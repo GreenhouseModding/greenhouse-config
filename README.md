@@ -37,7 +37,7 @@ dependencies {
     modImplementation(include("house.greenhouse:greenhouseconfig:${ghc_version}+${minecraft_version}-fabric"))
     
     // Depend on the NeoForge project, for ModDevGradle.
-    jarJar("house.greenhouse:greenhouse-config:${ghc_version}+${minecraft_version}-neoforge")
+    implementation(jarJar("house.greenhouse:greenhouse-config:${ghc_version}+${minecraft_version}-neoforge"))
     
     // Depend on the NeoForge project, for NeoGradle.
     jarJar(implementation("house.greenhouse:greenhouseconfig:[${ghc_version}+${minecraft_version},)")) {
