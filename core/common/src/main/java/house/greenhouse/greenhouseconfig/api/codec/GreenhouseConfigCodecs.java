@@ -29,7 +29,7 @@ public class GreenhouseConfigCodecs {
     }
 
     /**
-     * A codec that encodes comments alongside its value.
+     * A {@link Codec} that encodes comments alongside its value.
      *
      * @param codec A codec.
      * @param comments  The comments to encode. New values are a new line.
@@ -41,7 +41,7 @@ public class GreenhouseConfigCodecs {
     }
 
     /**
-     * A codec for a LateHolder, a {@link net.minecraft.core.Holder} that gets bound when registries are loaded.
+     * A {@link Codec} for a LateHolder, a {@link net.minecraft.core.Holder} that gets bound when registries are loaded.
      *
      * @param registry The registry key to use for this codec.
      * @return A {@link LateHolder} codec.
@@ -53,7 +53,7 @@ public class GreenhouseConfigCodecs {
     }
 
     /**
-     * A codec for a LateHolderSet, a {@link net.minecraft.core.HolderSet} that gets bound when registries are loaded.
+     * A {@link Codec} for a LateHolderSet, a {@link net.minecraft.core.HolderSet} that gets bound when registries are loaded.
      *
      * @param registry The registry key to use for this codec.
      * @return A {@link LateHolderSet} codec.
