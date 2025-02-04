@@ -8,15 +8,12 @@ plugins {
     `maven-publish`
 }
 
-lateinit var props: Properties.ModuleProperties
+var props = Properties.MODULES["core"]!!
 lateinit var platform: String
 
-Properties.MODULES.forEach { (name, metadata) ->
-    Properties.PLATFORMS.forEach { platform ->
-        if (project.name == "${name}-${platform}") {
-            props = metadata
-            this.platform = platform
-        }
+Properties.PLATFORMS.forEach { platform ->
+    if (project.name == platform) {
+        this.platform = platform
     }
 }
 

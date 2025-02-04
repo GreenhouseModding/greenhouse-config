@@ -1,5 +1,5 @@
+import house.greenhouse.greenhouseconfig.gradle.Properties
 import house.greenhouse.greenhouseconfig.gradle.Versions
-import house.greenhouse.greenhouseconfig.gradle.props
 import net.fabricmc.loom.task.RemapJarTask
 import org.gradle.jvm.tasks.Jar
 
@@ -8,6 +8,8 @@ plugins {
     id("fabric-loom")
     id("me.modmuss50.mod-publish-plugin")
 }
+
+var props = Properties.MODULES["core"]!!
 
 repositories {
     maven("https://maven.terraformersmc.com/") {
@@ -74,28 +76,28 @@ publishMods {
     github {
         file.set(tasks.named<Jar>("remapJar").get().archiveFile)
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        parent(project(":core-common").tasks.named("publishGithub"))
+        parent(project(":common").tasks.named("publishGithub"))
     }
 }
 
 tasks.register<RemapJarTask>("remapCommon") {
-    dependsOn(project(":core-common").tasks.jar)
-    inputFile.set(project(":core-common").tasks.jar.get().archiveFile)
+    dependsOn(project(":common").tasks.jar)
+    inputFile.set(project(":common").tasks.jar.get().archiveFile)
 
     archiveVersion.set("${props.version}+${Versions.MINECRAFT}-common-intermediary")
 }
 
 tasks.register<RemapJarTask>("remapCommonSources") {
-    dependsOn(project(":core-common").tasks.sourcesJar)
-    inputFile.set(project(":core-common").tasks.sourcesJar.get().archiveFile)
+    dependsOn(project(":common").tasks.sourcesJar)
+    inputFile.set(project(":common").tasks.sourcesJar.get().archiveFile)
 
     archiveClassifier.set("sources")
     archiveVersion.set("${props.version}+${Versions.MINECRAFT}-common-intermediary")
 }
 
 tasks.register<RemapJarTask>("remapCommonJavadoc") {
-    dependsOn(project(":core-common").tasks.javadocJar)
-    inputFile.set(project(":core-common").tasks.javadocJar.get().archiveFile)
+    dependsOn(project(":common").tasks.javadocJar)
+    inputFile.set(project(":common").tasks.javadocJar.get().archiveFile)
 
     archiveClassifier.set("javadoc")
     archiveVersion.set("${props.version}+${Versions.MINECRAFT}-common-intermediary")

@@ -4,11 +4,14 @@ import house.greenhouse.greenhouseconfig.gradle.Versions
 plugins {
     id("net.neoforged.moddev")
     id("me.modmuss50.mod-publish-plugin")
+    id("maven-publish")
 }
 
 var props = Properties.MODULES["jsonc"]!!
 
-version = "${props.version}+${Versions.MINECRAFT}-common-mojmap"
+base.archivesName.set(props.modId)
+group = Properties.GROUP
+version = props.version
 
 sourceSets {
     create("generated") {
@@ -27,14 +30,14 @@ neoForge {
 }
 
 dependencies {
-    compileOnly(project(":core-common"))
+    compileOnly(project(":common"))
 }
 
 publishMods {
     github {
         file.set(tasks.named<Jar>("jar").get().archiveFile)
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        parent(project(":core-common").tasks.named("publishGithub"))
+        parent(project(":common").tasks.named("publishGithub"))
     }
 }
 
@@ -58,7 +61,6 @@ tasks {
     val expandProps = mapOf(
         "mod_version" to props.version,
         "group" to project.group, //Else we target the task's group.
-        "minecraft_version" to Versions.MINECRAFT,
         "mod_name" to props.modName,
         "mod_author" to Properties.MOD_AUTHOR,
         "neoforge_mod_contributors" to Properties.MOD_CONTRIBUTORS.joinToString(),
@@ -80,5 +82,27 @@ tasks {
             expand(expandProps)
         }
         exclude("\\.cache")
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            artifactId = props.modId
+        }
+    }
+    repositories {
+        maven {
+            name = "Greenhouse"
+            url = uri("https://repo.greenhouse.house/releases")
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
+            }
+        }
     }
 }

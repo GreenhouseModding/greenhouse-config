@@ -1,12 +1,13 @@
 import house.greenhouse.greenhouseconfig.gradle.Properties
 import house.greenhouse.greenhouseconfig.gradle.Versions
-import house.greenhouse.greenhouseconfig.gradle.props
 
 plugins {
     id("conventions.common")
     id("net.neoforged.moddev")
     id("me.modmuss50.mod-publish-plugin")
 }
+
+var props = Properties.MODULES["core"]!!
 version = "${props.version}+${Versions.MINECRAFT}-common-mojmap"
 
 sourceSets {

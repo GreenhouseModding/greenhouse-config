@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "${mod_id}",
-  "version": "${mod_version}+${minecraft_version}",
+  "version": "${mod_version}",
   "name": "${mod_name}",
   "description": "${mod_description}",
   "authors": [
@@ -23,7 +23,7 @@
     "fabric-api": "*",
     "minecraft": "*",
     "java": "*",
-    "greenhouseconfig": ">=1.0.0-"
+    "greenhouseconfig": ">=1.0.0-alpha.2"
   },
   "custom": {
     "modmenu": {

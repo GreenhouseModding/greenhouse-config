@@ -5,7 +5,7 @@ issueTrackerURL="https://github.com/${sources}/issues"
 
 [[mods]]
 modId="${mod_id}"
-version="${mod_version}+${minecraft_version}"
+version="${mod_version}"
 displayName="${mod_name}"
 displayURL="${homepage}"
 logoFile="${mod_id}.png"
@@ -34,6 +34,6 @@ side = "BOTH"
 [[dependencies.${mod_id}]]
 modId = "greenhouseconfig"
 type="required"
-versionRange = "[1.0.0-alpha.1,)"
+versionRange = "[1.0.0-alpha.2,)"
 ordering = "NONE"
 side = "BOTH"

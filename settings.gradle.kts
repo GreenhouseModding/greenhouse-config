@@ -24,8 +24,8 @@ rootProject.name = "greenhouse-config"
 val platforms = setOf("common", "fabric", "neoforge")
 
 platforms.forEach { platform ->
-    include(":core-${platform}")
-    val proj = project(":core-${platform}")
+    include(":${platform}")
+    val proj = project(":${platform}")
     proj.projectDir = file("core/${platform}")
 }
 include(":jsonc")

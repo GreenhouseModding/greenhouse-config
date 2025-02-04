@@ -4,19 +4,6 @@ plugins {
     id("conventions.common")
 }
 
-lateinit var props: Properties.ModuleProperties;
-
-Properties.MODULES.forEach { (name, metadata) ->
-    Properties.PLATFORMS.forEach { platform ->
-        if (project.name == "${name}-${platform}")
-            props = metadata
-    }
-}
-
-fun getCommonProjectName() : String {
-    return props.moduleName + "-common"
-}
-
 configurations {
     register("commonJava") {
         isCanBeResolved = true
@@ -33,13 +20,13 @@ configurations {
 }
 
 dependencies {
-    compileOnly(project(":${getCommonProjectName()}"))
-    testCompileOnly(project(":${getCommonProjectName()}", "commonJava"))
-    testCompileOnly(project(":${getCommonProjectName()}", "commonTestJava"))
-    "commonJava"(project(":${getCommonProjectName()}", "commonJava"))
-    "commonTestJava"(project(":${getCommonProjectName()}", "commonTestJava"))
-    "commonResources"(project(":${getCommonProjectName()}", "commonResources"))
-    "commonTestResources"(project(":${getCommonProjectName()}", "commonTestResources"))
+    compileOnly(project(":common"))
+    testCompileOnly(project(":common", "commonJava"))
+    testCompileOnly(project(":common", "commonTestJava"))
+    "commonJava"(project(":common", "commonJava"))
+    "commonTestJava"(project(":common", "commonTestJava"))
+    "commonResources"(project(":common", "commonResources"))
+    "commonTestResources"(project(":common", "commonTestResources"))
 }
 
 tasks {

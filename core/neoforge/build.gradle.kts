@@ -1,5 +1,5 @@
+import house.greenhouse.greenhouseconfig.gradle.Properties
 import house.greenhouse.greenhouseconfig.gradle.Versions
-import house.greenhouse.greenhouseconfig.gradle.props
 import org.apache.tools.ant.filters.LineContains
 import org.gradle.jvm.tasks.Jar
 
@@ -8,6 +8,8 @@ plugins {
     id("net.neoforged.moddev")
     id("me.modmuss50.mod-publish-plugin")
 }
+
+var props = Properties.MODULES["core"]!!
 
 dependencies {
     testImplementation(project(":jsonc"))
@@ -21,7 +23,7 @@ neoForge {
     }
     addModdingDependenciesTo(sourceSets["test"])
 
-    val at = project(":core-common").file("src/main/resources/${props.modId}.cfg")
+    val at = project(":common").file("src/main/resources/${props.modId}.cfg")
     if (at.exists())
         setAccessTransformers(at)
     validateAccessTransformers = true
@@ -71,6 +73,6 @@ publishMods {
     github {
         file.set(tasks.named<Jar>("jar").get().archiveFile)
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        parent(project(":core-common").tasks.named("publishGithub"))
+        parent(project(":common").tasks.named("publishGithub"))
     }
 }
