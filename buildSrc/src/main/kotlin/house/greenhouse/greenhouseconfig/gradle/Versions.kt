@@ -1,12 +1,9 @@
 package house.greenhouse.greenhouseconfig.gradle
 
 object Versions {
-    const val MOD = "1.0.0-alpha.2"
-
-    const val MINECRAFT = "1.21"
-    const val INTERNAL_MINECRAFT = "1.21"
-    const val NEOFORM = "$MINECRAFT-20240613.152323"
-    const val PARCHMENT = "2024.06.23"
+    const val MINECRAFT = "1.21.1"
+    const val NEOFORM = "$MINECRAFT-20240808.144430"
+    const val PARCHMENT = "2024.11.17"
 
     // TODO: Implement Common Events.
     const val COMMON_EVENTS = "1.0.0"
