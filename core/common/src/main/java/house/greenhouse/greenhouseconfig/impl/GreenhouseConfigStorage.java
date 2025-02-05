@@ -2,6 +2,7 @@ package house.greenhouse.greenhouseconfig.impl;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 
 import house.greenhouse.greenhouseconfig.api.lang.ConfigLang;
@@ -9,6 +10,7 @@ import house.greenhouse.greenhouseconfig.api.GreenhouseConfigHolder;
 import house.greenhouse.greenhouseconfig.api.GreenhouseConfigSide;
 import house.greenhouse.greenhouseconfig.impl.network.SyncGreenhouseConfigPacket;
 import net.minecraft.core.HolderLookup;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileReader;
@@ -147,29 +149,32 @@ public class GreenhouseConfigStorage {
         if (file.exists()) {
             try {
                 ConfigLang<C> lang = holder.getConfigLang();
-                C json = lang.read(new FileReader(file));
+                C contents = lang.read(new FileReader(file));
                 int schemaVersion = readSchemaVersion(file);
                 if (schemaVersion != holder.getSchemaVersion()) {
-                    Codec<T> oldCodec = holder.getBackwardsCompatCodec(schemaVersion);
-                    if (oldCodec != null) {
-                        var dataResult = oldCodec.decode(lang.getOps(), json);
+                    @Nullable C converted = holder.update(schemaVersion, new Dynamic<>(holder.getConfigLang().getOps(), contents));
+                    if (converted != null) {
+                        var dataResult = holder.decode(converted);
                         if (!dataResult.hasResultOrPartial()) {
-                            GreenhouseConfig.LOG.error("Could not decode old config file '{}'. Using default instead.", file.getPath());
+                            GreenhouseConfig.LOG.error("Could not decode old config file '{}'. Using default instead. {}", file.getPath(), dataResult.error().orElseThrow().message());
                         } else {
-                            T value = createConfig(holder, dataResult.resultOrPartial(GreenhouseConfig.LOG::error).orElseThrow().getFirst(), file);
+                            T value = createConfig(holder, dataResult.resultOrPartial(string -> GreenhouseConfig.LOG.error("Could not completely decode old config file '{}'. Using partially decoded value. {}", file.getPath(), dataResult.error().orElseThrow().message())).orElseThrow().getFirst(), file);
                             consumer.accept(holder, value);
                             return;
                         }
                     }
                 } else {
-                    var value = holder.decode(json);
-                    if (value.isError() && value.hasResultOrPartial())
-                        createConfig(holder, value.getPartialOrThrow().getFirst(), file);
-                    consumer.accept(holder, value.getPartialOrThrow().getFirst());
+                    var dataResult = holder.decode(contents);
+                    if (!dataResult.hasResultOrPartial()) {
+                        GreenhouseConfig.LOG.error("Could not decode config file '{}'. Using default instead. {}", file.getPath(), dataResult.error().orElseThrow().message());
+                        createConfig(holder, holder.getDefaultValue(), file);
+                    }
+
+                    consumer.accept(holder, dataResult.resultOrPartial(string -> GreenhouseConfig.LOG.error("Could not completely decode config file '{}'. Using partially decoded value. {}", file.getPath(), dataResult.error().orElseThrow())));
                     return;
                 }
             } catch (Exception ex) {
-                GreenhouseConfig.LOG.error("Could not read config file '{}'.", file.getPath(), ex);
+                GreenhouseConfig.LOG.error("Could not decode config file '{}'.", file.getPath(), ex);
             }
         }
 
@@ -208,10 +213,13 @@ public class GreenhouseConfigStorage {
             element = ops.createMap(Map.of(ops.createString("value"), element));
         }
 
-        FileWriter writer = new FileWriter(file);
-        holder.getConfigLang().write(writer, element);
-        writer.close();
-        writeSchemaVersion(file, holder);
+        try (FileWriter writer = new FileWriter(file)) {
+            holder.getConfigLang().write(writer, element);
+            writeSchemaVersion(file, holder);
+        } catch (Exception ex) {
+            GreenhouseConfig.LOG.error("Failed to write config '{}'.", holder.getConfigName(), ex);
+            return null;
+        }
 
         return holder.decode(element).getOrThrow().getFirst();
     }

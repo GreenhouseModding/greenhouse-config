@@ -20,12 +20,10 @@ public class GreenhouseConfigTest {
 
     public static final GreenhouseConfigHolder<TestConfig> CONFIG = GreenhouseConfigHolder.<TestConfig>builder(MOD_ID, JsonCLang.INSTANCE)
             .schemaVersion(3)
-            .server(TestConfig.CODEC, TestConfig.DEFAULT)
-            .client(TestConfig.CODEC, TestConfig.DEFAULT)
+            .common(TestConfig.CODEC, TestConfig.DEFAULT)
             .networkSerializable(TestConfig::streamCodec)
             .lateValues(TestConfig::getLateValues, s -> LOG.error("Error handling config/greenhouseconfig_test.jsonc: {}", s))
-            .backwardsCompat(1, TestConfig.CompatCodecs.V1)
-            .backwardsCompat(2, TestConfig.CompatCodecs.V2)
+            .dataFixer(TestConfig.Fixer.INSTANCE)
             .buildAndRegister();
 
     public static void init() {}
@@ -55,7 +53,7 @@ public class GreenhouseConfigTest {
         if (holder == GreenhouseConfigTest.CONFIG && config instanceof TestConfig testConfig) {
             GreenhouseConfigTest.LOG.info("Main Config Values...");
             GreenhouseConfigTest.LOG.info("Silly: {}", testConfig.silly());
-            GreenhouseConfigTest.LOG.info(testConfig.favoriteEnchantment().toString());
+            GreenhouseConfigTest.LOG.info("Enchantment opinion: {} {}", testConfig.enchantmentOpinion().getSecond().getSerializedName(), testConfig.enchantmentOpinion().getFirst());
             GreenhouseConfigTest.LOG.info(testConfig.redBlocks().toString());
             GreenhouseConfigTest.LOG.info(testConfig.greenBiomes().toString());
             GreenhouseConfigTest.LOG.info("Split Config Values...");

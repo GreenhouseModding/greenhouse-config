@@ -3,6 +3,7 @@ package house.greenhouse.greenhouseconfig.jsonc.internal;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import house.greenhouse.greenhouseconfig.api.lang.CommentedValue;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,8 +27,8 @@ public class JsonCObject extends JsonCElement {
         super(null, comments);
     }
 
-    public JsonCObject(JsonObject object) {
-        super(object);
+    public JsonCObject(JsonObject object, String... comments) {
+        super(null, comments);
 
         for (Map.Entry<String, JsonElement> entry : object.entrySet()) {
             members.put(entry.getKey(), entry.getValue().isJsonObject() ?
@@ -46,5 +47,10 @@ public class JsonCObject extends JsonCElement {
 
     public void putAll(Map<String, JsonCElement> map) {
         members.putAll(map);
+    }
+
+    @Override
+    public CommentedValue withComment(String[] comments) {
+        return new JsonCObject(members, comments);
     }
 }

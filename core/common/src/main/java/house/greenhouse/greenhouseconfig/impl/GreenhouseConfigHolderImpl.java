@@ -1,18 +1,20 @@
 package house.greenhouse.greenhouseconfig.impl;
 
+import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Dynamic;
 import house.greenhouse.greenhouseconfig.api.GreenhouseConfigHolder;
 import house.greenhouse.greenhouseconfig.api.GreenhouseConfigSide;
 import house.greenhouse.greenhouseconfig.api.lang.ConfigLang;
 
+import house.greenhouse.greenhouseconfig.api.dfu.GreenhouseConfigDFUReferences;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -32,8 +34,8 @@ public class GreenhouseConfigHolderImpl<C, T> implements GreenhouseConfigHolder<
     private final BiConsumer<HolderLookup.Provider, T> postRegistryPopulationCallback;
     @Nullable
     private final Consumer<T> postRegistryDepopulationCallback;
-    private final Map<Integer, Codec<T>> backwardsCompatCodecsServer;
-    private final Map<Integer, Codec<T>> backwardsCompatCodecsClient;
+    private final DataFixer dataFixerServer;
+    private final DataFixer dataFixerClient;
 
     public GreenhouseConfigHolderImpl(String configName, int schemaVersion, ConfigLang<C> configLang,
                                       T defaultServerValue, T defaultClientValue,
@@ -41,8 +43,8 @@ public class GreenhouseConfigHolderImpl<C, T> implements GreenhouseConfigHolder<
                                       @Nullable Function<T, StreamCodec<FriendlyByteBuf, T>> networkCodecFunction,
                                       @Nullable BiConsumer<HolderLookup.Provider, T> postRegistryPopulationCallback,
                                       @Nullable Consumer<T> postRegistryDepopulationCallback,
-                                      Map<Integer, Codec<T>> backwardsCompatCodecsServer,
-                                      Map<Integer, Codec<T>> backwardsCompatCodecsClient) {
+                                      DataFixer dataFixerServer,
+                                      DataFixer dataFixerClient) {
         this.configName = configName;
         this.schemaVersion = schemaVersion;
         this.configLang = configLang;
@@ -53,8 +55,8 @@ public class GreenhouseConfigHolderImpl<C, T> implements GreenhouseConfigHolder<
         this.networkCodecFunction = networkCodecFunction;
         this.postRegistryPopulationCallback = postRegistryPopulationCallback;
         this.postRegistryDepopulationCallback = postRegistryDepopulationCallback;
-        this.backwardsCompatCodecsServer = backwardsCompatCodecsServer;
-        this.backwardsCompatCodecsClient = backwardsCompatCodecsClient;
+        this.dataFixerServer = dataFixerServer;
+        this.dataFixerClient = dataFixerClient;
     }
 
     @Override
@@ -115,8 +117,11 @@ public class GreenhouseConfigHolderImpl<C, T> implements GreenhouseConfigHolder<
     }
 
     @Nullable
-    public Codec<T> getBackwardsCompatCodec(int configVersion) {
-        return GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? backwardsCompatCodecsServer.get(configVersion) : backwardsCompatCodecsClient.get(configVersion);
+    public C update(int previousVersion, Dynamic<C> configContents) {
+        DataFixer fixer = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? dataFixerServer : dataFixerClient;
+        if (fixer == null)
+            return null;
+        return fixer.update(GreenhouseConfigDFUReferences.CONFIG, configContents, previousVersion, schemaVersion).getValue();
     }
 
     @Override

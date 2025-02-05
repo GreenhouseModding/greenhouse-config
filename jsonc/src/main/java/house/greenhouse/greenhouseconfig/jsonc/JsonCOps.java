@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
@@ -198,7 +197,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
             public JsonCElement get(final JsonCElement key) {
                 if (key.json() instanceof JsonPrimitive primitive && primitive.isString()) {
                     final JsonCElement element = object.members().get((primitive.getAsString()));
-                    if (element.json() instanceof JsonNull)
+                    if (element == null || element.json() instanceof JsonNull)
                         return null;
                     return element;
                 }
@@ -209,7 +208,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
             @Override
             public JsonCElement get(final String key) {
                 final JsonCElement element = object.members().get(key);
-                if (element.json() instanceof JsonNull) {
+                if (element == null || element.json() instanceof JsonNull) {
                     return null;
                 }
                 return element;
@@ -263,10 +262,10 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 
     @Override
     public JsonCElement remove(final JsonCElement input, final String key) {
-        if (input.json() instanceof JsonObject object) {
-            final JsonObject result = new JsonObject();
-            object.entrySet().stream().filter(entry -> !Objects.equals(entry.getKey(), key)).forEach(entry -> result.add(entry.getKey(), entry.getValue()));
-            return new JsonCElement(result, input.comments());
+        if (input instanceof JsonCObject object) {
+            final JsonCObject result = new JsonCObject();
+            object.members().entrySet().stream().filter(entry -> !Objects.equals(entry.getKey(), key)).forEach(entry -> result.put(entry.getKey(), entry.getValue()));
+            return result;
         }
         return input;
     }

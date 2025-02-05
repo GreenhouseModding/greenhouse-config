@@ -1,6 +1,6 @@
 package house.greenhouse.greenhouseconfig.api;
 
-import com.google.common.collect.ImmutableMap;
+import com.mojang.datafixers.DataFixer;
 import com.mojang.serialization.Codec;
 
 import house.greenhouse.greenhouseconfig.api.util.LateHolder;
@@ -19,9 +19,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -136,8 +134,8 @@ public interface GreenhouseConfigHolder<T> {
     class Builder<T> {
         @NotNull
         private final String configName;
+        private final ConfigLang<?> configLang;
         private int schemaVersion = 1;
-        private ConfigLang<?> configLang;
         private T defaultServerValue;
         private T defaultClientValue;
         private Codec<T> serverCodec;
@@ -148,9 +146,8 @@ public interface GreenhouseConfigHolder<T> {
         private Consumer<T> lateDepopulationCallback;
         private Consumer<T> postRegistryDepopulationCallback;
 
-        private final ImmutableMap.Builder<Integer, Codec<T>> backwardsCompatCodecsServer = ImmutableMap.builder();
-        private final Set<Integer> backwardsCompatClientVersions = new HashSet<>();
-        private final ImmutableMap.Builder<Integer, Codec<T>> backwardsCompatCodecsClient = ImmutableMap.builder();
+        private DataFixer dataFixerServer;
+        private DataFixer dataFixerClient;
 
         protected Builder(@NotNull String configName, ConfigLang<?> lang) {
             this.configName = configName;
@@ -159,21 +156,20 @@ public interface GreenhouseConfigHolder<T> {
 
         /**
          * Sets the config version.
-         * The config's version is accessed through the user defined file metadata
-         * 'GreenhouseConfigSchemaVersion'.
+         * The config's version is accessed through the user defined file metadata 'GreenhouseConfigSchemaVersion'.
          *
-         * @param schemaVersion The version of the schema.
+         * @param version The version of the schema.
          */
-        public Builder<T> schemaVersion(int schemaVersion) {
-            this.schemaVersion = Math.max(1, schemaVersion);
+        public Builder<T> schemaVersion(int version) {
+            this.schemaVersion = Math.max(1, version);
             return this;
         }
 
         /**
          * Sets a codec for both the dedicated server and the client/integrated server.
          *
-         * @param codec         The codec to use for both environments.
-         * @param defaultValue  The default value for this config.
+         * @param codec The codec to use for both environments.
+         * @param defaultValue The default value for this config.
          */
         public Builder<T> common(Codec<T> codec, T defaultValue) {
             server(codec, defaultValue);
@@ -187,22 +183,20 @@ public interface GreenhouseConfigHolder<T> {
          * This will set the client config is there is no client config value,
          * this is so clients running this mod can still access this config.
          *
-         * @param codec         The codec to use for serialization.
-         * @param defaultValue  The default server config value.
+         * @param codec The codec to use for serialization.
+         * @param defaultValue The default server config value.
          */
         public Builder<T> server(Codec<T> codec, T defaultValue) {
             serverCodec =  codec;
             defaultServerValue = defaultValue;
-            if (clientCodec == null && defaultClientValue == null)
-                client(codec, defaultValue);
             return this;
         }
 
         /**
          * Sets the config for use with clients and integrated servers.
          *
-         * @param codec         The codec to use for serialization.
-         * @param defaultValue  The default client config value.
+         * @param codec The codec to use for serialization.
+         * @param defaultValue The default client config value.
          */
         public Builder<T> client(Codec<T> codec, T defaultValue) {
             clientCodec =  codec;
@@ -216,7 +210,7 @@ public interface GreenhouseConfigHolder<T> {
          * <p>
          * If the client does not have the mod that this config originates from, this will be ignored.
          *
-         * @param streamCodec   The stream codec to use for serialization.
+         * @param streamCodec The stream codec to use for serialization.
          */
         public Builder<T> networkSerializable(StreamCodec<FriendlyByteBuf, T> streamCodec) {
             return networkSerializable(clientConfig -> streamCodec);
@@ -228,8 +222,7 @@ public interface GreenhouseConfigHolder<T> {
          * <p>
          * If the client does not have the mod that this config originates from, this will be ignored.
          *
-         * @param streamCodecFunction   The stream codec to use for serialization,
-         *                              whilst passing the current client config.
+         * @param streamCodecFunction The stream codec to use for serialization whilst passing the current client config.
          */
         public Builder<T> networkSerializable(Function<T, StreamCodec<FriendlyByteBuf, T>> streamCodecFunction) {
             networkCodecFunction = streamCodecFunction;
@@ -238,15 +231,15 @@ public interface GreenhouseConfigHolder<T> {
 
         /**
          * Adds a backwards compatibility codec used for converting from
-         * an older version of this config to the current version for
+         * older versions of this config to the current version for
          * both the dedicated server and client/integrated server.
          *
-         * @param version   The version to convert from.
-         * @param codec     The codec used to convert from the old version to the current version.
+         * @param fixer The DataFixer to use for updating this config.
+         * @see com.mojang.datafixers.DataFixerBuilder
          */
-        public Builder<T> backwardsCompat(int version, Codec<T> codec) {
-            backwardsCompatServer(version, codec);
-            backwardsCompatClient(version, codec);
+        public Builder<T> dataFixer(DataFixer fixer) {
+            dataFixerServer(fixer);
+            dataFixerClient(fixer);
             return this;
         }
 
@@ -258,31 +251,24 @@ public interface GreenhouseConfigHolder<T> {
          * This will additionally set the client backwards compatibility config is there is no client config value,
          * this is so integrated servers running the mod can still access this config.
          *
-         * @param version   The version to convert from.
-         * @param codec     The codec used to convert from the old version to the current version.
+         * @param fixer The DataFixer to use for updating this config.
+         * @see com.mojang.datafixers.DataFixerBuilder
          */
-        public Builder<T> backwardsCompatServer(int version, Codec<T> codec) {
-            if (version >= schemaVersion)
-                throw new IllegalArgumentException("Cannot add backwards compatibility codec for version '" + version + "' for mod '" + configName + "' as it is equal or larger than the current schema version. Make sure to specify your current config version prior to any backwards compat codecs!");
-            backwardsCompatCodecsServer.put(version, codec);
-            if (!backwardsCompatClientVersions.contains(version))
-                backwardsCompatClient(version, codec);
+        public Builder<T> dataFixerServer(DataFixer fixer) {
+            dataFixerServer = fixer;
             return this;
         }
 
         /**
          * Adds a backwards compatibility codec used for converting from
-         * an older version of this config to the current version for
+         * older versions of this config to the current version for
          * the client/integrated server.
          *
-         * @param version   The version to convert from.
-         * @param codec     The codec used to convert from the old version to the current version.
+         * @param fixer The DataFixer to use for updating this config.
+         * @see com.mojang.datafixers.DataFixerBuilder
          */
-        public Builder<T> backwardsCompatClient(int version, Codec<T> codec) {
-            if (version >= schemaVersion)
-                throw new IllegalArgumentException("Cannot add backwards compatibility codec for version '" + version + "' for mod '" + configName + "' as it is equal or larger than the current schema version. Make sure to specify your current config version prior to any backwards compat codecs!");
-            backwardsCompatCodecsClient.put(version, codec);
-            backwardsCompatClientVersions.add(version);
+        public Builder<T> dataFixerClient(DataFixer fixer) {
+            dataFixerClient = fixer;
             return this;
         }
 
@@ -338,7 +324,7 @@ public interface GreenhouseConfigHolder<T> {
             BiConsumer<HolderLookup.Provider, T> populationCallback = latePopulationCallback != null && postRegistryPopulationCallback != null ? latePopulationCallback.andThen(postRegistryPopulationCallback) : latePopulationCallback != null ? latePopulationCallback : postRegistryPopulationCallback;
             Consumer<T> depopulationCallback = lateDepopulationCallback != null && postRegistryDepopulationCallback != null ? lateDepopulationCallback.andThen(postRegistryDepopulationCallback) : lateDepopulationCallback != null ? lateDepopulationCallback : postRegistryDepopulationCallback;
 
-            GreenhouseConfigHolderImpl<?, T> config = new GreenhouseConfigHolderImpl<>(configName, schemaVersion, configLang, defaultServerValue, defaultClientValue, serverCodec, clientCodec, networkCodecFunction, populationCallback, depopulationCallback, backwardsCompatCodecsServer.buildKeepingLast(), backwardsCompatCodecsClient.buildKeepingLast());
+            GreenhouseConfigHolderImpl<?, T> config = new GreenhouseConfigHolderImpl<>(configName, schemaVersion, configLang, defaultServerValue, defaultClientValue, serverCodec, clientCodec, networkCodecFunction, populationCallback, depopulationCallback, dataFixerServer, dataFixerClient);
 
             if (serverCodec != null)
                 GreenhouseConfigHolderRegistry.registerServerConfig(configName, config);

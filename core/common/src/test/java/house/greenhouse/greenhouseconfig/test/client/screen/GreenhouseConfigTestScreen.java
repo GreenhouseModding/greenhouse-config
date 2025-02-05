@@ -1,5 +1,6 @@
 package house.greenhouse.greenhouseconfig.test.client.screen;
 
+import com.mojang.datafixers.util.Pair;
 import house.greenhouse.greenhouseconfig.api.util.LateHolder;
 import house.greenhouse.greenhouseconfig.api.util.LateHolderSet;
 import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
@@ -154,7 +155,7 @@ public class GreenhouseConfigTestScreen extends Screen {
      */
     public static class TestConfigBuilder {
         protected int silly;
-        protected LateHolder<Enchantment> favoriteEnchantment;
+        protected Pair<LateHolder<Enchantment>, TestConfig.Opinion> enchantmentOpinion;
         protected LateHolderSet<Block> redBlocks;
         protected LateHolderSet<Biome> greenBiomes;
         protected TextColor color;
@@ -162,7 +163,7 @@ public class GreenhouseConfigTestScreen extends Screen {
 
         protected TestConfigBuilder(TestConfig config) {
             this.silly = config.silly();
-            this.favoriteEnchantment = config.favoriteEnchantment();
+            this.enchantmentOpinion = config.enchantmentOpinion();
             this.redBlocks = config.redBlocks();
             this.greenBiomes = config.greenBiomes();
             this.color = config.color();
@@ -174,8 +175,8 @@ public class GreenhouseConfigTestScreen extends Screen {
             return this;
         }
 
-        public TestConfigBuilder favoriteEnchantment(LateHolder<Enchantment> enchantment) {
-            this.favoriteEnchantment = enchantment;
+        public TestConfigBuilder enchantmentOpinion(LateHolder<Enchantment> enchantment, TestConfig.Opinion opinion) {
+            this.enchantmentOpinion = Pair.of(enchantment, opinion);
             return this;
         }
 
@@ -190,11 +191,11 @@ public class GreenhouseConfigTestScreen extends Screen {
         }
 
         public boolean equals(TestConfig original) {
-            return original.silly() == silly && original.favoriteEnchantment().equals(favoriteEnchantment) && original.redBlocks().equals(redBlocks) && original.greenBiomes().equals(greenBiomes) && original.color().getValue() == color.getValue() && original.clientValues().color().getValue() == clientColor.getValue();
+            return original.silly() == silly && original.enchantmentOpinion().equals(enchantmentOpinion) && original.redBlocks().equals(redBlocks) && original.greenBiomes().equals(greenBiomes) && original.color().getValue() == color.getValue() && original.clientValues().color().getValue() == clientColor.getValue();
         }
 
         public TestConfig build() {
-            return new TestConfig(silly, favoriteEnchantment, redBlocks, greenBiomes, color, new TestConfig.ClientConfigValues(clientColor));
+            return new TestConfig(silly, enchantmentOpinion, redBlocks, greenBiomes, color, new TestConfig.ClientConfigValues(clientColor));
         }
     }
 }
