@@ -7,3 +7,8 @@
 ## Minor Changes
 - Added `getUnsynced` method, for getting the client config values without any server interference.
 - Simplified internal JSONC writing. Thank you to Echo from [Spirit Studios](https://github.com/SpiritGameStudios) for allowing me to utilise the simplified JSONC writing code.
+
+## Bugfixes
+- Fixed JSONCObject remapping into an element when adding comments to one.
+- Fixed exceptions always throwing when a schema version is not attached to a config.
+  - It will now always fall back to the latest value.

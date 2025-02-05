@@ -150,7 +150,7 @@ public class GreenhouseConfigStorage {
             try {
                 ConfigLang<C> lang = holder.getConfigLang();
                 C contents = lang.read(new FileReader(file));
-                int schemaVersion = readSchemaVersion(file);
+                int schemaVersion = readSchemaVersion(file, holder);
                 if (schemaVersion != holder.getSchemaVersion()) {
                     @Nullable C converted = holder.update(schemaVersion, new Dynamic<>(holder.getConfigLang().getOps(), contents));
                     if (converted != null) {
@@ -228,11 +228,17 @@ public class GreenhouseConfigStorage {
         Files.setAttribute(file.toPath(), "user:GreenhouseConfigSchemaVersion", ByteBuffer.wrap(String.valueOf(holder.getSchemaVersion()).getBytes(StandardCharsets.UTF_8)));
     }
 
-    private static int readSchemaVersion(File file) throws IOException {
-        UserDefinedFileAttributeView view = Files.getFileAttributeView(file.toPath(), UserDefinedFileAttributeView.class);
-        ByteBuffer buffer = ByteBuffer.allocate(view.size("GreenhouseConfigSchemaVersion"));
-        view.read("GreenhouseConfigSchemaVersion", buffer);
-        buffer.flip();
-        return Integer.parseInt(StandardCharsets.UTF_8.decode(buffer).toString());
+    private static int readSchemaVersion(File file, GreenhouseConfigHolder<?> holder) {
+        try {
+            UserDefinedFileAttributeView view = Files.getFileAttributeView(file.toPath(), UserDefinedFileAttributeView.class);
+            ByteBuffer buffer = ByteBuffer.allocate(view.size("GreenhouseConfigSchemaVersion"));
+            view.read("GreenhouseConfigSchemaVersion", buffer);
+            buffer.flip();
+            return Integer.parseInt(StandardCharsets.UTF_8.decode(buffer).toString());
+        } catch (IOException e) {
+            // Return the current schema version in the case of being unable to read the file attribute.
+            // Maybe consider a fallback schema version for migrating from other config libs.
+            return holder.getSchemaVersion();
+        }
     }
 }
