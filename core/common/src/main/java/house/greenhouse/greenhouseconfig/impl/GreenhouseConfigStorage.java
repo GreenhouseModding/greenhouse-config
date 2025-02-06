@@ -1,7 +1,6 @@
 package house.greenhouse.greenhouseconfig.impl;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 
@@ -167,10 +166,12 @@ public class GreenhouseConfigStorage {
                     var dataResult = holder.decode(contents);
                     if (!dataResult.hasResultOrPartial()) {
                         GreenhouseConfig.LOG.error("Could not decode config file '{}'. Using default instead. {}", file.getPath(), dataResult.error().orElseThrow().message());
-                        createConfig(holder, holder.getDefaultValue(), file);
+                        T config = createConfig(holder, holder.getDefaultValue(), file);
+                        consumer.accept(holder, config);
+                        return;
                     }
 
-                    consumer.accept(holder, dataResult.resultOrPartial(string -> GreenhouseConfig.LOG.error("Could not completely decode config file '{}'. Using partially decoded value. {}", file.getPath(), dataResult.error().orElseThrow())));
+                    consumer.accept(holder, dataResult.resultOrPartial(string -> GreenhouseConfig.LOG.error("Could not completely decode config file '{}'. Using partially decoded value. {}", file.getPath(), dataResult.error().orElseThrow())).orElseThrow().getFirst());
                     return;
                 }
             } catch (Exception ex) {
