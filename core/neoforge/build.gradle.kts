@@ -13,6 +13,7 @@ var props = Properties.MODULES["core"]!!
 
 dependencies {
     testImplementation(project(":jsonc"))
+    testImplementation(project(":toml"))
 }
 
 neoForge {

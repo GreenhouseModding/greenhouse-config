@@ -38,6 +38,7 @@ dependencies {
     compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
 
     testCompileOnly(project(":jsonc"))
+    testCompileOnly(project(":toml"))
 }
 
 configurations {
