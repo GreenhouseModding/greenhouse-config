@@ -7,6 +7,8 @@ object Versions {
 
     // TODO: Implement Common Events.
     const val COMMON_EVENTS = "1.0.0"
+    
+    const val NIGHT_CONFIG = "3.8.1"
 
     const val FABRIC_API = "0.108.0+1.21.1"
     const val FABRIC_LOADER = "0.16.9"
