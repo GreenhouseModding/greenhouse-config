@@ -94,6 +94,7 @@ tasks {
         configurations = listOf(shadowInclude)
         archiveClassifier.set("")
         relocate("com.electronwill.nightconfig", "house.greenhouse.greenhouseconfig.toml.nightconfig")
+        exclude("com/electronwill/nightconfig/core/**")
     }
 }
 
