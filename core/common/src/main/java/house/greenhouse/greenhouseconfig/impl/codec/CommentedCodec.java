@@ -6,6 +6,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 
 import house.greenhouse.greenhouseconfig.api.lang.CommentedValue;
+import house.greenhouse.greenhouseconfig.impl.GreenhouseConfig;
 
 public class CommentedCodec<T> implements Codec<T> {
     protected final String[] comments;
@@ -24,9 +25,11 @@ public class CommentedCodec<T> implements Codec<T> {
     @Override
     public <T1> DataResult<T1> encode(T input, DynamicOps<T1> ops, T1 prefix) {
         DataResult<T1> result = baseCodec.encode(input, ops, prefix);
-        if (result.hasResultOrPartial() && result.getPartialOrThrow() instanceof CommentedValue commented) {
+        if (result.hasResultOrPartial() && result.resultOrPartial().get() instanceof CommentedValue commented) {
             commented = commented.withComment(comments);
-            return DataResult.success((T1) commented);
+            if (result.isSuccess())
+                return DataResult.success((T1)commented);
+            return DataResult.<T1>error(() -> result.error().get().message()).setPartial(() -> (T1)result.getPartialOrThrow());
         }
         return result;
     }
