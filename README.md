@@ -22,7 +22,7 @@ Greenhouse Config is on the Greenhouse Team Maven, to get the mod in your enviro
 repositories {
     maven {
         name = "Greenhouse Maven"
-        url = "https://repo.greenhouse.house/snapshots/"
+        url = "https://repo.greenhouse.house/releases/"
     }
 }
 

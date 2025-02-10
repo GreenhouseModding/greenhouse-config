@@ -105,23 +105,15 @@ publishing {
         }
     }
     repositories {
-        if (System.getenv("MAVEN_USERNAME") != null && System.getenv("MAVEN_PASSWORD") != null) {
-            maven {
-                name = "Greenhouse"
-                url = uri("https://repo.greenhouse.house/releases")
-                credentials {
-                    username = System.getenv("MAVEN_USERNAME")
-                    password = System.getenv("MAVEN_PASSWORD")
-                }
-                authentication {
-                    create<BasicAuthentication>("basic")
-                }
+        maven {
+            name = "Greenhouse"
+            url = uri("https://repo.greenhouse.house/releases")
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
             }
-        }
-        if (System.getenv("PUBLISH_REPO") != null) {
-            maven {
-                name = "publishRepo"
-                url = rootProject.uri(System.getenv("PUBLISH_REPO"))
+            authentication {
+                create<BasicAuthentication>("basic")
             }
         }
     }
