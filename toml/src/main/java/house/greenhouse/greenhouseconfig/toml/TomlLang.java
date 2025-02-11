@@ -9,20 +9,21 @@ import com.electronwill.nightconfig.toml.TomlParser;
 import com.electronwill.nightconfig.toml.TomlWriter;
 
 import house.greenhouse.greenhouseconfig.api.lang.ConfigLang;
-import house.greenhouse.greenhouseconfig.toml.internal.TomlElement;
-import house.greenhouse.greenhouseconfig.toml.internal.TomlObject;
+import house.greenhouse.greenhouseconfig.nightconfig.NightConfigElement;
+import house.greenhouse.greenhouseconfig.nightconfig.NightConfigObject;
+import house.greenhouse.greenhouseconfig.nightconfig.NightConfigOps;
 
 import com.mojang.serialization.DynamicOps;
 
-public final class TomlLang implements ConfigLang<TomlElement> {
+public final class TomlLang implements ConfigLang<NightConfigElement> {
     public static final TomlLang INSTANCE = new TomlLang();
 
     private TomlLang() {
     }
 
     @Override
-    public DynamicOps<TomlElement> getOps() {
-        return TomlOps.INSTANCE;
+    public DynamicOps<NightConfigElement> getOps() {
+        return NightConfigOps.INSTANCE;
     }
 
     @Override
@@ -31,8 +32,8 @@ public final class TomlLang implements ConfigLang<TomlElement> {
     }
 
     @Override
-    public void write(Writer writer, TomlElement configObj) throws IOException {
-        if (configObj instanceof TomlObject object) {
+    public void write(Writer writer, NightConfigElement configObj) throws IOException {
+        if (configObj instanceof NightConfigObject object) {
             TomlWriter tomlWriter = new TomlWriter();
             tomlWriter.write(object.getConfig(), writer);
             writer.flush();
@@ -40,9 +41,9 @@ public final class TomlLang implements ConfigLang<TomlElement> {
     }
 
     @Override
-    public TomlElement read(Reader reader) throws IOException {
+    public NightConfigElement read(Reader reader) throws IOException {
         TomlParser parser = new TomlParser();
         CommentedConfig config = parser.parse(reader);
-        return new TomlObject(config);
+        return new NightConfigObject(config);
     }
 }

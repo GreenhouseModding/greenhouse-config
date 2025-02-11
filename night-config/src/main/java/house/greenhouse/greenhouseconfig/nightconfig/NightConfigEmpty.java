@@ -1,11 +1,11 @@
-package house.greenhouse.greenhouseconfig.toml.internal;
+package house.greenhouse.greenhouseconfig.nightconfig;
 
 import house.greenhouse.greenhouseconfig.api.lang.CommentedValue;
 
-public final class TomlEmpty extends TomlElement {
-    public static final TomlEmpty INSTANCE = new TomlEmpty();
+public final class NightConfigEmpty extends NightConfigElement {
+    public static final NightConfigEmpty INSTANCE = new NightConfigEmpty();
     
-    private TomlEmpty() {
+    private NightConfigEmpty() {
         super(new String[0]);
     }
 

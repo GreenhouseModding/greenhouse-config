@@ -8,7 +8,7 @@ plugins {
     id("com.github.johnrengelman.shadow")
 }
 
-var props = Properties.MODULES["toml"]!!
+var props = Properties.MODULES["night-config"]!!
 
 base.archivesName.set(props.modId)
 group = Properties.GROUP
@@ -31,18 +31,12 @@ neoForge {
 }
 
 val shadowInclude = configurations.create("shade")
-val jijInclude = configurations.create("jijInclude")
 
 dependencies {
     compileOnly(project(":common"))
 
-    implementation("com.electronwill.night-config:toml:${Versions.NIGHT_CONFIG}")
-    shadowInclude("com.electronwill.night-config:toml:${Versions.NIGHT_CONFIG}")
-
-    api(project(":night-config"))
-    jijInclude(project(":night-config")) {
-        isTransitive = false
-    }
+    implementation("com.electronwill.night-config:core:${Versions.NIGHT_CONFIG}")
+    shadowInclude("com.electronwill.night-config:core:${Versions.NIGHT_CONFIG}")
 }
 
 publishMods {
@@ -83,40 +77,23 @@ tasks {
         "neoforge_version" to Versions.NEOFORGE,
         "java_version" to Versions.JAVA,
         "homepage" to Properties.HOMEPAGE,
-        "sources" to Properties.GITHUB_REPO,
-        "night_config_version" to Properties.MODULES["night-config"]!!.version
+        "sources" to Properties.GITHUB_REPO
     )
 
     val processResourcesTasks = listOf("processResources", "processTestResources", "processDatagenResources")
 
     withType<ProcessResources>().matching { processResourcesTasks.contains(it.name) }.configureEach {
         inputs.properties(expandProps)
-        filesMatching(setOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/jarjar/metadata.json")) {
+        filesMatching(setOf("fabric.mod.json", "META-INF/neoforge.mods.toml")) {
             expand(expandProps)
         }
         exclude("\\.cache")
-    }
-
-    // GradleUp Shadow jank (we have to double-jar jij dependencies because shadow decompresses all jars)
-    val depJar = create<Jar>("depJar") {
-        from(jijInclude) {
-            into("META-INF/jarjar")
-        }
-        destinationDirectory.set(layout.buildDirectory.dir("depJar"))
-        // gradle jank
-        dependsOn(":night-config:shadowJar")
     }
 
     shadowJar {
         configurations = listOf(shadowInclude)
         archiveClassifier.set("")
         relocate("com.electronwill.nightconfig", "house.greenhouse.greenhouseconfig.nightconfig.shade")
-        exclude("com/electronwill/nightconfig/core/**")
-
-        from(depJar)
-
-        // more shadow jank
-        dependsOn(jar)
     }
 }
 

@@ -34,10 +34,3 @@ type="required"
 versionRange = "[1.0.0-alpha.2,)"
 ordering = "NONE"
 side = "BOTH"
-
-[[dependencies.${mod_id}]]
-modId = "greenhouseconfig_night_config"
-type="required"
-versionRange = "[1.0.0-alpha.2,)"
-ordering = "NONE"
-side = "BOTH"

@@ -1,16 +1,16 @@
-package house.greenhouse.greenhouseconfig.toml.internal;
+package house.greenhouse.greenhouseconfig.nightconfig;
 
 import java.util.Arrays;
 
-public final class TomlValue extends TomlElement {
+public final class NightConfigValue extends NightConfigElement {
     private final Object value;
 
-    public TomlValue(Object value) {
+    public NightConfigValue(Object value) {
         super(new String[0]);
         this.value = value;
     }
 
-    public TomlValue(Object value, String... comments) {
+    public NightConfigValue(Object value, String... comments) {
         super(comments);
         this.value = value;
     }
@@ -20,8 +20,8 @@ public final class TomlValue extends TomlElement {
     }
 
     @Override
-    public TomlValue withComment(String[] comments) {
-        return new TomlValue(value, comments);
+    public NightConfigValue withComment(String[] comments) {
+        return new NightConfigValue(value, comments);
     }
 
     @Override

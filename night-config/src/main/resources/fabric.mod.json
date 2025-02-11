@@ -23,8 +23,7 @@
     "fabric-api": "*",
     "minecraft": "*",
     "java": "*",
-    "greenhouseconfig": ">=1.0.0-alpha.2",
-    "greenhouseconfig_night_config": ">=1.0.0-alpha.2"
+    "greenhouseconfig": ">=1.0.0-alpha.2"
   },
   "custom": {
     "modmenu": {
@@ -36,10 +35,5 @@
         "modmenu.github_releases": "https://github.com/${sources}/releases"
       }
     }
-  },
-  "jars": [
-    {
-      "file": "META-INF/jarjar/greenhouseconfig_night_config-${night_config_version}.jar"
-    }
-  ]
+  }
 }
