@@ -39,6 +39,8 @@ dependencies {
 
     testCompileOnly(project(":jsonc"))
     testCompileOnly(project(":toml"))
+    testCompileOnly(project(":yaml"))
+    testCompileOnly(project(":hocon"))
 }
 
 configurations {

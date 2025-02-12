@@ -13,7 +13,9 @@ var props = Properties.MODULES["core"]!!
 
 dependencies {
     testImplementation(project(":jsonc"))
-    testImplementation(project(":toml"))
+    testImplementation(project(":toml", configuration = "shaded"))
+    testImplementation(project(":yaml", configuration = "shaded"))
+    testImplementation(project(":hocon", configuration = "shaded"))
 }
 
 neoForge {

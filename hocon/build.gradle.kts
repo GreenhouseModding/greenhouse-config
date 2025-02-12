@@ -8,7 +8,7 @@ plugins {
     id("com.github.johnrengelman.shadow")
 }
 
-var props = Properties.MODULES["toml"]!!
+var props = Properties.MODULES["hocon"]!!
 
 base.archivesName.set(props.modId)
 group = Properties.GROUP
@@ -39,8 +39,8 @@ configurations.create("shaded") {
 dependencies {
     compileOnly(project(":common"))
 
-    implementation("com.electronwill.night-config:toml:${Versions.NIGHT_CONFIG}")
-    shadowInclude("com.electronwill.night-config:toml:${Versions.NIGHT_CONFIG}")
+    implementation("com.electronwill.night-config:hocon:${Versions.NIGHT_CONFIG}")
+    shadowInclude("com.electronwill.night-config:hocon:${Versions.NIGHT_CONFIG}")
 
     api(project(":night-config"))
     jijInclude(project(":night-config")) {
@@ -114,6 +114,7 @@ tasks {
         configurations = listOf(shadowInclude)
         archiveClassifier.set("")
         relocate("com.electronwill.nightconfig", "house.greenhouse.greenhouseconfig.nightconfig.shade")
+        relocate("com.typesafe.config", "house.greenhouse.greenhouseconfig.nightconfig.typesafe")
         exclude("com/electronwill/nightconfig/core/**")
 
         from(depJar)

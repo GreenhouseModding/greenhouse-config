@@ -31,3 +31,5 @@ platforms.forEach { platform ->
 include(":jsonc")
 include(":night-config")
 include(":toml")
+include(":yaml")
+include(":hocon")

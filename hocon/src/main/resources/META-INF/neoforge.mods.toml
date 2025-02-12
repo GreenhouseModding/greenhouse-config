@@ -1,0 +1,43 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "${mod_license}"
+issueTrackerURL="https://github.com/${sources}/issues"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+displayURL="${homepage}"
+logoFile="${mod_id}.png"
+logoBlur=false
+credits="${neoforge_mod_contributors}"
+authors = "${mod_author}"
+description = '''${mod_description}'''
+
+[[dependencies.${mod_id}]]
+modId = "neoforge"
+type="required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "minecraft"
+type="required"
+versionRange = "[1.21,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "greenhouseconfig"
+type="required"
+versionRange = "[1.0.0-alpha.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.${mod_id}]]
+modId = "greenhouseconfig_night_config"
+type="required"
+versionRange = "[1.0.0-alpha.2,)"
+ordering = "NONE"
+side = "BOTH"

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_author}"
+  ],
+  "contributors": [
+    "${fabric_mod_contributors}"
+  ],
+  "contact": {
+    "homepage": "${homepage}",
+    "issues": "https://github.com/${sources}/issues",
+    "sources": "https://github.com/${sources}"
+  },
+  "license": "${mod_license}",
+  "icon": "${mod_id}.png",
+  "environment": "*",
+  "depends": {
+    "fabricloader": "*",
+    "fabric-api": "*",
+    "minecraft": "*",
+    "java": "*",
+    "greenhouseconfig": ">=1.0.0-alpha.2",
+    "greenhouseconfig_night_config": ">=1.0.0-alpha.2"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [ "library" ],
+      "parent": {
+        "id": "greenhouseconfig"
+      },
+      "links": {
+        "modmenu.github_releases": "https://github.com/${sources}/releases"
+      }
+    }
+  },
+  "jars": [
+    {
+      "file": "META-INF/jarjar/greenhouseconfig_night_config-${night_config_version}.jar"
+    }
+  ]
+}
