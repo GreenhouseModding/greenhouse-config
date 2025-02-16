@@ -1,12 +1,12 @@
-package house.greenhouse.greenhouseconfig.toml;
+package house.greenhouse.greenhouseconfig.hocon;
 
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
-import com.electronwill.nightconfig.toml.TomlParser;
-import com.electronwill.nightconfig.toml.TomlWriter;
+import com.electronwill.nightconfig.hocon.HoconParser;
+import com.electronwill.nightconfig.hocon.HoconWriter;
 
 import house.greenhouse.greenhouseconfig.api.lang.ConfigLang;
 import house.greenhouse.greenhouseconfig.nightconfig.NightConfigElement;
@@ -15,10 +15,10 @@ import house.greenhouse.greenhouseconfig.nightconfig.NightConfigOps;
 
 import com.mojang.serialization.DynamicOps;
 
-public final class TomlLang implements ConfigLang<NightConfigElement> {
-    public static final TomlLang INSTANCE = new TomlLang();
+public class HoconLang implements ConfigLang<NightConfigElement> {
+    public static final HoconLang INSTANCE = new HoconLang();
 
-    private TomlLang() {
+    private HoconLang() {
     }
 
     @Override
@@ -28,21 +28,21 @@ public final class TomlLang implements ConfigLang<NightConfigElement> {
 
     @Override
     public String getFileExtension() {
-        return "toml";
+        return "hocon";
     }
 
     @Override
     public void write(Writer writer, NightConfigElement configObj) throws IOException {
         if (configObj instanceof NightConfigObject object) {
-            TomlWriter tomlWriter = new TomlWriter();
-            tomlWriter.write(object.getConfig(), writer);
+            HoconWriter hoconWriter = new HoconWriter();
+            hoconWriter.write(object.getConfig(), writer);
             writer.flush();
         }
     }
 
     @Override
     public NightConfigElement read(Reader reader) throws IOException {
-        TomlParser parser = new TomlParser();
+        HoconParser parser = new HoconParser();
         CommentedConfig config = parser.parse(reader);
         return new NightConfigObject(config);
     }

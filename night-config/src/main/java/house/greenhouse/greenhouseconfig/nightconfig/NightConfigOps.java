@@ -1,4 +1,4 @@
-package house.greenhouse.greenhouseconfig.toml;
+package house.greenhouse.greenhouseconfig.nightconfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,36 +9,30 @@ import java.util.stream.Stream;
 
 import org.jetbrains.annotations.Nullable;
 
-import house.greenhouse.greenhouseconfig.toml.internal.TomlElement;
-import house.greenhouse.greenhouseconfig.toml.internal.TomlEmpty;
-import house.greenhouse.greenhouseconfig.toml.internal.TomlList;
-import house.greenhouse.greenhouseconfig.toml.internal.TomlObject;
-import house.greenhouse.greenhouseconfig.toml.internal.TomlValue;
-
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.MapLike;
 
-public final class TomlOps implements DynamicOps<TomlElement> {
-    public static final TomlOps INSTANCE = new TomlOps();
+public final class NightConfigOps implements DynamicOps<NightConfigElement> {
+    public static final NightConfigOps INSTANCE = new NightConfigOps();
 
-    private TomlOps() {
+    private NightConfigOps() {
     }
 
     @Override
-    public TomlElement empty() {
-        return TomlEmpty.INSTANCE;
+    public NightConfigElement empty() {
+        return NightConfigEmpty.INSTANCE;
     }
 
     @Override
-    public <U> U convertTo(DynamicOps<U> outOps, TomlElement input) {
+    public <U> U convertTo(DynamicOps<U> outOps, NightConfigElement input) {
         return null;
     }
 
     @Override
-    public DataResult<Number> getNumberValue(TomlElement input) {
-        if (input instanceof TomlValue value) {
+    public DataResult<Number> getNumberValue(NightConfigElement input) {
+        if (input instanceof NightConfigValue value) {
             if (value.getValue() instanceof Number number) {
                 return DataResult.success(number);
             } else if (value.getValue() instanceof String str) {
@@ -57,13 +51,13 @@ public final class TomlOps implements DynamicOps<TomlElement> {
     }
 
     @Override
-    public TomlElement createNumeric(Number i) {
-        return new TomlValue(i);
+    public NightConfigElement createNumeric(Number i) {
+        return new NightConfigValue(i);
     }
 
     @Override
-    public DataResult<Boolean> getBooleanValue(TomlElement input) {
-        if (input instanceof TomlValue value) {
+    public DataResult<Boolean> getBooleanValue(NightConfigElement input) {
+        if (input instanceof NightConfigValue value) {
             if (value.getValue() instanceof Boolean bool) {
                 return DataResult.success(bool);
             } else {
@@ -74,30 +68,30 @@ public final class TomlOps implements DynamicOps<TomlElement> {
     }
 
     @Override
-    public TomlElement createBoolean(boolean value) {
-        return new TomlValue(value);
+    public NightConfigElement createBoolean(boolean value) {
+        return new NightConfigValue(value);
     }
 
     @Override
-    public DataResult<String> getStringValue(TomlElement input) {
-        if (input instanceof TomlValue value) {
+    public DataResult<String> getStringValue(NightConfigElement input) {
+        if (input instanceof NightConfigValue value) {
             return DataResult.success(String.valueOf(value.getValue()));
         }
         return DataResult.error(() -> "Cannot convert a non-value toml element into a string");
     }
 
     @Override
-    public TomlElement createString(String value) {
-        return new TomlValue(value);
+    public NightConfigElement createString(String value) {
+        return new NightConfigValue(value);
     }
 
     @Override
-    public DataResult<TomlElement> mergeToList(TomlElement list, TomlElement value) {
-        if (!(list instanceof TomlList) && list != empty())
+    public DataResult<NightConfigElement> mergeToList(NightConfigElement list, NightConfigElement value) {
+        if (!(list instanceof NightConfigList) && list != empty())
             return DataResult.error(() -> "Cannot merge into a non-list toml element");
 
-        TomlList newList = new TomlList(list.getComments());
-        if (list instanceof TomlList tomlList) {
+        NightConfigList newList = new NightConfigList(list.getComments());
+        if (list instanceof NightConfigList tomlList) {
             newList.addAll(tomlList);
         }
         newList.add(value);
@@ -105,29 +99,29 @@ public final class TomlOps implements DynamicOps<TomlElement> {
     }
 
     @Override
-    public DataResult<TomlElement> mergeToList(TomlElement list, List<TomlElement> values) {
-        if (!(list instanceof TomlList) && list != empty())
+    public DataResult<NightConfigElement> mergeToList(NightConfigElement list, List<NightConfigElement> values) {
+        if (!(list instanceof NightConfigList) && list != empty())
             return DataResult.error(() -> "Cannot merge into a non-list toml element");
 
-        TomlList newList = new TomlList(list.getComments());
-        if (list instanceof TomlList tomlList) {
+        NightConfigList newList = new NightConfigList(list.getComments());
+        if (list instanceof NightConfigList tomlList) {
             newList.addAll(tomlList);
         }
-        for (TomlElement value : values) {
+        for (NightConfigElement value : values) {
             newList.add(value);
         }
         return DataResult.success(newList);
     }
 
     @Override
-    public DataResult<TomlElement> mergeToMap(TomlElement map, TomlElement key, TomlElement value) {
-        if (!(map instanceof TomlObject) && map != empty())
+    public DataResult<NightConfigElement> mergeToMap(NightConfigElement map, NightConfigElement key, NightConfigElement value) {
+        if (!(map instanceof NightConfigObject) && map != empty())
             return DataResult.error(() -> "Cannot merge into a non-map toml element");
-        if (!(key instanceof TomlValue keyValue))
+        if (!(key instanceof NightConfigValue keyValue))
             return DataResult.error(() -> "Key is not a string or string-convertable");
 
-        TomlObject newMap = new TomlObject(map.getComments());
-        if (map instanceof TomlObject tomlObject) {
+        NightConfigObject newMap = new NightConfigObject(map.getComments());
+        if (map instanceof NightConfigObject tomlObject) {
             newMap.putAll(tomlObject);
         }
         newMap.put(String.valueOf(keyValue.getValue()), value);
@@ -135,18 +129,18 @@ public final class TomlOps implements DynamicOps<TomlElement> {
     }
 
     @Override
-    public DataResult<TomlElement> mergeToMap(TomlElement map, Map<TomlElement, TomlElement> values) {
-        if (!(map instanceof TomlObject) && map != empty())
+    public DataResult<NightConfigElement> mergeToMap(NightConfigElement map, Map<NightConfigElement, NightConfigElement> values) {
+        if (!(map instanceof NightConfigObject) && map != empty())
             return DataResult.error(() -> "Cannot merge into a non-map toml element");
 
-        List<TomlElement> missed = new ArrayList<>();
-        TomlObject newMap = new TomlObject(map.getComments());
-        if (map instanceof TomlObject tomlObject) {
+        List<NightConfigElement> missed = new ArrayList<>();
+        NightConfigObject newMap = new NightConfigObject(map.getComments());
+        if (map instanceof NightConfigObject tomlObject) {
             newMap.putAll(tomlObject);
         }
 
         for (var entry : values.entrySet()) {
-            if (entry.getKey() instanceof TomlValue keyValue) {
+            if (entry.getKey() instanceof NightConfigValue keyValue) {
                 newMap.put(String.valueOf(keyValue.getValue()), entry.getValue());
             } else {
                 missed.add(entry.getKey());
@@ -161,18 +155,18 @@ public final class TomlOps implements DynamicOps<TomlElement> {
     }
 
     @Override
-    public DataResult<TomlElement> mergeToMap(TomlElement map, MapLike<TomlElement> values) {
-        if (!(map instanceof TomlObject) && map != empty())
+    public DataResult<NightConfigElement> mergeToMap(NightConfigElement map, MapLike<NightConfigElement> values) {
+        if (!(map instanceof NightConfigObject) && map != empty())
             return DataResult.error(() -> "Cannot merge into a non-map toml element");
 
-        List<TomlElement> missed = new ArrayList<>();
-        TomlObject newMap = new TomlObject(map.getComments());
-        if (map instanceof TomlObject tomlObject) {
+        List<NightConfigElement> missed = new ArrayList<>();
+        NightConfigObject newMap = new NightConfigObject(map.getComments());
+        if (map instanceof NightConfigObject tomlObject) {
             newMap.putAll(tomlObject);
         }
 
         values.entries().forEach(entry -> {
-            if (entry.getFirst() instanceof TomlValue keyValue) {
+            if (entry.getFirst() instanceof NightConfigValue keyValue) {
                 newMap.put(String.valueOf(keyValue.getValue()), entry.getSecond());
             } else {
                 missed.add(entry.getFirst());
@@ -187,15 +181,16 @@ public final class TomlOps implements DynamicOps<TomlElement> {
     }
 
     @Override
-    public DataResult<Stream<Pair<TomlElement, TomlElement>>> getMapValues(TomlElement input) {
-        if (!(input instanceof TomlObject object)) return DataResult.error(() -> "Input is not a toml object");
+    public DataResult<Stream<Pair<NightConfigElement, NightConfigElement>>> getMapValues(NightConfigElement input) {
+        if (!(input instanceof NightConfigObject object)) return DataResult.error(() -> "Input is not a toml object");
         return DataResult.success(
             object.toElementMap().entrySet().stream().map(e -> Pair.of(createString(e.getKey()), e.getValue())));
     }
 
     @Override
-    public DataResult<Consumer<BiConsumer<TomlElement, TomlElement>>> getMapEntries(TomlElement input) {
-        if (!(input instanceof TomlObject object)) return DataResult.error(() -> "Input is not a toml object");
+    public DataResult<Consumer<BiConsumer<NightConfigElement, NightConfigElement>>> getMapEntries(
+        NightConfigElement input) {
+        if (!(input instanceof NightConfigObject object)) return DataResult.error(() -> "Input is not a toml object");
         return DataResult.success(c -> {
             for (var entry : object.toElementMap().entrySet()) {
                 c.accept(createString(entry.getKey()), entry.getValue());
@@ -204,32 +199,32 @@ public final class TomlOps implements DynamicOps<TomlElement> {
     }
 
     @Override
-    public DataResult<MapLike<TomlElement>> getMap(TomlElement input) {
-        if (!(input instanceof TomlObject object)) return DataResult.error(() -> "Input is not a toml object");
-        final Map<String, TomlElement> map = object.toElementMap();
-        return DataResult.success(new MapLike<TomlElement>() {
+    public DataResult<MapLike<NightConfigElement>> getMap(NightConfigElement input) {
+        if (!(input instanceof NightConfigObject object)) return DataResult.error(() -> "Input is not a toml object");
+        final Map<String, NightConfigElement> map = object.toElementMap();
+        return DataResult.success(new MapLike<NightConfigElement>() {
             @Override
-            public @Nullable TomlElement get(TomlElement key) {
-                return map.get(String.valueOf(((TomlValue) key).getValue()));
+            public @Nullable NightConfigElement get(NightConfigElement key) {
+                return map.get(String.valueOf(((NightConfigValue) key).getValue()));
             }
 
             @Override
-            public @Nullable TomlElement get(String key) {
+            public @Nullable NightConfigElement get(String key) {
                 return map.get(key);
             }
 
             @Override
-            public Stream<Pair<TomlElement, TomlElement>> entries() {
+            public Stream<Pair<NightConfigElement, NightConfigElement>> entries() {
                 return map.entrySet().stream().map(e -> Pair.of(createString(e.getKey()), e.getValue()));
             }
         });
     }
 
     @Override
-    public TomlElement createMap(Stream<Pair<TomlElement, TomlElement>> map) {
-        TomlObject object = new TomlObject();
+    public NightConfigElement createMap(Stream<Pair<NightConfigElement, NightConfigElement>> map) {
+        NightConfigObject object = new NightConfigObject();
         map.forEach(pair -> {
-            if (pair.getFirst() instanceof TomlValue value) {
+            if (pair.getFirst() instanceof NightConfigValue value) {
                 object.put(String.valueOf(value.getValue()), pair.getSecond());
             }
         });
@@ -237,21 +232,21 @@ public final class TomlOps implements DynamicOps<TomlElement> {
     }
 
     @Override
-    public DataResult<Stream<TomlElement>> getStream(TomlElement input) {
-        if (!(input instanceof TomlList list)) return DataResult.error(() -> "Input is not a toml list");
+    public DataResult<Stream<NightConfigElement>> getStream(NightConfigElement input) {
+        if (!(input instanceof NightConfigList list)) return DataResult.error(() -> "Input is not a toml list");
         return DataResult.success(list.toElementList().stream());
     }
 
     @Override
-    public TomlElement createList(Stream<TomlElement> input) {
-        TomlList list = new TomlList();
+    public NightConfigElement createList(Stream<NightConfigElement> input) {
+        NightConfigList list = new NightConfigList();
         input.forEach(list::add);
         return list;
     }
 
     @Override
-    public TomlElement remove(TomlElement input, String key) {
-        if (input instanceof TomlObject object) {
+    public NightConfigElement remove(NightConfigElement input, String key) {
+        if (input instanceof NightConfigObject object) {
             return object.without(key);
         }
         return input;

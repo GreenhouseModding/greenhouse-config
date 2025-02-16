@@ -8,7 +8,7 @@ plugins {
     id("com.github.johnrengelman.shadow")
 }
 
-var props = Properties.MODULES["toml"]!!
+var props = Properties.MODULES["yaml"]!!
 
 base.archivesName.set(props.modId)
 group = Properties.GROUP
@@ -39,8 +39,8 @@ configurations.create("shaded") {
 dependencies {
     compileOnly(project(":common"))
 
-    implementation("com.electronwill.night-config:toml:${Versions.NIGHT_CONFIG}")
-    shadowInclude("com.electronwill.night-config:toml:${Versions.NIGHT_CONFIG}")
+    implementation("com.electronwill.night-config:yaml:${Versions.NIGHT_CONFIG}")
+    shadowInclude("com.electronwill.night-config:yaml:${Versions.NIGHT_CONFIG}")
 
     api(project(":night-config"))
     jijInclude(project(":night-config")) {
@@ -114,6 +114,7 @@ tasks {
         configurations = listOf(shadowInclude)
         archiveClassifier.set("")
         relocate("com.electronwill.nightconfig", "house.greenhouse.greenhouseconfig.nightconfig.shade")
+        relocate("org.yaml.snakeyaml", "house.greenhouse.greenhouseconfig.nightconfig.snakeyaml")
         exclude("com/electronwill/nightconfig/core/**")
 
         from(depJar)
@@ -133,15 +134,23 @@ publishing {
         }
     }
     repositories {
-        maven {
-            name = "Greenhouse"
-            url = uri("https://repo.greenhouse.house/releases")
-            credentials {
-                username = System.getenv("MAVEN_USERNAME")
-                password = System.getenv("MAVEN_PASSWORD")
+        if (System.getenv("MAVEN_USERNAME") != null && System.getenv("MAVEN_PASSWORD") != null) {
+            maven {
+                name = "Greenhouse"
+                url = uri("https://repo.greenhouse.house/releases")
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
+                }
+                authentication {
+                    create<BasicAuthentication>("basic")
+                }
             }
-            authentication {
-                create<BasicAuthentication>("basic")
+        }
+        if (System.getenv("PUBLISH_REPO") != null) {
+            maven {
+                name = "publishRepo"
+                url = rootProject.uri(System.getenv("PUBLISH_REPO"))
             }
         }
     }

@@ -8,7 +8,7 @@ plugins {
     id("com.github.johnrengelman.shadow")
 }
 
-var props = Properties.MODULES["toml"]!!
+var props = Properties.MODULES["night-config"]!!
 
 base.archivesName.set(props.modId)
 group = Properties.GROUP
@@ -31,26 +31,17 @@ neoForge {
 }
 
 val shadowInclude = configurations.create("shade")
-val jijInclude = configurations.create("jijInclude")
-configurations.create("shaded") {
-    isCanBeResolved = false
-}
 
 dependencies {
     compileOnly(project(":common"))
 
-    implementation("com.electronwill.night-config:toml:${Versions.NIGHT_CONFIG}")
-    shadowInclude("com.electronwill.night-config:toml:${Versions.NIGHT_CONFIG}")
-
-    api(project(":night-config"))
-    jijInclude(project(":night-config")) {
-        isTransitive = false
-    }
+    implementation("com.electronwill.night-config:core:${Versions.NIGHT_CONFIG}")
+    shadowInclude("com.electronwill.night-config:core:${Versions.NIGHT_CONFIG}")
 }
 
 publishMods {
     github {
-        file.set(tasks.named<Jar>("shadowJar").get().archiveFile)
+        file.set(tasks.named<Jar>("jar").get().archiveFile)
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
         parent(project(":common").tasks.named("publishGithub"))
     }
@@ -86,44 +77,25 @@ tasks {
         "neoforge_version" to Versions.NEOFORGE,
         "java_version" to Versions.JAVA,
         "homepage" to Properties.HOMEPAGE,
-        "sources" to Properties.GITHUB_REPO,
-        "night_config_version" to Properties.MODULES["night-config"]!!.version
+        "sources" to Properties.GITHUB_REPO
     )
 
     val processResourcesTasks = listOf("processResources", "processTestResources", "processDatagenResources")
 
     withType<ProcessResources>().matching { processResourcesTasks.contains(it.name) }.configureEach {
         inputs.properties(expandProps)
-        filesMatching(setOf("fabric.mod.json", "META-INF/neoforge.mods.toml", "META-INF/jarjar/metadata.json")) {
+        filesMatching(setOf("fabric.mod.json", "META-INF/neoforge.mods.toml")) {
             expand(expandProps)
         }
         exclude("\\.cache")
     }
 
-    // GradleUp Shadow jank (we have to double-jar jij dependencies because shadow decompresses all jars)
-    val depJar = create<Jar>("depJar") {
-        from(jijInclude) {
-            into("META-INF/jarjar")
-        }
-        destinationDirectory.set(layout.buildDirectory.dir("depJar"))
-        // gradle jank
-        dependsOn(":night-config:shadowJar")
-    }
-
-    shadowJar.configure {
+    shadowJar {
         configurations = listOf(shadowInclude)
         archiveClassifier.set("")
         relocate("com.electronwill.nightconfig", "house.greenhouse.greenhouseconfig.nightconfig.shade")
-        exclude("com/electronwill/nightconfig/core/**")
-
-        from(depJar)
-
-        // more shadow jank
-        dependsOn(jar)
     }
 }
-
-artifacts.add("shaded", tasks.shadowJar)
 
 publishing {
     publications {
@@ -133,15 +105,23 @@ publishing {
         }
     }
     repositories {
-        maven {
-            name = "Greenhouse"
-            url = uri("https://repo.greenhouse.house/releases")
-            credentials {
-                username = System.getenv("MAVEN_USERNAME")
-                password = System.getenv("MAVEN_PASSWORD")
+        if (System.getenv("MAVEN_USERNAME") != null && System.getenv("MAVEN_PASSWORD") != null) {
+            maven {
+                name = "Greenhouse"
+                url = uri("https://repo.greenhouse.house/releases")
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
+                }
+                authentication {
+                    create<BasicAuthentication>("basic")
+                }
             }
-            authentication {
-                create<BasicAuthentication>("basic")
+        }
+        if (System.getenv("PUBLISH_REPO") != null) {
+            maven {
+                name = "publishRepo"
+                url = rootProject.uri(System.getenv("PUBLISH_REPO"))
             }
         }
     }

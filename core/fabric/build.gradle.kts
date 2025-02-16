@@ -34,7 +34,9 @@ dependencies {
     modLocalRuntime("com.terraformersmc:modmenu:${Versions.MOD_MENU}")
 
     testImplementation(project(":jsonc"))
-    testImplementation(project(":toml"))
+    testImplementation(project(":toml", configuration = "shaded"))
+    testImplementation(project(":yaml", configuration = "shaded"))
+    testImplementation(project(":hocon", configuration = "shaded"))
 }
 
 loom {

@@ -29,4 +29,7 @@ platforms.forEach { platform ->
     proj.projectDir = file("core/${platform}")
 }
 include(":jsonc")
+include(":night-config")
 include(":toml")
+include(":yaml")
+include(":hocon")

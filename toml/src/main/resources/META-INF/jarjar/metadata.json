@@ -1,0 +1,16 @@
+{
+  "jars": [
+    {
+      "identifier": {
+        "group": "house.greenhouse.greenhouse_config",
+        "artifact": "greenhouseconfig_night_config"
+      },
+      "version": {
+        "range": "[${night_config_version},)",
+        "artifactVersion": "${night_config_version}"
+      },
+      "path": "META-INF/jarjar/greenhouseconfig_night_config-${night_config_version}.jar",
+      "isObfuscated": false
+    }
+  ]
+}
