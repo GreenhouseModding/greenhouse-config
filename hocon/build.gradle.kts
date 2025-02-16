@@ -118,14 +118,6 @@ tasks {
 
 artifacts.add("shaded", tasks.shadowJar)
 
-publishMods {
-    github {
-        file.set(tasks.named<Jar>("shadowJar").get().archiveFile)
-        accessToken = providers.environmentVariable("GITHUB_TOKEN")
-        parent(project(":common").tasks.named("publishGithub"))
-    }
-}
-
 publishing {
     publications {
         create<MavenPublication>("mavenJava") {
