@@ -29,7 +29,10 @@ public class CommentedCodec<T> implements Codec<T> {
             commented = commented.withComment(comments);
             if (result.isSuccess())
                 return DataResult.success((T1)commented);
-            return DataResult.<T1>error(() -> result.error().get().message()).setPartial(() -> (T1)result.getPartialOrThrow());
+            DataResult<T1> errorResult = DataResult.<T1>error(() -> result.error().get().message());
+            if (errorResult.hasResultOrPartial())
+                errorResult.setPartial(result.getPartialOrThrow());
+            return errorResult;
         }
         return result;
     }

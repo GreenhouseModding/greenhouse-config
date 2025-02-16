@@ -1,6 +1,11 @@
 ## Major Changes
 - Config languages are now separate from Greenhouse Config.
   - You will need to include these dependencies separately from Greenhouse Config, the single JAR works across both loaders, as no Minecraft code is referenced within it.
+  - The current config languages are:
+    - JSONC
+    - TOML
+    - YAML
+    - HOCON
 - Updated `backwardsCompat` related fields to utilise data fixers. These fields have been renamed to `dataFixer` respectively.
   - (Currently undocumented) Examples are found within the test source set.
 
