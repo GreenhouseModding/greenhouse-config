@@ -94,6 +94,15 @@ tasks {
         configurations = listOf(shadowInclude)
         archiveClassifier.set("")
         relocate("com.electronwill.nightconfig", "house.greenhouse.greenhouseconfig.nightconfig.shade")
+
+    }
+
+    named("publishGithub").configure {
+        dependsOn("shadowJar")
+    }
+
+    named("publish").configure {
+        dependsOn("shadowJar")
     }
 }
 
