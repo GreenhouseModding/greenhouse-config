@@ -73,7 +73,6 @@ publishMods {
     changelog = rootProject.file("CHANGELOG.md").readText()
     version = "${props.version}+${Versions.MINECRAFT}"
     displayName = "v${props.version} (Minecraft ${Versions.MINECRAFT})"
-    type = ALPHA
 
     github {
         accessToken = providers.environmentVariable("GITHUB_TOKEN")
