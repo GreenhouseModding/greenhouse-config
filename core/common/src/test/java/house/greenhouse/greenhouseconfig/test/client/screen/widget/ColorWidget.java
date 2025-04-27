@@ -370,7 +370,7 @@ public class ColorWidget extends AbstractColorWidget {
 		else if (currentlyActive == Type.SATURATION)
 			narrationElementOutput.add(NarratedElementType.TITLE, "Update Saturation to " + s);
 		else if (currentlyActive == Type.VALUE)
-			narrationElementOutput.add(NarratedElementType.TITLE, "Update Value to " + s);
+			narrationElementOutput.add(NarratedElementType.TITLE, "Update Value to " + v);
 	}
 
 	private enum Type {
