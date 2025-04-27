@@ -46,7 +46,7 @@ public class ColorWidget extends AbstractColorWidget {
 			}
 
 			@Override
-			public void renderString(GuiGraphics guiGraphics, Font font, int color) {}
+			public void renderString(@NotNull GuiGraphics guiGraphics, @NotNull Font font, int color) {}
 
 			@Override
 			protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
