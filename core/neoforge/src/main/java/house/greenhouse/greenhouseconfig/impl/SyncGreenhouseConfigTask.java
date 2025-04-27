@@ -4,6 +4,7 @@ import house.greenhouse.greenhouseconfig.impl.network.SyncGreenhouseConfigPacket
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.network.protocol.configuration.ServerConfigurationPacketListener;
 import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
@@ -11,13 +12,13 @@ public record SyncGreenhouseConfigTask(ServerConfigurationPacketListener listene
 	public static final Type TYPE = new Type(SyncGreenhouseConfigPacket.ID);
 
 	@Override
-	public void run(Consumer<CustomPacketPayload> sender) {
+	public void run(@NotNull Consumer<CustomPacketPayload> sender) {
 		GreenhouseConfigStorage.createSyncPackets().forEach(sender);
 		listener.finishCurrentTask(TYPE);
 	}
 
 	@Override
-	public Type type() {
+	public @NotNull Type type() {
 		return TYPE;
 	}
 }
