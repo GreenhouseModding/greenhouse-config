@@ -73,6 +73,7 @@ publishMods {
 	changelog = rootProject.file("CHANGELOG.md").readText()
 	version = "${props.version}+${Versions.MINECRAFT}"
 	displayName = "v${props.version} (Minecraft ${Versions.MINECRAFT})"
+	type = STABLE
 
 	github {
 		accessToken = providers.environmentVariable("GITHUB_TOKEN")
@@ -80,6 +81,12 @@ publishMods {
 		tagName = "${props.version}+${Versions.MINECRAFT}"
 		commitish = Properties.GITHUB_COMMITISH
 
-		allowEmptyFiles = true
+		file(project(":fabric"))
+		additionalFile(project(":neoforge"))
+		additionalFile(project(":hocon"))
+		additionalFile(project(":jsonc"))
+		additionalFile(project(":toml"))
+		additionalFile(project(":night-config"))
+		additionalFile(project(":yaml"))
 	}
 }
