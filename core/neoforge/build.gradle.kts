@@ -71,11 +71,3 @@ tasks {
 		}
 	}
 }
-
-publishMods {
-	github {
-		file.set(tasks.named<Jar>("jar").get().archiveFile)
-		accessToken = providers.environmentVariable("GITHUB_TOKEN")
-		parent(project(":common").tasks.named("publishGithub"))
-	}
-}

@@ -75,14 +75,6 @@ loom {
 	}
 }
 
-publishMods {
-	github {
-		file.set(tasks.named<Jar>("remapJar").get().archiveFile)
-		accessToken = providers.environmentVariable("GITHUB_TOKEN")
-		parent(project(":common").tasks.named("publishGithub"))
-	}
-}
-
 tasks.register<RemapJarTask>("remapCommon") {
 	dependsOn(project(":common").tasks.jar)
 	inputFile.set(project(":common").tasks.jar.get().archiveFile)
