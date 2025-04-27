@@ -15,56 +15,56 @@ import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unchecked")
 public record SyncGreenhouseConfigPacket(String configName, @Nullable Object config) implements CustomPacketPayload {
-    public static final ResourceLocation ID = GreenhouseConfig.asResource("sync_config");
-    public static final Type<SyncGreenhouseConfigPacket> TYPE = new Type<>(ID);
-    public static final StreamCodec<FriendlyByteBuf, SyncGreenhouseConfigPacket> STREAM_CODEC = StreamCodec.of(SyncGreenhouseConfigPacket::write, SyncGreenhouseConfigPacket::read);
+	public static final ResourceLocation ID = GreenhouseConfig.asResource("sync_config");
+	public static final Type<SyncGreenhouseConfigPacket> TYPE = new Type<>(ID);
+	public static final StreamCodec<FriendlyByteBuf, SyncGreenhouseConfigPacket> STREAM_CODEC = StreamCodec.of(SyncGreenhouseConfigPacket::write, SyncGreenhouseConfigPacket::read);
 
-    public static SyncGreenhouseConfigPacket read(FriendlyByteBuf buf) {
-        String configName = buf.readUtf();
-        if (!GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.containsKey(configName))
-            return new SyncGreenhouseConfigPacket(configName, null);
-        var holder = GreenhouseConfigHolderImpl.cast(GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(configName));
-        var streamCodec = holder.getNetworkCodec(holder.get());
-        if (streamCodec == null)
-            return new SyncGreenhouseConfigPacket(configName, null);
-        Object newConfig = streamCodec.decode(buf);
-        return new SyncGreenhouseConfigPacket(configName, newConfig);
-    }
+	public static SyncGreenhouseConfigPacket read(FriendlyByteBuf buf) {
+		String configName = buf.readUtf();
+		if (!GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.containsKey(configName))
+			return new SyncGreenhouseConfigPacket(configName, null);
+		var holder = GreenhouseConfigHolderImpl.cast(GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(configName));
+		var streamCodec = holder.getNetworkCodec(holder.get());
+		if (streamCodec == null)
+			return new SyncGreenhouseConfigPacket(configName, null);
+		Object newConfig = streamCodec.decode(buf);
+		return new SyncGreenhouseConfigPacket(configName, newConfig);
+	}
 
-    public static void write(FriendlyByteBuf buf, SyncGreenhouseConfigPacket packet) {
-        buf.writeUtf(packet.configName);
-        var holder = GreenhouseConfigHolderImpl.cast(GreenhouseConfigHolderRegistry.SERVER_CONFIG_HOLDERS.get(packet.configName));
-        if (packet.config == null)
-            throw new IllegalArgumentException("Could not sync non existent config with id '" + packet.configName + "',");
-        var streamCodec = holder.getNetworkCodec(holder.get());
-        if (streamCodec == null)
-            throw new IllegalStateException("Could not sync non sync-able config.");
-        streamCodec.encode(buf, packet.config);
-    }
+	public static void write(FriendlyByteBuf buf, SyncGreenhouseConfigPacket packet) {
+		buf.writeUtf(packet.configName);
+		var holder = GreenhouseConfigHolderImpl.cast(GreenhouseConfigHolderRegistry.SERVER_CONFIG_HOLDERS.get(packet.configName));
+		if (packet.config == null)
+			throw new IllegalArgumentException("Could not sync non existent config with id '" + packet.configName + "',");
+		var streamCodec = holder.getNetworkCodec(holder.get());
+		if (streamCodec == null)
+			throw new IllegalStateException("Could not sync non sync-able config.");
+		streamCodec.encode(buf, packet.config);
+	}
 
-    public void handleConfiguration() {
-        Minecraft.getInstance().execute(() -> {
-            if (config == null)
-                return;
-            GreenhouseConfigHolder<Object> holder = (GreenhouseConfigHolder<Object>) GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(configName);
-            GreenhouseConfigStorage.updateConfig(holder, config);
-        });
-    }
+	public void handleConfiguration() {
+		Minecraft.getInstance().execute(() -> {
+			if (config == null)
+				return;
+			GreenhouseConfigHolder<Object> holder = (GreenhouseConfigHolder<Object>) GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(configName);
+			GreenhouseConfigStorage.updateConfig(holder, config);
+		});
+	}
 
-    public void handlePlay() {
-        Minecraft.getInstance().execute(() -> {
-            if (config == null)
-                return;
-            GreenhouseConfigHolder<Object> holder = (GreenhouseConfigHolder<Object>) GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(configName);
-            GreenhouseConfigStorage.updateConfig(holder, config);
+	public void handlePlay() {
+		Minecraft.getInstance().execute(() -> {
+			if (config == null)
+				return;
+			GreenhouseConfigHolder<Object> holder = (GreenhouseConfigHolder<Object>) GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(configName);
+			GreenhouseConfigStorage.updateConfig(holder, config);
 			if (Minecraft.getInstance().level != null) {
 				GreenhouseConfigStorage.individualRegistryPopulation(Minecraft.getInstance().level.registryAccess(), holder, config);
 			}
 		});
-    }
+	}
 
-    @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
-        return TYPE;
-    }
+	@Override
+	public @NotNull Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
 }

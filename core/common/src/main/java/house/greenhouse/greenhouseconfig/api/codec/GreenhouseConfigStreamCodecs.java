@@ -12,17 +12,17 @@ import java.util.function.Function;
 
 @Deprecated
 public class GreenhouseConfigStreamCodecs {
-    /**
+	/**
 	 * @see LateHolderSet#codec(ResourceKey)
-     */
-    public static <E> StreamCodec<ByteBuf, LateHolder<E>> lateHolderStreamCodec(final ResourceKey<? extends Registry<E>> registry) {
+	 */
+	public static <E> StreamCodec<ByteBuf, LateHolder<E>> lateHolderStreamCodec(final ResourceKey<? extends Registry<E>> registry) {
 		return new LateHolderStreamCodec<>(registry).map(holder -> (LateHolder<E>) holder, Function.identity());
-    }
+	}
 
-    /**
+	/**
 	 * @see LateHolderSet#streamCodec(ResourceKey)
-     */
-    public static <E> StreamCodec<ByteBuf, LateHolderSet<E>> lateHolderSetStreamCodec(final ResourceKey<? extends Registry<E>> registry) {
+	 */
+	public static <E> StreamCodec<ByteBuf, LateHolderSet<E>> lateHolderSetStreamCodec(final ResourceKey<? extends Registry<E>> registry) {
 		return LateHolderSet.streamCodec(registry);
 	}
 }

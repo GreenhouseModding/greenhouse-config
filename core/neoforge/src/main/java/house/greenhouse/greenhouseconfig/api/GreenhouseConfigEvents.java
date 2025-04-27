@@ -6,105 +6,105 @@ import net.neoforged.fml.event.IModBusEvent;
 import org.jetbrains.annotations.ApiStatus;
 
 public class GreenhouseConfigEvents {
-    public static class PostLoad<T> extends Event implements IModBusEvent {
-        private final GreenhouseConfigHolder<T> holder;
-        private final T config;
-        private final GreenhouseConfigSide side;
+	public static class PostLoad<T> extends Event implements IModBusEvent {
+		private final GreenhouseConfigHolder<T> holder;
+		private final T config;
+		private final GreenhouseConfigSide side;
 
-        private PostLoad(GreenhouseConfigHolder<T> holder, T config, GreenhouseConfigSide side) {
-            this.holder = holder;
-            this.config = config;
-            this.side = side;
-        }
+		private PostLoad(GreenhouseConfigHolder<T> holder, T config, GreenhouseConfigSide side) {
+			this.holder = holder;
+			this.config = config;
+			this.side = side;
+		}
 
-        public String getConfigName() {
-            return holder.getConfigName();
-        }
+		@ApiStatus.Internal
+		public static <T> void post(GreenhouseConfigHolder<T> modId, T config, GreenhouseConfigSide side) {
+			PostLoad<T> event = new PostLoad<>(modId, config, side);
+			ModLoader.postEvent(event);
+		}
 
-        public GreenhouseConfigHolder<T> getHolder() {
-            return holder;
-        }
+		public String getConfigName() {
+			return holder.getConfigName();
+		}
 
-        public T getConfig() {
-            return config;
-        }
+		public GreenhouseConfigHolder<T> getHolder() {
+			return holder;
+		}
 
-        public GreenhouseConfigSide getSide() {
-            return side;
-        }
+		public T getConfig() {
+			return config;
+		}
 
-        @ApiStatus.Internal
-        public static <T> void post(GreenhouseConfigHolder<T> modId, T config, GreenhouseConfigSide side) {
-            PostLoad<T> event = new PostLoad<>(modId, config, side);
-            ModLoader.postEvent(event);
-        }
-    }
+		public GreenhouseConfigSide getSide() {
+			return side;
+		}
+	}
 
-    public static class PostPopulation<T> extends Event implements IModBusEvent {
-        private final GreenhouseConfigHolder<T> holder;
-        private final T config;
-        private final GreenhouseConfigSide side;
+	public static class PostPopulation<T> extends Event implements IModBusEvent {
+		private final GreenhouseConfigHolder<T> holder;
+		private final T config;
+		private final GreenhouseConfigSide side;
 
-        private PostPopulation(GreenhouseConfigHolder<T> holder, T config, GreenhouseConfigSide side) {
-            this.holder = holder;
-            this.config = config;
-            this.side = side;
-        }
+		private PostPopulation(GreenhouseConfigHolder<T> holder, T config, GreenhouseConfigSide side) {
+			this.holder = holder;
+			this.config = config;
+			this.side = side;
+		}
 
-        public String getConfigName() {
-            return holder.getConfigName();
-        }
+		@ApiStatus.Internal
+		public static <T> void post(GreenhouseConfigHolder<T> modId, T config, GreenhouseConfigSide side) {
+			PostPopulation<T> event = new PostPopulation<>(modId, config, side);
+			ModLoader.postEvent(event);
+		}
 
-        public GreenhouseConfigHolder<T> getHolder() {
-            return holder;
-        }
+		public String getConfigName() {
+			return holder.getConfigName();
+		}
 
-        public T getConfig() {
-            return config;
-        }
+		public GreenhouseConfigHolder<T> getHolder() {
+			return holder;
+		}
 
-        public GreenhouseConfigSide getSide() {
-            return side;
-        }
+		public T getConfig() {
+			return config;
+		}
 
-        @ApiStatus.Internal
-        public static <T> void post(GreenhouseConfigHolder<T> modId, T config, GreenhouseConfigSide side) {
-            PostPopulation<T> event = new PostPopulation<>(modId, config, side);
-            ModLoader.postEvent(event);
-        }
-    }
+		public GreenhouseConfigSide getSide() {
+			return side;
+		}
+	}
 
-    public static class PostDepopulation<T> extends Event implements IModBusEvent {
-        private final GreenhouseConfigHolder<T> holder;
-        private final T config;
-        private final GreenhouseConfigSide side;
+	public static class PostDepopulation<T> extends Event implements IModBusEvent {
+		private final GreenhouseConfigHolder<T> holder;
+		private final T config;
+		private final GreenhouseConfigSide side;
 
-        private PostDepopulation(GreenhouseConfigHolder<T> holder, T config, GreenhouseConfigSide side) {
-            this.holder = holder;
-            this.config = config;
-            this.side = side;
-        }
+		private PostDepopulation(GreenhouseConfigHolder<T> holder, T config, GreenhouseConfigSide side) {
+			this.holder = holder;
+			this.config = config;
+			this.side = side;
+		}
 
-        public String getConfigName() {
-            return holder.getConfigName();
-        }
+		@ApiStatus.Internal
+		public static <T> void post(GreenhouseConfigHolder<T> modId, T config, GreenhouseConfigSide side) {
+			PostPopulation<T> event = new PostPopulation<>(modId, config, side);
+			ModLoader.postEvent(event);
+		}
 
-        public GreenhouseConfigHolder<T> getHolder() {
-            return holder;
-        }
+		public String getConfigName() {
+			return holder.getConfigName();
+		}
 
-        public T getConfig() {
-            return config;
-        }
+		public GreenhouseConfigHolder<T> getHolder() {
+			return holder;
+		}
 
-        public GreenhouseConfigSide getSide() {
-            return side;
-        }
+		public T getConfig() {
+			return config;
+		}
 
-        @ApiStatus.Internal
-        public static <T> void post(GreenhouseConfigHolder<T> modId, T config, GreenhouseConfigSide side) {
-            PostPopulation<T> event = new PostPopulation<>(modId, config, side);
-            ModLoader.postEvent(event);
-        }
-    }
+		public GreenhouseConfigSide getSide() {
+			return side;
+		}
+	}
 }

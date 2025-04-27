@@ -7,5 +7,5 @@ public class GreenhouseConfigDFUReferences {
 	 * A type reference for a Greenhouse Config.
 	 * For use within your data fixers.
 	 */
-    public static final DSL.TypeReference CONFIG = () -> "Greenhouse Config";
+	public static final DSL.TypeReference CONFIG = () -> "Greenhouse Config";
 }

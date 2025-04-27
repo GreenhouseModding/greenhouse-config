@@ -4,9 +4,9 @@ public enum GreenhouseConfigSide {
 	/**
 	 * Represents the client or integrated server.
 	 */
-    CLIENT,
+	CLIENT,
 	/**
 	 * Represents the dedicated server.
 	 */
-    DEDICATED_SERVER
+	DEDICATED_SERVER
 }

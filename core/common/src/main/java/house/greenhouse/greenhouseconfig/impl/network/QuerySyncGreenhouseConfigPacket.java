@@ -12,21 +12,21 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 public record QuerySyncGreenhouseConfigPacket(GreenhouseConfigHolder<?> holder) implements CustomPacketPayload {
-    public static final ResourceLocation ID = GreenhouseConfig.asResource("query_sync_config");
-    public static final Type<QuerySyncGreenhouseConfigPacket> TYPE = new Type<>(ID);
-    public static final StreamCodec<ByteBuf, QuerySyncGreenhouseConfigPacket> STREAM_CODEC =
-            ByteBufCodecs.STRING_UTF8.map(key -> new QuerySyncGreenhouseConfigPacket(GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(key)), config -> config.holder().getConfigName());
+	public static final ResourceLocation ID = GreenhouseConfig.asResource("query_sync_config");
+	public static final Type<QuerySyncGreenhouseConfigPacket> TYPE = new Type<>(ID);
+	public static final StreamCodec<ByteBuf, QuerySyncGreenhouseConfigPacket> STREAM_CODEC =
+			ByteBufCodecs.STRING_UTF8.map(key -> new QuerySyncGreenhouseConfigPacket(GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(key)), config -> config.holder().getConfigName());
 
-    public void handle(ServerPlayer player) {
+	public void handle(ServerPlayer player) {
 		if (player.getServer() == null)
 			return;
-        player.getServer().execute(() ->
-                GreenhouseConfig.getPlatform().syncConfig(holder, player.server, player)
-        );
-    }
+		player.getServer().execute(() ->
+				GreenhouseConfig.getPlatform().syncConfig(holder, player.server, player)
+		);
+	}
 
-    @Override
-    public @NotNull Type<? extends CustomPacketPayload> type() {
-        return TYPE;
-    }
+	@Override
+	public @NotNull Type<? extends CustomPacketPayload> type() {
+		return TYPE;
+	}
 }

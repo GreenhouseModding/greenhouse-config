@@ -1,29 +1,29 @@
 modLoader = "javafml"
 loaderVersion = "${neoforge_loader_version_range}"
 license = "${mod_license}"
-issueTrackerURL="https://github.com/GreenhouseTeam/greenhouse-config/issues"
+issueTrackerURL = "https://github.com/GreenhouseTeam/greenhouse-config/issues"
 
 [[mods]]
 modId = "${mod_id}_test"
 version = "${mod_version}+${minecraft_version}"
 displayName = "${mod_name} Test"
-displayURL="${homepage}"
-logoFile="${mod_id}_test.png"
-logoBlur=false
-credits="${neoforge_mod_contributors}"
+displayURL = "${homepage}"
+logoFile = "${mod_id}_test.png"
+logoBlur = false
+credits = "${neoforge_mod_contributors}"
 authors = "${mod_author}"
 description = '''${mod_description}'''
 
-[[dependencies.${mod_id}_test]]
+[[dependencies.${ mod_id }_test]]
 modId = "neoforge"
-type="required"
+type = "required"
 versionRange = "${neoforge_loader_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.${mod_id}_test]]
+[[dependencies.${ mod_id }_test]]
 modId = "minecraft"
-type="required"
+type = "required"
 versionRange = "${neoforge_minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"

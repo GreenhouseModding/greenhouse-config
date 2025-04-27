@@ -17,105 +17,105 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 public class LateHolderImpl<T> implements LateHolder<T> {
-    private final ResourceKey<Registry<T>> registry;
-    private final ResourceKey<T> key;
-    private Holder<T> value;
+	private final ResourceKey<Registry<T>> registry;
+	private final ResourceKey<T> key;
+	private Holder<T> value;
 
-    public LateHolderImpl(ResourceKey<Registry<T>> registry, ResourceKey<T> key) {
-        this.registry = registry;
-        this.key = key;
-    }
+	public LateHolderImpl(ResourceKey<Registry<T>> registry, ResourceKey<T> key) {
+		this.registry = registry;
+		this.key = key;
+	}
 
-    @Override
-    public void bind(HolderLookup.Provider registries, Consumer<String> onException) {
-        if (registries.lookup(registryKey()).isEmpty())
-            onException.accept("Could not find registry " + registryKey().location());
-        HolderLookup.RegistryLookup<T> registry = registries.lookupOrThrow(registryKey());
-
-        if (registry.get(key).isEmpty())
-            onException.accept("Could not get value " + key.location() + " from registry " + key.registry() + ".");
-
-        value = registry.getOrThrow(key);
-    }
-
-    @Override
-    public void unbind() {
-        value = null;
-    }
-
-    public String toString() {
-        return "LateHolder[" + registry.location() + " / " + key.location() + "]";
-    }
-
-    public ResourceKey<Registry<T>> registryKey() {
-        return registry;
-    }
-
-    @Override
-    public @NotNull T value() {
-        return value.value();
-    }
-
-    @Override
-    public boolean isBound() {
-        return value != null && value.isBound();
-    }
-
-    @Override
-    public boolean is(@NotNull ResourceLocation resourceLocation) {
-        return value != null && value.is(resourceLocation);
-    }
-
-    @Override
-    public boolean is(@NotNull ResourceKey<T> resourceKey) {
-        return value != null && value.is(resourceKey);
-    }
-
-    @Override
-    public boolean is(@NotNull Predicate<ResourceKey<T>> predicate) {
-        return value != null && value.is(predicate);
-    }
-
-    @Override
-    public boolean is(@NotNull TagKey<T> tagKey) {
-        return value != null && value.is(tagKey);
-    }
-
-    @SuppressWarnings("deprecation")
 	@Override
-    public boolean is(@NotNull Holder<T> holder) {
-        return value != null && value.is(holder);
-    }
+	public void bind(HolderLookup.Provider registries, Consumer<String> onException) {
+		if (registries.lookup(registryKey()).isEmpty())
+			onException.accept("Could not find registry " + registryKey().location());
+		HolderLookup.RegistryLookup<T> registry = registries.lookupOrThrow(registryKey());
 
-    @Override
-    public @NotNull Stream<TagKey<T>> tags() {
-        if (value == null)
-            return Stream.empty();
-        return value.tags();
-    }
+		if (registry.get(key).isEmpty())
+			onException.accept("Could not get value " + key.location() + " from registry " + key.registry() + ".");
 
-    @Override
-    public @NotNull Either<ResourceKey<T>, T> unwrap() {
-        return Either.left(key);
-    }
+		value = registry.getOrThrow(key);
+	}
 
-    @Override
-    public @NotNull Optional<ResourceKey<T>> unwrapKey() {
-        return Optional.empty();
-    }
+	@Override
+	public void unbind() {
+		value = null;
+	}
 
-    @Override
-    public @NotNull Kind kind() {
-        return Kind.REFERENCE;
-    }
+	public String toString() {
+		return "LateHolder[" + registry.location() + " / " + key.location() + "]";
+	}
 
-    @Override
-    public boolean canSerializeIn(@NotNull HolderOwner<T> holderOwner) {
-        return true;
-    }
+	public ResourceKey<Registry<T>> registryKey() {
+		return registry;
+	}
 
-    @Override
-    public ResourceKey<T> key() {
-        return key;
-    }
+	@Override
+	public @NotNull T value() {
+		return value.value();
+	}
+
+	@Override
+	public boolean isBound() {
+		return value != null && value.isBound();
+	}
+
+	@Override
+	public boolean is(@NotNull ResourceLocation resourceLocation) {
+		return value != null && value.is(resourceLocation);
+	}
+
+	@Override
+	public boolean is(@NotNull ResourceKey<T> resourceKey) {
+		return value != null && value.is(resourceKey);
+	}
+
+	@Override
+	public boolean is(@NotNull Predicate<ResourceKey<T>> predicate) {
+		return value != null && value.is(predicate);
+	}
+
+	@Override
+	public boolean is(@NotNull TagKey<T> tagKey) {
+		return value != null && value.is(tagKey);
+	}
+
+	@SuppressWarnings("deprecation")
+	@Override
+	public boolean is(@NotNull Holder<T> holder) {
+		return value != null && value.is(holder);
+	}
+
+	@Override
+	public @NotNull Stream<TagKey<T>> tags() {
+		if (value == null)
+			return Stream.empty();
+		return value.tags();
+	}
+
+	@Override
+	public @NotNull Either<ResourceKey<T>, T> unwrap() {
+		return Either.left(key);
+	}
+
+	@Override
+	public @NotNull Optional<ResourceKey<T>> unwrapKey() {
+		return Optional.empty();
+	}
+
+	@Override
+	public @NotNull Kind kind() {
+		return Kind.REFERENCE;
+	}
+
+	@Override
+	public boolean canSerializeIn(@NotNull HolderOwner<T> holderOwner) {
+		return true;
+	}
+
+	@Override
+	public ResourceKey<T> key() {
+		return key;
+	}
 }

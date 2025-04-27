@@ -12,20 +12,20 @@ public interface CommentedValue {
 	/**
 	 * A {@link Codec} that encodes comments alongside its value.
 	 *
-	 * @param codec A codec.
-	 * @param comments  The comments to encode. New values are a new line.
+	 * @param codec    A codec.
+	 * @param comments The comments to encode. New values are a new line.
+	 * @param <A>      The codec's type parameter.
 	 * @return A commented codec.
-	 * @param <A> The codec's type parameter.
 	 */
 	static <A> Codec<A> codec(Codec<A> codec, String... comments) {
 		return new CommentedCodec<>(codec, comments);
 	}
 
-    /**
-     * Makes a copy of this commented value with the given comment.
-     *
-     * @param comments the comments the resulting value should have attached.
-     * @return the new value with comments attached.
-     */
-    CommentedValue withComment(String[] comments);
+	/**
+	 * Makes a copy of this commented value with the given comment.
+	 *
+	 * @param comments the comments the resulting value should have attached.
+	 * @return the new value with comments attached.
+	 */
+	CommentedValue withComment(String[] comments);
 }
