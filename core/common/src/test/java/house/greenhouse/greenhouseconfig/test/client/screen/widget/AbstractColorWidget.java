@@ -4,7 +4,7 @@ import house.greenhouse.greenhouseconfig.test.client.util.ColorUtil;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 
 public abstract class AbstractColorWidget extends AbstractWidget implements ServerControllable {
 	protected float h;
@@ -34,7 +34,7 @@ public abstract class AbstractColorWidget extends AbstractWidget implements Serv
 	public void setColor(TextColor color) {
 		this.color = color;
 		int c = color.getValue();
-		float[] hsv = ColorUtil.rgbToHsv(FastColor.ARGB32.red(c), FastColor.ARGB32.green(c), FastColor.ARGB32.blue(c));
+		float[] hsv = ColorUtil.rgbToHsv(ARGB.red(c), ARGB.green(c), ARGB.blue(c));
 		h = hsv[0];
 		s = hsv[1];
 		v = hsv[2];

@@ -90,6 +90,11 @@ public class LateHolderSetImpl<T> extends LateHolderSet<T> {
 	}
 
 	@Override
+	public boolean isBound() {
+		return contents != null;
+	}
+
+	@Override
 	public @NotNull Either<TagKey<T>, List<Holder<T>>> unwrap() {
 		if (contents != null)
 			return Either.right(contents);

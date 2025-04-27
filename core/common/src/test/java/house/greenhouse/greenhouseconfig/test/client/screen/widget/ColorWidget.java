@@ -5,6 +5,7 @@ import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
 import house.greenhouse.greenhouseconfig.test.client.util.ColorUtil;
 import house.greenhouse.greenhouseconfig.test.client.util.MouseUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.EditBox;
@@ -15,8 +16,9 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
@@ -44,15 +46,18 @@ public class ColorWidget extends AbstractColorWidget {
 			}
 
 			@Override
-			protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+			public void renderString(GuiGraphics guiGraphics, Font font, int color) {}
+
+			@Override
+			protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 				super.renderWidget(graphics, mouseX, mouseY, partialTick);
-				graphics.blitSprite(DEFAULT_BUTTON.get(active, isHoveredOrFocused()), getX(), getY(), 12, 12);
+				graphics.blitSprite(RenderType::guiTextured, DEFAULT_BUTTON.get(active, isHoveredOrFocused()), getX(), getY(), 12, 12);
 				if (isHovered() && !isServerControlled())
 					graphics.renderTooltip(Minecraft.getInstance().font, Component.literal("Reset to Default"), mouseX, mouseY);
 			}
 
 			@Override
-			protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+			protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
 				narrationElementOutput.add(NarratedElementType.POSITION, Component.literal("Reset to Default Color"));
 			}
 		};
@@ -128,10 +133,8 @@ public class ColorWidget extends AbstractColorWidget {
 	}
 
 	@Override
-	protected boolean clicked(double mouseX, double mouseY) {
-		return MouseUtil.inBounds(mouseX, mouseY, getX() + 2, getY() + 14, 120, 8) ||
-				MouseUtil.inBounds(mouseX, mouseY, getX() + 2, getY() + 23, 120, 8) ||
-				MouseUtil.inBounds(mouseX, mouseY, getX() + 2, getY() + 32, 120, 8);
+	public boolean isMouseOver(double mouseX, double mouseY) {
+		return MouseUtil.inBounds(mouseX, mouseY, getX(), getY(), 120, 40);
 	}
 
 	@Override
@@ -191,13 +194,13 @@ public class ColorWidget extends AbstractColorWidget {
 	}
 
 	@Override
-	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		renderColorBox(graphics, getX(), getY());
 		textBox.renderWidget(graphics, mouseX, mouseY, partialTick);
 		defaultButton.render(graphics, mouseX, mouseY, partialTick);
 
 		renderHBackground(graphics, getX(), getY() + 14);
-		renderSBBackground(graphics, getX(), getY() + 23, FastColor.ARGB32.colorFromFloat(1.0F, v, v, v), maxHV);
+		renderSBBackground(graphics, getX(), getY() + 23, ARGB.colorFromFloat(1.0F, v, v, v), maxHV);
 		renderSBBackground(graphics, getX(), getY() + 32, 0xFF000000, maxHS);
 
 		renderSlider(graphics, getX(), getY() + 14, h);
@@ -234,114 +237,102 @@ public class ColorWidget extends AbstractColorWidget {
 		int endX = startX + 12;
 		int endY = startY + 12;
 
-		if (isServerControlled())
-			graphics.setColor(0.4F, 0.4F, 0.4F, 1.0F);
-		graphics.fill(startX, startY, endX, endY, 0xFFFFFFFF);
-		if (isServerControlled())
-			graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		graphics.fill(startX, startY, endX, endY, isServerControlled() ? 0xFF666666 : 0xFFFFFFFF);
 
 		startX = startX + 1;
 		startY = startY + 1;
 		endX = endX - 1;
 		endY = endY - 1;
 
-		int colorValue = FastColor.ARGB32.color(255, color.getValue());
+		int colorValue = ARGB.color(255, color.getValue());
 		if (isServerControlled())
-			colorValue = FastColor.ARGB32.color((int) (FastColor.ARGB32.red(colorValue) * 0.4), (int) (FastColor.ARGB32.green(colorValue) * 0.4), (int) (FastColor.ARGB32.blue(colorValue) * 0.4));
+			colorValue = ARGB.color((int) (ARGB.red(colorValue) * 0.4), (int) (ARGB.green(colorValue) * 0.4), (int) (ARGB.blue(colorValue) * 0.4));
 
-		graphics.fill(startX, startY, endX, endY, 10, colorValue);
+		graphics.fill(startX, startY, endX, endY, 0, colorValue);
 	}
 
 	private void renderHBackground(GuiGraphics graphics, int startX, int startY) {
 		int endX = startX + 122;
 		int endY = startY + 8;
 
-		if (isServerControlled())
-			graphics.setColor(0.4F, 0.4F, 0.4F, 1.0F);
-		graphics.fill(startX, startY, endX, endY, 0xFFFFFFFF);
-		if (isServerControlled())
-			graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		graphics.fill(startX, startY, endX, endY, isServerControlled() ? 0xFF666666 : 0xFFFFFFFF);
 
-		startX = startX + 1;
-		startY = startY + 1;
-		endY = endY - 2;
+		int finalStartX = startX + 1;
+		int finalStartY = startY + 1;
+		int finalEndY = endY - 2;
 
 		Matrix4f matrix4f = graphics.pose().last().pose();
-		VertexConsumer vertex = graphics.bufferSource().getBuffer(RenderType.gui());
+		graphics.drawSpecial(bufferSource -> {
+			VertexConsumer vertex = bufferSource.getBuffer(RenderType.gui());
 
-		float full = isServerControlled() ? 0.4F : 1.0F;
-		int red = FastColor.ARGB32.colorFromFloat(1.0F, full, 0.0F, 0.0F);
-		int yellow = FastColor.ARGB32.colorFromFloat(1.0F, full, full, 0.0F);
-		int green = FastColor.ARGB32.colorFromFloat(1.0F, 0.0F, full, 0.0F);
-		int cyan = FastColor.ARGB32.colorFromFloat(1.0F, 0.0F, full, full);
-		int blue = FastColor.ARGB32.colorFromFloat(1.0F, 0.0F, 0.0F, full);
-		int magenta = FastColor.ARGB32.colorFromFloat(1.0F, full, 0.0F, full);
+			float full = isServerControlled() ? 0.4F : 1.0F;
+			int red = ARGB.colorFromFloat(1.0F, full, 0.0F, 0.0F);
+			int yellow = ARGB.colorFromFloat(1.0F, full, full, 0.0F);
+			int green = ARGB.colorFromFloat(1.0F, 0.0F, full, 0.0F);
+			int cyan = ARGB.colorFromFloat(1.0F, 0.0F, full, full);
+			int blue = ARGB.colorFromFloat(1.0F, 0.0F, 0.0F, full);
+			int magenta = ARGB.colorFromFloat(1.0F, full, 0.0F, full);
 
-		vertex.addVertex(matrix4f, (float) startX, (float) startY, 10.0F).setColor(red);
-		vertex.addVertex(matrix4f, (float) startX, (float) endY, 10.0F).setColor(red);
-		vertex.addVertex(matrix4f, (float) startX + 20, (float) endY, 10.0F).setColor(yellow);
-		vertex.addVertex(matrix4f, (float) startX + 20, (float) startY, 10.0F).setColor(yellow);
-		vertex.addVertex(matrix4f, (float) startX + 20, (float) startY, 10.0F).setColor(yellow);
-		vertex.addVertex(matrix4f, (float) startX + 20, (float) endY, 10.0F).setColor(yellow);
-		vertex.addVertex(matrix4f, (float) startX + 40, (float) endY, 10.0F).setColor(green);
-		vertex.addVertex(matrix4f, (float) startX + 40, (float) startY, 10.0F).setColor(green);
-		vertex.addVertex(matrix4f, (float) startX + 40, (float) startY, 10.0F).setColor(green);
-		vertex.addVertex(matrix4f, (float) startX + 40, (float) endY, 10.0F).setColor(green);
-		vertex.addVertex(matrix4f, (float) startX + 60, (float) endY, 10.0F).setColor(cyan);
-		vertex.addVertex(matrix4f, (float) startX + 60, (float) startY, 10.0F).setColor(cyan);
-		vertex.addVertex(matrix4f, (float) startX + 60, (float) startY, 10.0F).setColor(cyan);
-		vertex.addVertex(matrix4f, (float) startX + 60, (float) endY, 10.0F).setColor(cyan);
-		vertex.addVertex(matrix4f, (float) startX + 80, (float) endY, 10.0F).setColor(blue);
-		vertex.addVertex(matrix4f, (float) startX + 80, (float) startY, 10.0F).setColor(blue);
-		vertex.addVertex(matrix4f, (float) startX + 80, (float) startY, 10.0F).setColor(blue);
-		vertex.addVertex(matrix4f, (float) startX + 80, (float) endY, 10.0F).setColor(blue);
-		vertex.addVertex(matrix4f, (float) startX + 100, (float) endY, 10.0F).setColor(magenta);
-		vertex.addVertex(matrix4f, (float) startX + 100, (float) startY, 10.0F).setColor(magenta);
-		vertex.addVertex(matrix4f, (float) startX + 100, (float) startY, 10.0F).setColor(magenta);
-		vertex.addVertex(matrix4f, (float) startX + 100, (float) endY, 10.0F).setColor(magenta);
-		vertex.addVertex(matrix4f, (float) startX + 120, (float) endY, 10.0F).setColor(red);
-		vertex.addVertex(matrix4f, (float) startX + 120, (float) startY, 10.0F).setColor(red);
+			vertex.addVertex(matrix4f, (float) finalStartX, (float) finalStartY, 0.0F).setColor(red);
+			vertex.addVertex(matrix4f, (float) finalStartX, (float) finalEndY, 0.0F).setColor(red);
+			vertex.addVertex(matrix4f, (float) finalStartX + 20, (float) finalEndY, 0.0F).setColor(yellow);
+			vertex.addVertex(matrix4f, (float) finalStartX + 20, (float) finalStartY, 0.0F).setColor(yellow);
+			vertex.addVertex(matrix4f, (float) finalStartX + 20, (float) finalStartY, 0.0F).setColor(yellow);
+			vertex.addVertex(matrix4f, (float) finalStartX + 20, (float) finalEndY, 0.0F).setColor(yellow);
+			vertex.addVertex(matrix4f, (float) finalStartX + 40, (float) finalEndY, 0.0F).setColor(green);
+			vertex.addVertex(matrix4f, (float) finalStartX + 40, (float) finalStartY, 0.0F).setColor(green);
+			vertex.addVertex(matrix4f, (float) finalStartX + 40, (float) finalStartY, 0.0F).setColor(green);
+			vertex.addVertex(matrix4f, (float) finalStartX + 40, (float) finalEndY, 0.0F).setColor(green);
+			vertex.addVertex(matrix4f, (float) finalStartX + 60, (float) finalEndY, 0.0F).setColor(cyan);
+			vertex.addVertex(matrix4f, (float) finalStartX + 60, (float) finalStartY, 0.0F).setColor(cyan);
+			vertex.addVertex(matrix4f, (float) finalStartX + 60, (float) finalStartY, 0.0F).setColor(cyan);
+			vertex.addVertex(matrix4f, (float) finalStartX + 60, (float) finalEndY, 0.0F).setColor(cyan);
+			vertex.addVertex(matrix4f, (float) finalStartX + 80, (float) finalEndY, 0.0F).setColor(blue);
+			vertex.addVertex(matrix4f, (float) finalStartX + 80, (float) finalStartY, 0.0F).setColor(blue);
+			vertex.addVertex(matrix4f, (float) finalStartX + 80, (float) finalStartY, 0.0F).setColor(blue);
+			vertex.addVertex(matrix4f, (float) finalStartX + 80, (float) finalEndY, 0.0F).setColor(blue);
+			vertex.addVertex(matrix4f, (float) finalStartX + 100, (float) finalEndY, 0.0F).setColor(magenta);
+			vertex.addVertex(matrix4f, (float) finalStartX + 100, (float) finalStartY, 0.0F).setColor(magenta);
+			vertex.addVertex(matrix4f, (float) finalStartX + 100, (float) finalStartY, 0.0F).setColor(magenta);
+			vertex.addVertex(matrix4f, (float) finalStartX + 100, (float) finalEndY, 0.0F).setColor(magenta);
+			vertex.addVertex(matrix4f, (float) finalStartX + 120, (float) finalEndY, 0.0F).setColor(red);
+			vertex.addVertex(matrix4f, (float) finalStartX + 120, (float) finalStartY, 0.0F).setColor(red);
+		});
 	}
 
 	private void renderSBBackground(GuiGraphics graphics, int startX, int startY, int startColor, int endColor) {
 		int endX = startX + 122;
 		int endY = startY + 8;
 
-		if (isServerControlled())
-			graphics.setColor(0.4F, 0.4F, 0.4F, 1.0F);
-		graphics.fill(startX, startY, endX, endY, 0xFFFFFFFF);
-		if (isServerControlled())
-			graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		graphics.fill(startX, startY, endX, endY, isServerControlled() ? 0xFF666666 : 0xFFFFFFFF);
 
-		startX = startX + 1;
-		startY = startY + 1;
-		endX = endX - 1;
-		endY = endY - 1;
+		int finalStartX = startX + 1;
+		int finalStartY = startY + 1;
+		int finalEndX = endX - 1;
+		int finalEndY = endY - 1;
 
 		Matrix4f matrix4f = graphics.pose().last().pose();
-		VertexConsumer vertex = graphics.bufferSource().getBuffer(RenderType.gui());
+		graphics.drawSpecial(bufferSource -> {
+			VertexConsumer vertex = bufferSource.getBuffer(RenderType.gui());
 
-		float full = isServerControlled() ? 0.4F : 1.0F;
+			float full = isServerControlled() ? 0.4F : 1.0F;
 
-		float startR = (FastColor.ARGB32.red(startColor) / 255.0F) * full;
-		float startG = (FastColor.ARGB32.green(startColor) / 255.0F) * full;
-		float startB = (FastColor.ARGB32.blue(startColor) / 255.0F) * full;
-		float endR = (FastColor.ARGB32.red(endColor) / 255.0F) * full;
-		float endG = (FastColor.ARGB32.green(endColor) / 255.0F) * full;
-		float endB = (FastColor.ARGB32.blue(endColor) / 255.0F) * full;
+			float startR = (ARGB.red(startColor) / 255.0F) * full;
+			float startG = (ARGB.green(startColor) / 255.0F) * full;
+			float startB = (ARGB.blue(startColor) / 255.0F) * full;
+			float endR = (ARGB.red(endColor) / 255.0F) * full;
+			float endG = (ARGB.green(endColor) / 255.0F) * full;
+			float endB = (ARGB.blue(endColor) / 255.0F) * full;
 
-		vertex.addVertex(matrix4f, (float) startX, (float) startY, 10.0F).setColor(startR, startG, startB, 1.0F);
-		vertex.addVertex(matrix4f, (float) startX, (float) endY, 10.0F).setColor(startR, startG, startB, 1.0F);
-		vertex.addVertex(matrix4f, (float) endX, (float) endY, 10.0F).setColor(endR, endG, endB, 1.0F);
-		vertex.addVertex(matrix4f, (float) endX, (float) startY, 10.0F).setColor(endR, endG, endB, 1.0F);
+			vertex.addVertex(matrix4f, (float) finalStartX, (float) finalStartY, 0.0F).setColor(startR, startG, startB, 1.0F);
+			vertex.addVertex(matrix4f, (float) finalStartX, (float) finalEndY, 0.0F).setColor(startR, startG, startB, 1.0F);
+			vertex.addVertex(matrix4f, (float) finalEndX, (float) finalEndY, 0.0F).setColor(endR, endG, endB, 1.0F);
+			vertex.addVertex(matrix4f, (float) finalEndX, (float) finalStartY, 0.0F).setColor(endR, endG, endB, 1.0F);
+		});
 	}
 
 	private void renderSlider(GuiGraphics graphics, int startX, int startY, float location) {
-		if (isServerControlled())
-			graphics.setColor(0.4F, 0.4F, 0.4F, 1.0F);
-		graphics.blitSprite(SELECTOR, Mth.clamp((int) (startX + (location * 120) - 1), startX, startX + 120), startY, 20, 3, 8);
-		if (isServerControlled())
-			graphics.setColor(1.0F, 1.0F, 1.0F, 1.0F);
+		graphics.blitSprite(RenderType::guiTextured, SELECTOR, Mth.clamp((int) (startX + (location * 120) - 1), startX, startX + 120), startY, 3, 8, isServerControlled() ? 0xFF666666 : 0xFFFFFFFF);
 	}
 
 	private void updateColorFromSlider() {
@@ -352,7 +343,7 @@ public class ColorWidget extends AbstractColorWidget {
 				case VALUE -> v = currentSlider;
 			}
 			float[] rgb = ColorUtil.hsvToRgb(h, s, v);
-			int c = Mth.color(rgb[0], rgb[1], rgb[2]);
+			int c = ARGB.colorFromFloat(1.0F, rgb[0], rgb[1], rgb[2]);
 			color = TextColor.fromRgb(c);
 			defaultButton.active = !color.equals(defaultColor);
 			updateMax();
@@ -362,9 +353,9 @@ public class ColorWidget extends AbstractColorWidget {
 
 	private void updateMax() {
 		float[] maxHVRgb = ColorUtil.hsvToRgb(h, 1.0F, v);
-		maxHV = FastColor.ARGB32.colorFromFloat(1.0F, maxHVRgb[0], maxHVRgb[1], maxHVRgb[2]);
+		maxHV = ARGB.colorFromFloat(1.0F, maxHVRgb[0], maxHVRgb[1], maxHVRgb[2]);
 		float[] maxHSRgb = ColorUtil.hsvToRgb(h, s, 1.0F);
-		maxHS = FastColor.ARGB32.colorFromFloat(1.0F, maxHSRgb[0], maxHSRgb[1], maxHSRgb[2]);
+		maxHS = ARGB.colorFromFloat(1.0F, maxHSRgb[0], maxHSRgb[1], maxHSRgb[2]);
 	}
 
 	@Override

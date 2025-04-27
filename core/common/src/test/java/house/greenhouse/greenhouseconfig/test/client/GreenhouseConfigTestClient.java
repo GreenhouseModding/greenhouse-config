@@ -8,6 +8,7 @@ import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
 import house.greenhouse.greenhouseconfig.test.command.TestCommand;
 
 public class GreenhouseConfigTestClient {
+	@SuppressWarnings("unchecked")
 	public static void registerClientCommands(CommandDispatcher<?> dispatcher) {
 		LiteralCommandNode<Object> ghTestNode = LiteralArgumentBuilder
 				.literal("greenhousetestclient")
@@ -26,6 +27,6 @@ public class GreenhouseConfigTestClient {
 		ghTestNode.addChild(reloadNode);
 		ghTestNode.addChild(colorNode);
 
-		((CommandDispatcher) dispatcher).getRoot().addChild(ghTestNode);
+		((CommandDispatcher<Object>) dispatcher).getRoot().addChild(ghTestNode);
 	}
 }

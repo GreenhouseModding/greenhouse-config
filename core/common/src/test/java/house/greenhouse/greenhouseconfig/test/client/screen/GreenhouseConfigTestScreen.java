@@ -18,10 +18,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -83,14 +84,14 @@ public class GreenhouseConfigTestScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		super.render(graphics, mouseX, mouseY, partialTick);
 		if (savedMessageTime > 0) {
 			float timeMultiplier = savedMessageTime - partialTick;
 			int alpha = (int) (timeMultiplier * 255.0F / 20.0F);
 			if (alpha > 255)
 				alpha = 255;
-			graphics.drawStringWithBackdrop(font, errorMessage == null ? SAVED_CONFIG : errorMessage, (int) ((float) width / 2 - ((float) Minecraft.getInstance().font.width(SAVED_CONFIG) / 2)), height - 40, 0, FastColor.ARGB32.color(alpha, 255, errorMessage == null ? 255 : 0, errorMessage == null ? 255 : 0));
+			graphics.drawStringWithBackdrop(font, errorMessage == null ? SAVED_CONFIG : errorMessage, (int) ((float) width / 2 - ((float) Minecraft.getInstance().font.width(SAVED_CONFIG) / 2)), height - 40, 0, ARGB.color(alpha, 255, errorMessage == null ? 255 : 0, errorMessage == null ? 255 : 0));
 		}
 	}
 
@@ -113,7 +114,7 @@ public class GreenhouseConfigTestScreen extends Screen {
 	}
 
 	@Override
-	protected void insertText(String text, boolean overwrite) {
+	protected void insertText(@NotNull String text, boolean overwrite) {
 		if (splitCommonColorWidget.getTextBox().canConsumeInput()) {
 			if (overwrite)
 				splitCommonColorWidget.getTextBox().setValue(text);
@@ -130,7 +131,7 @@ public class GreenhouseConfigTestScreen extends Screen {
 
 	private void updateColor(Consumer<TextColor> colorSetter, TextColor color) {
 		colorSetter.accept(color);
-		saveConfigButton.active = !builder.equals(GreenhouseConfigTest.CONFIG.getUnsynced());
+		saveConfigButton.active = !builder.build().equals(GreenhouseConfigTest.CONFIG.getUnsynced());
 	}
 
 	private void save() {
@@ -148,6 +149,8 @@ public class GreenhouseConfigTestScreen extends Screen {
 
 	@Override
 	public void onClose() {
+		if (minecraft == null)
+			return;
 		minecraft.setScreen(previousScreen);
 	}
 

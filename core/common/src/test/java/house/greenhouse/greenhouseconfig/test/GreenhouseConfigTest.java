@@ -2,15 +2,21 @@ package house.greenhouse.greenhouseconfig.test;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import com.mojang.datafixers.util.Pair;
 import house.greenhouse.greenhouseconfig.api.GreenhouseConfigHolder;
 import house.greenhouse.greenhouseconfig.api.GreenhouseConfigSide;
 import house.greenhouse.greenhouseconfig.api.command.GreenhouseConfigReloadCommandMethods;
+import house.greenhouse.greenhouseconfig.api.util.LateHolder;
+import house.greenhouse.greenhouseconfig.api.util.LateHolderSet;
 import house.greenhouse.greenhouseconfig.jsonc.JsonCLang;
 import house.greenhouse.greenhouseconfig.test.command.TestCommand;
 import house.greenhouse.greenhouseconfig.test.config.TestConfig;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.Block;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,16 +56,22 @@ public class GreenhouseConfigTest {
 	}
 
 	public static void logTestConfigs(GreenhouseConfigHolder<?> holder, Object config, GreenhouseConfigSide side) {
-		if (holder == GreenhouseConfigTest.CONFIG && config instanceof TestConfig testConfig) {
+		if (holder == GreenhouseConfigTest.CONFIG && config instanceof TestConfig(
+				int silly,
+				Pair<LateHolder<Enchantment>, TestConfig.Opinion> enchantmentOpinion,
+				LateHolderSet<Block> redBlocks,
+				LateHolderSet<net.minecraft.world.level.biome.Biome> greenBiomes,
+				TextColor color, TestConfig.ClientConfigValues clientValues
+		)) {
 			GreenhouseConfigTest.LOG.info("Main Config Values...");
-			GreenhouseConfigTest.LOG.info("Silly: {}", testConfig.silly());
-			GreenhouseConfigTest.LOG.info("Enchantment opinion: {} {}", testConfig.enchantmentOpinion().getSecond().getSerializedName(), testConfig.enchantmentOpinion().getFirst());
-			GreenhouseConfigTest.LOG.info(testConfig.redBlocks().toString());
-			GreenhouseConfigTest.LOG.info(testConfig.greenBiomes().toString());
+			GreenhouseConfigTest.LOG.info("Silly: {}", silly);
+			GreenhouseConfigTest.LOG.info("Enchantment opinion: {} {}", enchantmentOpinion.getSecond().getSerializedName(), enchantmentOpinion.getFirst());
+			GreenhouseConfigTest.LOG.info(redBlocks.toString());
+			GreenhouseConfigTest.LOG.info(greenBiomes.toString());
 			GreenhouseConfigTest.LOG.info("Split Config Values...");
-			GreenhouseConfigTest.LOG.info(testConfig.color().serialize());
+			GreenhouseConfigTest.LOG.info(color.serialize());
 			if (side == GreenhouseConfigSide.CLIENT)
-				GreenhouseConfigTest.LOG.info(testConfig.clientValues().color().serialize());
+				GreenhouseConfigTest.LOG.info(clientValues.color().serialize());
 		}
 	}
 
