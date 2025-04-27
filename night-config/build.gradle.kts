@@ -97,10 +97,6 @@ tasks {
 
     }
 
-    named("publishGithub").configure {
-        dependsOn("shadowJar")
-    }
-
     named("publish").configure {
         dependsOn("shadowJar")
     }
