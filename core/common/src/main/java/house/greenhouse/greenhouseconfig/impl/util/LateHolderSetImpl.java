@@ -11,18 +11,20 @@ import net.minecraft.core.HolderOwner;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class LateHolderSetImpl<T> extends LateHolderSet<T> {
-    private final ResourceKey<Registry<T>> registry;
+    private final ResourceKey<? extends Registry<T>> registry;
     private final List<Either<TagKey<T>, ResourceKey<T>>> keys;
     private List<Holder<T>> contents;
 
 
-    public LateHolderSetImpl(ResourceKey<Registry<T>> registry, List<Either<TagKey<T>, ResourceKey<T>>> keys) {
+    public LateHolderSetImpl(ResourceKey<? extends Registry<T>> registry, List<Either<TagKey<T>, ResourceKey<T>>> keys) {
         this.registry = registry;
         this.keys = List.copyOf(keys);
     }
@@ -34,21 +36,21 @@ public class LateHolderSetImpl<T> extends LateHolderSet<T> {
         HolderLookup.RegistryLookup<T> registry = registries.lookupOrThrow(registryKey());
 
         ImmutableList.Builder<Holder<T>> builder = ImmutableList.builder();
-        keys.forEach(key -> {
-            key.ifLeft(tagKey -> {
-                if (registry.get(tagKey).isEmpty()) {
-                        onException.accept("Could not get tag " + tagKey.location() + " from registry " + tagKey.registry().location() + ".");
-                    return;
-                }
-                builder.addAll(registry.getOrThrow(tagKey).stream().toList());
-            }).ifRight(resourceKey -> {
-                if (registry.get(resourceKey).isEmpty()) {
-                        onException.accept("Could not get " + resourceKey.location() + " from registry " + resourceKey.registry() + ".");
-                    return;
-                }
-                builder.add(registry.getOrThrow(resourceKey));
-            });
-        });
+        keys.forEach(key ->
+				key.ifLeft(tagKey -> {
+					if (registry.get(tagKey).isEmpty()) {
+						onException.accept("Could not get tag " + tagKey.location() + " from registry " + tagKey.registry().location() + ".");
+						return;
+					}
+					builder.addAll(registry.getOrThrow(tagKey).stream().toList());
+				}).ifRight(resourceKey -> {
+					if (registry.get(resourceKey).isEmpty()) {
+						onException.accept("Could not get " + resourceKey.location() + " from registry " + resourceKey.registry() + ".");
+						return;
+					}
+					builder.add(registry.getOrThrow(resourceKey));
+				})
+		);
         contents = builder.build();
     }
 
@@ -58,12 +60,14 @@ public class LateHolderSetImpl<T> extends LateHolderSet<T> {
     }
 
     public String toString() {
-        return "LateHolderSet[" + keys + "]";
+        return "LateHolderSet[" + registryKey().location() + " /" + keys.stream().map(either ->
+						either.map(key -> " " + key.location(), key -> " #" + key.location()))
+				.collect(Collectors.joining(" /")) + "]";
     }
 
     public <E> E encode(DynamicOps<E> ops, E prefix) {
         if (keys.size() == 1) {
-            return ops.createString(keys.get(0).map(
+            return ops.createString(keys.getFirst().map(
                     tagKey -> "#" + tagKey.location(),
                     resourceKey -> resourceKey.location().toString())
             );
@@ -79,21 +83,21 @@ public class LateHolderSetImpl<T> extends LateHolderSet<T> {
     }
 
     @Override
-    protected List<Holder<T>> contents() {
+    protected @NotNull List<Holder<T>> contents() {
         if (contents != null)
             return contents;
         return List.of();
     }
 
     @Override
-    public Either<TagKey<T>, List<Holder<T>>> unwrap() {
+    public @NotNull Either<TagKey<T>, List<Holder<T>>> unwrap() {
         if (contents != null)
             return Either.right(contents);
         return Either.right(List.of());
     }
 
     @Override
-    public boolean contains(Holder<T> holder) {
+    public boolean contains(@NotNull Holder<T> holder) {
         if (contents != null)
             return contents.contains(holder);
         ResourceKey<T> holderKey = holder.unwrapKey().orElse(null);
@@ -103,11 +107,11 @@ public class LateHolderSetImpl<T> extends LateHolderSet<T> {
     }
 
     @Override
-    public Optional<TagKey<T>> unwrapKey() {
+    public @NotNull Optional<TagKey<T>> unwrapKey() {
         return Optional.empty();
     }
 
-    public ResourceKey<Registry<T>> registryKey() {
+    public ResourceKey<? extends Registry<T>> registryKey() {
         return registry;
     }
 
@@ -116,7 +120,7 @@ public class LateHolderSetImpl<T> extends LateHolderSet<T> {
     }
 
     @Override
-    public boolean canSerializeIn(HolderOwner<T> holderOwner) {
+    public boolean canSerializeIn(@NotNull HolderOwner<T> holderOwner) {
         return true;
     }
 }

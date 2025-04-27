@@ -18,9 +18,9 @@ import com.mojang.serialization.DynamicOps;
 
 public class YamlLang implements ConfigLang<NightConfigElement> {
     public static final YamlLang INSTANCE = new YamlLang();
-    
+
     private YamlLang() {}
-    
+
     @Override
     public DynamicOps<NightConfigElement> getOps() {
         return NightConfigOps.INSTANCE;
@@ -41,7 +41,7 @@ public class YamlLang implements ConfigLang<NightConfigElement> {
     }
 
     @Override
-    public NightConfigElement read(Reader reader) throws IOException {
+    public NightConfigElement read(Reader reader) {
         YamlParser parser = new YamlParser();
         Config config = parser.parse(reader);
         // night-config-yaml doesn't actually support comments yet :(

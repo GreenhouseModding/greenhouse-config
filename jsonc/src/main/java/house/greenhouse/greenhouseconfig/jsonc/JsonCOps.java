@@ -113,7 +113,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
         if (list == null)
             return DataResult.error(() -> "mergeToList called with null.");
 
-        if (!(list instanceof JsonCElement) && list != empty())
+        if ((list instanceof JsonCObject || !list.json().isJsonArray()) && list != empty())
             return DataResult.error(() -> "mergeToList called with not a list: " + list, list);
 
         final JsonArray result = new JsonArray();
@@ -133,8 +133,9 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
             return DataResult.error(() -> "key is not a string: " + key, map);
 
         final Map<String, JsonCElement> output = new HashMap<>();
-        if (map != null && map != empty())
-            output.putAll(((JsonCObject) map).members());
+		if (map instanceof JsonCObject jsonCObject)
+			output.putAll(jsonCObject.members());
+
         output.put(key.json().getAsString(), value);
 
         return DataResult.success(new JsonCObject(output, map != null ? map.comments() : new String[]{}));
@@ -142,13 +143,12 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 
     @Override
     public DataResult<JsonCElement> mergeToMap(final JsonCElement map, final MapLike<JsonCElement> values) {
-        if (!(map instanceof JsonCObject) && map != empty()) {
+        if (!(map instanceof JsonCObject) && map != empty())
             return DataResult.error(() -> "mergeToMap called with not a map: " + map, map);
-        }
 
         final JsonCObject output = new JsonCObject(map != null ? map.comments() : new String[]{});
-        if (map != null && map != empty())
-            output.putAll(((JsonCObject) map).members());
+        if (map instanceof JsonCObject jsonCObject)
+            output.putAll(jsonCObject.members());
 
         final List<JsonElement> missed = Lists.newArrayList();
 

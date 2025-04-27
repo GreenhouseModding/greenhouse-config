@@ -59,14 +59,14 @@ public class GreenhouseConfigFabricPlatformHelper implements GHConfigIPlatformHe
 
     @Override
     public <T> void syncConfig(GreenhouseConfigHolder<T> holder, MinecraftServer server, ServerPlayer player) {
-        if (!holder.isNetworkSyncable() || !ServerPlayNetworking.canSend(player, SyncGreenhouseConfigPacket.TYPE) || server.isSingleplayerOwner(player.getGameProfile()))
+        if (!holder.shouldSync() || !ServerPlayNetworking.canSend(player, SyncGreenhouseConfigPacket.TYPE) || server.isSingleplayerOwner(player.getGameProfile()))
             return;
         ServerPlayNetworking.send(player, new SyncGreenhouseConfigPacket(holder.getConfigName(), holder.get()));
     }
 
     @Override
     public <T> boolean queryConfig(GreenhouseConfigHolder<T> holder) {
-        if (!holder.isNetworkSyncable() || !ClientPlayNetworking.canSend(QuerySyncGreenhouseConfigPacket.TYPE) || Minecraft.getInstance().hasSingleplayerServer())
+        if (!holder.shouldSync() || !ClientPlayNetworking.canSend(QuerySyncGreenhouseConfigPacket.TYPE) || Minecraft.getInstance().hasSingleplayerServer())
             return false;
         ClientPlayNetworking.send(new QuerySyncGreenhouseConfigPacket(holder));
         return true;

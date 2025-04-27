@@ -10,8 +10,10 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unchecked")
 public record SyncGreenhouseConfigPacket(String configName, @Nullable Object config) implements CustomPacketPayload {
     public static final ResourceLocation ID = GreenhouseConfig.asResource("sync_config");
     public static final Type<SyncGreenhouseConfigPacket> TYPE = new Type<>(ID);
@@ -55,12 +57,14 @@ public record SyncGreenhouseConfigPacket(String configName, @Nullable Object con
                 return;
             GreenhouseConfigHolder<Object> holder = (GreenhouseConfigHolder<Object>) GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(configName);
             GreenhouseConfigStorage.updateConfig(holder, config);
-            GreenhouseConfigStorage.individualRegistryPopulation(Minecraft.getInstance().level.registryAccess(), holder, config);
-        });
+			if (Minecraft.getInstance().level != null) {
+				GreenhouseConfigStorage.individualRegistryPopulation(Minecraft.getInstance().level.registryAccess(), holder, config);
+			}
+		});
     }
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

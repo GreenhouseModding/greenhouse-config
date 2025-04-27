@@ -74,7 +74,7 @@ public final class NightConfigObject extends NightConfigElement {
         }
         return elementMap;
     }
-    
+
     public NightConfigObject without(String key) {
         CommentedConfig newConfig = CommentedConfig.inMemory();
         for (var entry : config.entrySet()) {
@@ -88,7 +88,7 @@ public final class NightConfigObject extends NightConfigElement {
 
     @Override
     public String toString() {
-        return "TomlObject{" +
+        return "NightConfigObject{" +
             "config=" + config +
             ", comments=" + Arrays.toString(comments) +
             '}';

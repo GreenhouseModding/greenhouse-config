@@ -3,7 +3,7 @@ package house.greenhouse.greenhouseconfig.gradle
 object Properties {
     const val GROUP = "house.greenhouse"
     const val MOD_AUTHOR = "Greenhouse Team"
-    val MOD_CONTRIBUTORS = listOf("MerchantPug", "Kneelawk")
+    val MOD_CONTRIBUTORS = listOf("MerchantCalico", "Kneelawk")
     const val LICENSE = "MPL-2.0"
 
     const val HOMEPAGE = "https://github.com/GreenhouseModding/greenhouse-config"
@@ -11,7 +11,7 @@ object Properties {
     const val GITHUB_COMMITISH = "1.21"
 
     val MODULES = mapOf(
-        "core" to ModuleProperties("core", "Greenhouse Config", "greenhouseconfig", "A niche codec based config system.", "1.0.1"),
+        "core" to ModuleProperties("core", "Greenhouse Config", "greenhouseconfig", "A niche codec based config system.", "2.0.0"),
         "jsonc" to ModuleProperties("jsonc", "Greenhouse Config - JSONC", "greenhouseconfig_jsonc", "JSONC language support for Greenhouse Config.", "1.0.0"),
         "night-config" to ModuleProperties("night-config", "Greenhouse Config - Night Config", "greenhouseconfig_night_config", "Night Config implementation for Greenhouse Config.", "1.0.0"),
         "toml" to ModuleProperties("toml", "Greenhouse Config - TOML", "greenhouseconfig_toml", "TOML language support for Greenhouse Config.", "1.0.0"),

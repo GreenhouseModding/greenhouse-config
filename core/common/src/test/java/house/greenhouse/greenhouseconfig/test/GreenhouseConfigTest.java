@@ -18,13 +18,12 @@ public class GreenhouseConfigTest {
     public static final String MOD_ID = "greenhouseconfig_test";
     public static final Logger LOG = LoggerFactory.getLogger("Greenhouse Config Test");
 
-    public static final GreenhouseConfigHolder<TestConfig> CONFIG = GreenhouseConfigHolder.<TestConfig>builder(MOD_ID, JsonCLang.INSTANCE)
+    public static final GreenhouseConfigHolder<TestConfig> CONFIG = GreenhouseConfigHolder.common(MOD_ID, TestConfig.CODEC, TestConfig.DEFAULT, JsonCLang.INSTANCE)
             .schemaVersion(3)
-            .common(TestConfig.CODEC, TestConfig.DEFAULT)
             .networkSerializable(TestConfig::streamCodec)
             .lateValues(TestConfig::getLateValues, s -> LOG.error("Error handling config/greenhouseconfig_test.jsonc: {}", s))
             .dataFixer(TestConfig.Fixer.INSTANCE)
-            .buildAndRegister();
+            .build();
 
     public static void init() {}
 

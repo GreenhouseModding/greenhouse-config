@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+@SuppressWarnings("unchecked")
 public class GreenhouseConfigStorage {
 
     private static final Map<GreenhouseConfigHolder<?>, Object> SERVER_CONFIGS = new HashMap<>();
@@ -186,7 +187,7 @@ public class GreenhouseConfigStorage {
     public static <T> void saveConfig(GreenhouseConfigHolder<T> holder, T config) {
         saveConfig((GreenhouseConfigHolderImpl<?, T>) holder, config);
     }
-    
+
     private static <C, T> void saveConfig(GreenhouseConfigHolderImpl<C, T> holder, T config) {
         try {
             int folderCount = holder.getConfigName().split("/").length;

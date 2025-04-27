@@ -46,11 +46,11 @@ public final class NightConfigList extends NightConfigElement {
             case NightConfigEmpty ignored -> {}
         }
     }
-    
+
     public void addAll(NightConfigList tomlList) {
         list.addAll(tomlList.getList());
     }
-    
+
     public List<NightConfigElement> toElementList() {
         List<NightConfigElement> elementList = new ArrayList<>();
         for (Object o : list) {
@@ -65,7 +65,7 @@ public final class NightConfigList extends NightConfigElement {
 
     @Override
     public String toString() {
-        return "TomlList{" +
+        return "NightConfigList{" +
             "list=" + list +
             ", comments=" + Arrays.toString(comments) +
             '}';

@@ -30,15 +30,15 @@ public class GreenhouseConfigReloadCommandMethods {
             return 0;
 
         GreenhouseConfigStorage.individualRegistryPopulation(context.getSource().registryAccess(), holder, config);
-        if (holder.isNetworkSyncable())
-            holder.syncConfig(context.getSource().getServer());
-
+        if (holder.shouldSync()) {
+			holder.syncConfig(context.getSource().getServer());
+		}
         context.getSource().sendSuccess(() -> Component.translatableWithFallback("command.greenhouseconfig.reload.success", "Successfully reloaded config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()), true);
         return 1;
     }
 
     /**
-     * A basic Greenhouse Config reload command method for clientside configurations.
+     * A basic Greenhouse Config reload command method for client-sided configurations.
      *
      * @param context   The {@link CommandContext} used for this command.
      * @param holder    The config holder.
@@ -49,11 +49,13 @@ public class GreenhouseConfigReloadCommandMethods {
                 GreenhouseConfig.getPlatform().sendFailureClient(context, Component.translatableWithFallback("command.greenhouseconfig.reload.error", "Failed to reload config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(s)))))
         );
         if (config == null)
-            return 0;
+			return 0;
 
-        holder.queryConfig();
-        GreenhouseConfigStorage.individualRegistryPopulation(Minecraft.getInstance().level.registryAccess(), holder, config);
-        GreenhouseConfig.getPlatform().sendSuccessClient(context, Component.translatableWithFallback("command.greenhouseconfig.reload.success", "Successfully reloading config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()));
+		holder.queryConfig();
+		if (Minecraft.getInstance().level != null) {
+			GreenhouseConfigStorage.individualRegistryPopulation(Minecraft.getInstance().level.registryAccess(), holder, config);
+		}
+		GreenhouseConfig.getPlatform().sendSuccessClient(context, Component.translatableWithFallback("command.greenhouseconfig.reload.success", "Successfully reloading config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()));
         return 1;
     }
 }

@@ -41,7 +41,7 @@ public final class TomlLang implements ConfigLang<NightConfigElement> {
     }
 
     @Override
-    public NightConfigElement read(Reader reader) throws IOException {
+    public NightConfigElement read(Reader reader) {
         TomlParser parser = new TomlParser();
         CommentedConfig config = parser.parse(reader);
         return new NightConfigObject(config);

@@ -41,7 +41,7 @@ public class HoconLang implements ConfigLang<NightConfigElement> {
     }
 
     @Override
-    public NightConfigElement read(Reader reader) throws IOException {
+    public NightConfigElement read(Reader reader) {
         HoconParser parser = new HoconParser();
         CommentedConfig config = parser.parse(reader);
         return new NightConfigObject(config);

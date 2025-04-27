@@ -9,6 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.NotNull;
 
 public record QuerySyncGreenhouseConfigPacket(GreenhouseConfigHolder<?> holder) implements CustomPacketPayload {
     public static final ResourceLocation ID = GreenhouseConfig.asResource("query_sync_config");
@@ -17,13 +18,15 @@ public record QuerySyncGreenhouseConfigPacket(GreenhouseConfigHolder<?> holder) 
             ByteBufCodecs.STRING_UTF8.map(key -> new QuerySyncGreenhouseConfigPacket(GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(key)), config -> config.holder().getConfigName());
 
     public void handle(ServerPlayer player) {
+		if (player.getServer() == null)
+			return;
         player.getServer().execute(() ->
                 GreenhouseConfig.getPlatform().syncConfig(holder, player.server, player)
         );
     }
 
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

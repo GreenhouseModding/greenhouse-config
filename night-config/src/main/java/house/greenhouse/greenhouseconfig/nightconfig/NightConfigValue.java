@@ -26,7 +26,7 @@ public final class NightConfigValue extends NightConfigElement {
 
     @Override
     public String toString() {
-        return "TomlValue{" +
+        return "NightConfigValue{" +
             "value=" + value +
             ", comments=" + Arrays.toString(comments) +
             '}';

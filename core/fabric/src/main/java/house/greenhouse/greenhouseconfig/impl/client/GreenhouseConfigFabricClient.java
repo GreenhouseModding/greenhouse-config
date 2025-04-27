@@ -21,9 +21,11 @@ public class GreenhouseConfigFabricClient implements ClientModInitializer {
         ClientConfigurationNetworking.registerGlobalReceiver(SyncGreenhouseConfigPacket.TYPE, (payload, context) -> payload.handleConfiguration());
         ClientPlayNetworking.registerGlobalReceiver(SyncGreenhouseConfigPacket.TYPE, (payload, context) -> payload.handlePlay());
 
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) ->
-                GreenhouseConfigClient.onWorldJoin(client.level.registryAccess())
-        );
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
+            if (client.level != null) {
+                GreenhouseConfigClient.onWorldJoin(client.level.registryAccess());
+            }
+        });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) ->
                 GreenhouseConfigClient.onWorldLeave()
         );

@@ -139,8 +139,12 @@ public class GreenhouseConfigTestScreen extends Screen {
             errorMessage = Component.literal("Error refreshing config! Check logs.");
             GreenhouseConfigTest.LOG.error(s);
         });
-        if (Minecraft.getInstance().getConnection() != null)
-            GreenhouseConfigTest.CONFIG.queryConfig();
+        if (Minecraft.getInstance().getConnection() != null) {
+			if (!GreenhouseConfigTest.CONFIG.queryConfig()) {
+				errorMessage = Component.literal("Error refreshing config! Check logs.");
+				GreenhouseConfigTest.LOG.error("Attempted to query config");
+			}
+		}
         savedMessageTime = 60;
         saveConfigButton.active = false;
     }

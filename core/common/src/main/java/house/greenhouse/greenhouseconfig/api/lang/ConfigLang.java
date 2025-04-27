@@ -29,7 +29,7 @@ public interface ConfigLang<T> {
      *
      * @param writer    the writer to write to.
      * @param configObj the config object to write.
-     * @throws IOException if an error ocurrs while writing the config object to the writer.
+     * @throws IOException if an error occurs while writing the config object to the writer.
      */
     void write(Writer writer, T configObj) throws IOException;
 
@@ -38,7 +38,7 @@ public interface ConfigLang<T> {
      *
      * @param reader the reader to read from.
      * @return the read config object.
-     * @throws IOException if an error ocurrs while reading the config object from the reader.
+     * @throws IOException if an error occurs while reading the config object from the reader.
      */
     T read(Reader reader) throws IOException;
 }

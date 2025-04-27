@@ -9,6 +9,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -43,7 +44,7 @@ public class LateHolderImpl<T> implements LateHolder<T> {
     }
 
     public String toString() {
-        return "LateHolder[" + key + "]";
+        return "LateHolder[" + registry.location() + " / " + key.location() + "]";
     }
 
     public ResourceKey<Registry<T>> registryKey() {
@@ -51,7 +52,7 @@ public class LateHolderImpl<T> implements LateHolder<T> {
     }
 
     @Override
-    public T value() {
+    public @NotNull T value() {
         return value.value();
     }
 
@@ -61,54 +62,55 @@ public class LateHolderImpl<T> implements LateHolder<T> {
     }
 
     @Override
-    public boolean is(ResourceLocation resourceLocation) {
+    public boolean is(@NotNull ResourceLocation resourceLocation) {
         return value != null && value.is(resourceLocation);
     }
 
     @Override
-    public boolean is(ResourceKey<T> resourceKey) {
+    public boolean is(@NotNull ResourceKey<T> resourceKey) {
         return value != null && value.is(resourceKey);
     }
 
     @Override
-    public boolean is(Predicate<ResourceKey<T>> predicate) {
+    public boolean is(@NotNull Predicate<ResourceKey<T>> predicate) {
         return value != null && value.is(predicate);
     }
 
     @Override
-    public boolean is(TagKey<T> tagKey) {
+    public boolean is(@NotNull TagKey<T> tagKey) {
         return value != null && value.is(tagKey);
     }
 
-    @Override
-    public boolean is(Holder<T> holder) {
+    @SuppressWarnings("deprecation")
+	@Override
+    public boolean is(@NotNull Holder<T> holder) {
         return value != null && value.is(holder);
     }
 
     @Override
-    public Stream<TagKey<T>> tags() {
+    public @NotNull Stream<TagKey<T>> tags() {
         if (value == null)
             return Stream.empty();
         return value.tags();
     }
 
     @Override
-    public Either<ResourceKey<T>, T> unwrap() {
+    public @NotNull Either<ResourceKey<T>, T> unwrap() {
         return Either.left(key);
     }
 
     @Override
-    public Optional<ResourceKey<T>> unwrapKey() {
+    public @NotNull Optional<ResourceKey<T>> unwrapKey() {
         return Optional.empty();
     }
 
     @Override
-    public Kind kind() {
+    public @NotNull Kind kind() {
         return Kind.REFERENCE;
     }
 
     @Override
-    public boolean canSerializeIn(HolderOwner<T> holderOwner) {
+    public boolean canSerializeIn(@NotNull HolderOwner<T> holderOwner) {
         return true;
     }
 

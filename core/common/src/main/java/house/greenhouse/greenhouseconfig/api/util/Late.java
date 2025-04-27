@@ -6,6 +6,5 @@ import java.util.function.Consumer;
 
 public interface Late {
     void bind(HolderLookup.Provider registries, Consumer<String> onException);
-
     void unbind();
 }

@@ -7,11 +7,11 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import house.greenhouse.greenhouseconfig.api.codec.GreenhouseConfigStreamCodecs;
+import house.greenhouse.greenhouseconfig.api.lang.CommentedValue;
+import house.greenhouse.greenhouseconfig.api.util.DefaultFieldUtil;
 import house.greenhouse.greenhouseconfig.api.util.Late;
 import house.greenhouse.greenhouseconfig.api.util.LateHolder;
 import house.greenhouse.greenhouseconfig.api.util.LateHolderSet;
-import house.greenhouse.greenhouseconfig.api.codec.GreenhouseConfigCodecs;
 import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
 import house.greenhouse.greenhouseconfig.test.dfu.fix.V2ToV3FieldsFix;
 import house.greenhouse.greenhouseconfig.test.dfu.fix.V1ToV2FieldsFix;
@@ -44,19 +44,35 @@ public record TestConfig(int silly,
                          TextColor color,
                          ClientConfigValues clientValues) {
     public static final TagKey<Biome> GREENS = TagKey.create(Registries.BIOME, GreenhouseConfigTest.asResource("greens"));
-    public static final TestConfig DEFAULT = new TestConfig(69, Pair.of(LateHolder.create(Enchantments.FROST_WALKER), Opinion.LIKE), LateHolderSet.createFromEntries(Registries.BLOCK, List.of(ResourceKey.create(Registries.BLOCK, ResourceLocation.withDefaultNamespace("netherrack")))), LateHolderSet.createMixed(Registries.BIOME, List.of(GREENS), List.of(Biomes.BAMBOO_JUNGLE)), TextColor.parseColor("#0095a8").getOrThrow(), ClientConfigValues.DEFAULT);
+    public static final TestConfig DEFAULT = new TestConfig(
+			69,
+			Pair.of(LateHolder.create(Enchantments.FROST_WALKER), Opinion.LIKE),
+			LateHolderSet.builder(Registries.BLOCK)
+					.add(ResourceKey.create(Registries.BLOCK, ResourceLocation.withDefaultNamespace("netherrack")))
+					.build(),
+			LateHolderSet.builder(Registries.BIOME)
+					.add(GREENS)
+					.add(Biomes.BAMBOO_JUNGLE)
+					.build(),
+			TextColor.parseColor("#0095a8").getOrThrow(),
+			ClientConfigValues.DEFAULT
+	);
 
     public static final Codec<Pair<LateHolder<Enchantment>, Opinion>> ENCHANTMENT_OPINION_CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            GreenhouseConfigCodecs.commentedCodec(GreenhouseConfigCodecs.lateHolderCodec(Registries.ENCHANTMENT), "The enchantment you wish to provide an opinion on.").fieldOf("enchantment").forGetter(Pair::getFirst),
-            GreenhouseConfigCodecs.commentedCodec(Opinion.CODEC, "The opinion you have on the above enchantment.", "Can either be 'like' or 'dislike' (case-sensitive)").fieldOf("opinion").forGetter(Pair::getSecond)
+            CommentedValue.codec(LateHolder.codec(Registries.ENCHANTMENT), "The enchantment you wish to provide an opinion on.").fieldOf("enchantment").forGetter(Pair::getFirst),
+            CommentedValue.codec(Opinion.CODEC, "The opinion you have on the above enchantment.", "Can either be 'like' or 'dislike' (case-sensitive)").fieldOf("opinion").forGetter(Pair::getSecond)
     ).apply(inst, Pair::of));
 
     public static final Codec<TestConfig> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-            GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.commentedCodec(Codec.INT, "The value which makes this config very silly."), "silly", DEFAULT.silly()).forGetter(TestConfig::silly),
-            GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.commentedCodec(ENCHANTMENT_OPINION_CODEC, "An enchantment that you either like or dislike.", "Note: Pug was not biased here."), "enchantment_opinion", DEFAULT.enchantmentOpinion()).forGetter(TestConfig::enchantmentOpinion),
-            GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.commentedCodec(GreenhouseConfigCodecs.lateHolderSetCodec(Registries.BLOCK), "One block, two block, red block, blue block."), "red_blocks", DEFAULT.redBlocks()).forGetter(TestConfig::redBlocks),
-            GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.commentedCodec(GreenhouseConfigCodecs.lateHolderSetCodec(Registries.BIOME), "Biomes that are green", "This is an extra line to show how green they really are!"), "green_biomes", DEFAULT.greenBiomes()).forGetter(TestConfig::greenBiomes),
-            GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.commentedCodec(TextColor.CODEC, "This is a value that exists on both the client and server."), "color", DEFAULT.color()).forGetter(TestConfig::color),
+            DefaultFieldUtil.codecWithComments(Codec.INT, "silly", DEFAULT.silly(), "The value which makes this config very silly.")
+					.forGetter(TestConfig::silly),
+			DefaultFieldUtil.codecWithComments(ENCHANTMENT_OPINION_CODEC, "enchantment_opinion", DEFAULT.enchantmentOpinion(), "An enchantment that you either like or dislike.", "Note: Calico was not biased here.")
+					.forGetter(TestConfig::enchantmentOpinion),
+			DefaultFieldUtil.codecWithComments(LateHolderSet.codec(Registries.BLOCK), "red_blocks", DEFAULT.redBlocks(), "One block, two block, red block, blue block.")
+					.forGetter(TestConfig::redBlocks),
+			DefaultFieldUtil.codecWithComments(LateHolderSet.codec(Registries.BIOME), "green_biomes", DEFAULT.greenBiomes(), "Biomes that are green", "This is an extra line to show how green they really are!").forGetter(TestConfig::greenBiomes),
+			DefaultFieldUtil.codecWithComments(TextColor.CODEC, "color", DEFAULT.color(), "This is a value that exists on both the client and server.")
+					.forGetter(TestConfig::color),
             ClientConfigValues.CODEC.forGetter(TestConfig::clientValues)
     ).apply(inst, TestConfig::new));
 
@@ -64,13 +80,13 @@ public record TestConfig(int silly,
         return StreamCodec.composite(
                 ByteBufCodecs.INT,
                 TestConfig::silly,
-                GreenhouseConfigStreamCodecs.lateHolderStreamCodec(Registries.ENCHANTMENT),
+				LateHolder.streamCodec(Registries.ENCHANTMENT),
                 config -> config.enchantmentOpinion().getFirst(),
                 Opinion.STREAM_CODEC,
                 config -> config.enchantmentOpinion().getSecond(),
-                GreenhouseConfigStreamCodecs.lateHolderSetStreamCodec(Registries.BLOCK),
+				LateHolderSet.streamCodec(Registries.BLOCK),
                 TestConfig::redBlocks,
-                GreenhouseConfigStreamCodecs.lateHolderSetStreamCodec(Registries.BIOME),
+				LateHolderSet.streamCodec(Registries.BIOME),
                 TestConfig::greenBiomes,
                 ByteBufCodecs.fromCodec(TextColor.CODEC),
                 TestConfig::color,
@@ -112,7 +128,8 @@ public record TestConfig(int silly,
         public static final ClientConfigValues DEFAULT = new ClientConfigValues(TextColor.parseColor("#54bf6b").getOrThrow());
 
         public static final MapCodec<ClientConfigValues> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.commentedCodec(TextColor.CODEC, "This is a value that only exists on the client."), "client_color", DEFAULT.color()).forGetter(ClientConfigValues::color)
+                DefaultFieldUtil.codecWithComments(TextColor.CODEC, "client_color", DEFAULT.color(), "This is a value that only exists on the client.")
+						.forGetter(ClientConfigValues::color)
         ).apply(inst, ClientConfigValues::new));
     }
 
@@ -136,14 +153,18 @@ public record TestConfig(int silly,
      */
     public static class PreviousVersionCodecs {
         public static final Codec<TestConfig> V2 = RecordCodecBuilder.create(inst -> inst.group(
-                GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.commentedCodec(Codec.INT, "The value which makes this config very silly."), "silly", DEFAULT.silly()).forGetter(TestConfig::silly),
-                GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.commentedCodec(GreenhouseConfigCodecs.lateHolderCodec(Registries.ENCHANTMENT), "An enchantment you like.", "Note: Pug was not biased here."), "liked_enchantment", DEFAULT.enchantmentOpinion().getFirst()).forGetter(config -> config.enchantmentOpinion().getFirst()),
-                GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.commentedCodec(GreenhouseConfigCodecs.lateHolderSetCodec(Registries.BLOCK), "One block, two block, red block, blue block."), "blue_blocks", DEFAULT.redBlocks()).forGetter(TestConfig::redBlocks),
-                GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.commentedCodec(GreenhouseConfigCodecs.lateHolderSetCodec(Registries.BIOME), "Biomes that are green", "This is an extra line to show how green they really are!"), "green_biomes", DEFAULT.greenBiomes()).forGetter(TestConfig::greenBiomes)
+                DefaultFieldUtil.codecWithComments(Codec.INT, "silly", DEFAULT.silly(), "The value which makes this config very silly.")
+						.forGetter(TestConfig::silly),
+                DefaultFieldUtil.codecWithComments(LateHolder.codec(Registries.ENCHANTMENT), "liked_enchantment", DEFAULT.enchantmentOpinion().getFirst(), "An enchantment you like.", "Note: Calico was not biased here.")
+						.forGetter(config -> config.enchantmentOpinion().getFirst()),
+                DefaultFieldUtil.codecWithComments(LateHolderSet.codec(Registries.BLOCK), "blue_blocks", DEFAULT.redBlocks(), "One block, two block, red block, blue block.")
+						.forGetter(TestConfig::redBlocks),
+				DefaultFieldUtil.codecWithComments(LateHolderSet.codec(Registries.BIOME), "green_biomes", DEFAULT.greenBiomes(), "Biomes that are green", "This is an extra line to show how green they really are!")
+						.forGetter(TestConfig::greenBiomes)
         ).apply(inst, (t1, t2, t3, t4) -> new TestConfig(t1, Pair.of(t2, Opinion.LIKE), t3, t4, DEFAULT.color(), DEFAULT.clientValues())));
         public static final Codec<TestConfig> V1 = RecordCodecBuilder.create(inst -> inst.group(
-                GreenhouseConfigCodecs.defaultFieldCodec(Codec.INT, "funny", DEFAULT.silly()).forGetter(TestConfig::silly),
-                GreenhouseConfigCodecs.defaultFieldCodec(GreenhouseConfigCodecs.lateHolderSetCodec(Registries.BIOME), "green_biomes", DEFAULT.greenBiomes()).forGetter(TestConfig::greenBiomes)
+                DefaultFieldUtil.codec(Codec.INT, "funny", DEFAULT.silly()).forGetter(TestConfig::silly),
+                DefaultFieldUtil.codec(LateHolderSet.codec(Registries.BIOME), "green_biomes", DEFAULT.greenBiomes()).forGetter(TestConfig::greenBiomes)
         ).apply(inst, (t1, t2) -> new TestConfig(t1, DEFAULT.enchantmentOpinion(), DEFAULT.redBlocks(), t2, DEFAULT.color(), DEFAULT.clientValues())));
     }
 }

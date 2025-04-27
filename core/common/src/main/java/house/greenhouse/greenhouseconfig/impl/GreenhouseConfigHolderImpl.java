@@ -70,7 +70,7 @@ public class GreenhouseConfigHolderImpl<C, T> implements GreenhouseConfigHolder<
     }
 
     @Override
-    public boolean isNetworkSyncable() {
+    public boolean shouldSync() {
         return networkCodecFunction != null;
     }
 
