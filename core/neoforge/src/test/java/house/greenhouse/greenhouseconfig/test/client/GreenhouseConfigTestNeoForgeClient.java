@@ -12,15 +12,15 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 @Mod(value = GreenhouseConfigTest.MOD_ID, dist = Dist.CLIENT)
 public class GreenhouseConfigTestNeoForgeClient {
-    public GreenhouseConfigTestNeoForgeClient(ModContainer container) {
-        container.registerExtensionPoint(IConfigScreenFactory.class, (modContainer, screen) -> new GreenhouseConfigTestScreen(screen));
-    }
+	public GreenhouseConfigTestNeoForgeClient(ModContainer container) {
+		container.registerExtensionPoint(IConfigScreenFactory.class, (modContainer, screen) -> new GreenhouseConfigTestScreen(screen));
+	}
 
-    @EventBusSubscriber(modid = GreenhouseConfigTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
-    public static class GameEvents {
-        @SubscribeEvent
-        public static void registerClientCommands(RegisterClientCommandsEvent event) {
-            GreenhouseConfigTestClient.registerClientCommands(event.getDispatcher());
-        }
-    }
+	@EventBusSubscriber(modid = GreenhouseConfigTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
+	public static class GameEvents {
+		@SubscribeEvent
+		public static void registerClientCommands(RegisterClientCommandsEvent event) {
+			GreenhouseConfigTestClient.registerClientCommands(event.getDispatcher());
+		}
+	}
 }

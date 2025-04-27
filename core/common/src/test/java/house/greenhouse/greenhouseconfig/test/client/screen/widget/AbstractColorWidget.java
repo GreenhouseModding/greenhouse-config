@@ -7,48 +7,46 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.FastColor;
 
 public abstract class AbstractColorWidget extends AbstractWidget implements ServerControllable {
-    protected float h;
-    protected float s;
-    protected float v;
+	protected float h;
+	protected float s;
+	protected float v;
+	protected TextColor color;
+	private boolean serverControlled = false;
+	private boolean dirty = false;
 
-    private boolean serverControlled = false;
+	public AbstractColorWidget(int x, int y, int width, int height, Component message) {
+		super(x, y, width, height, message);
+	}
 
-    protected TextColor color;
-    private boolean dirty = false;
+	public boolean isDirty() {
+		return dirty;
+	}
 
-    public AbstractColorWidget(int x, int y, int width, int height, Component message) {
-        super(x, y, width, height, message);
-    }
+	protected void setDirty(boolean value) {
+		dirty = value;
+	}
 
-    public void setColor(TextColor color) {
-        this.color = color;
-        int c = color.getValue();
-        float[] hsv = ColorUtil.rgbToHsv(FastColor.ARGB32.red(c), FastColor.ARGB32.green(c), FastColor.ARGB32.blue(c));
-        h = hsv[0];
-        s = hsv[1];
-        v = hsv[2];
-    }
+	public TextColor getColor() {
+		setDirty(false);
+		return color;
+	}
 
-    public boolean isDirty() {
-        return dirty;
-    }
+	public void setColor(TextColor color) {
+		this.color = color;
+		int c = color.getValue();
+		float[] hsv = ColorUtil.rgbToHsv(FastColor.ARGB32.red(c), FastColor.ARGB32.green(c), FastColor.ARGB32.blue(c));
+		h = hsv[0];
+		s = hsv[1];
+		v = hsv[2];
+	}
 
-    public TextColor getColor() {
-        setDirty(false);
-        return color;
-    }
+	@Override
+	public boolean isServerControlled() {
+		return serverControlled;
+	}
 
-    protected void setDirty(boolean value) {
-        dirty = value;
-    }
-
-    @Override
-    public boolean isServerControlled() {
-        return serverControlled;
-    }
-
-    @Override
-    public void setServerControlled(boolean serverControlled) {
-        this.serverControlled = serverControlled;
-    }
+	@Override
+	public void setServerControlled(boolean serverControlled) {
+		this.serverControlled = serverControlled;
+	}
 }

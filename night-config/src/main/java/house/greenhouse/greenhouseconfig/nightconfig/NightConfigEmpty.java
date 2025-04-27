@@ -4,7 +4,7 @@ import house.greenhouse.greenhouseconfig.api.lang.CommentedValue;
 
 public final class NightConfigEmpty extends NightConfigElement {
     public static final NightConfigEmpty INSTANCE = new NightConfigEmpty();
-    
+
     private NightConfigEmpty() {
         super(new String[0]);
     }
@@ -16,6 +16,6 @@ public final class NightConfigEmpty extends NightConfigElement {
 
     @Override
     public String toString() {
-        return "TomlEmpty";
+        return "NightConfigEmpty";
     }
 }

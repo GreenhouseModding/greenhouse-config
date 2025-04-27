@@ -8,16 +8,16 @@ import net.neoforged.neoforge.network.configuration.ICustomConfigurationTask;
 import java.util.function.Consumer;
 
 public record SyncGreenhouseConfigTask(ServerConfigurationPacketListener listener) implements ICustomConfigurationTask {
-    public static final Type TYPE = new Type(SyncGreenhouseConfigPacket.ID);
+	public static final Type TYPE = new Type(SyncGreenhouseConfigPacket.ID);
 
-    @Override
-    public void run(Consumer<CustomPacketPayload> sender) {
-        GreenhouseConfigStorage.createSyncPackets().forEach(sender);
-        listener.finishCurrentTask(TYPE);
-    }
+	@Override
+	public void run(Consumer<CustomPacketPayload> sender) {
+		GreenhouseConfigStorage.createSyncPackets().forEach(sender);
+		listener.finishCurrentTask(TYPE);
+	}
 
-    @Override
-    public Type type() {
-        return TYPE;
-    }
+	@Override
+	public Type type() {
+		return TYPE;
+	}
 }

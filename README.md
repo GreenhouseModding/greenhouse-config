@@ -1,5 +1,5 @@
 # Greenhouse Config
-Greenhouse Config is a config library for Fabric and NeoForge made for mostly myself (MerchantPug), however, any developer is free to utilise it and provide feedback for it.
+Greenhouse Config is a config library for Fabric and NeoForge made for mostly myself (MerchantCalico), however, any developer is free to utilise it and provide feedback for it.
 
 Please note that Greenhouse Config is currently in alpha, and code may be subject to change.
 
@@ -35,10 +35,10 @@ dependencies {
 
     // Depend on the Fabric project, for Loom.
     modImplementation(include("house.greenhouse:greenhouseconfig:${ghc_version}+${minecraft_version}-fabric"))
-    
+
     // Depend on the NeoForge project, for ModDevGradle.
     implementation(jarJar("house.greenhouse:greenhouse-config:${ghc_version}+${minecraft_version}-neoforge"))
-    
+
     // Depend on the NeoForge project, for NeoGradle.
     jarJar(implementation("house.greenhouse:greenhouseconfig:[${ghc_version}+${minecraft_version},)")) {
         version {

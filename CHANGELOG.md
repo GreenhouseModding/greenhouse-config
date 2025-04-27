@@ -1,2 +1,6 @@
+## Changes
+- Deprecated most previous methods, and updated them with more simplistic implementation.
+
 ## Bugfixes
-- [FABRIC] Fixed client configs not initializing at the right time due to Fabric's random load order.
+- Fixed a crash when defaulted fields cannot resolve into a result or partial.
+- Fixed Greenhouse Config YAML not having an icon.
