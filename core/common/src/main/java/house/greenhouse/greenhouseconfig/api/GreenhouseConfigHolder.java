@@ -26,10 +26,23 @@ import java.util.function.Function;
 
 /**
  * A holder for configs which has a bunch of helpers methods for accessing and operating on your config.
+ * <br>
+ * Configs are saved inside the config folder as <b>&lt;config_name&gt;.&lt;file_extension&gt;</b>
  * @param <T>   The config class.
  */
 public interface GreenhouseConfigHolder<T> {
-
+	/**
+	 * Creates a config builder that is set up to be shared between the client and the server.
+	 *
+	 * @param configName The name of the config to create.
+	 * @param codec	The codec used to serialize/deserialize the config.
+	 * @param defaultValue An initial/default value for this config.
+	 * @param lang The file language to use for this config.
+	 *             <br>
+	 *             {@link ConfigLang}s are not built into Greenhouse Config by default, you should instead depend on and include a library with a config lang of choice. Such as the JSONC or TOML lib.
+	 * @return A config builder.
+	 * @param <T> The config object.
+	 */
 	static <T> Builder<T> common(String configName,
 								 Codec<T> codec,
 								 T defaultValue,
@@ -37,20 +50,18 @@ public interface GreenhouseConfigHolder<T> {
 		return new Builder<>(configName, codec, codec, defaultValue, defaultValue, lang);
 	}
 
-	static <T> Builder<T> client(String configName,
-								 Codec<T> codec,
-								 T defaultValue,
-								 ConfigLang<?> lang) {
-		return new Builder<>(configName, codec, null, defaultValue, null, lang);
-	}
-
-	static <T> Builder<T> dedicatedServer(String configName,
-										  Codec<T> codec,
-										  T defaultValue,
-										  ConfigLang<?> lang) {
-		return new Builder<>(configName, null, codec, null, defaultValue, lang);
-	}
-
+	/**
+	 * Creates a config builder that is set up to have separate client and the server values.
+	 *
+	 * @param configName The name of the config to create.
+	 * @param clientCodec The client-sided codec used to serialize/deserialize the config.
+	 * @param clientDefault An initial/default value for this config.
+	 * @param lang The file language to use for this config.
+	 *             <br>
+	 *             {@link ConfigLang}s are not built into Greenhouse Config by default, you should instead depend on and include a library with a config lang of choice. Such as the JSONC or TOML lib.
+	 * @return A config builder.
+	 * @param <T> The config object.
+	 */
 	static <T> Builder<T> split(String configName,
 								Codec<T> clientCodec,
 								T clientDefault,
@@ -58,6 +69,44 @@ public interface GreenhouseConfigHolder<T> {
 								T serverDefault,
 								ConfigLang<?> lang) {
 		return new Builder<>(configName, clientCodec, serverCodec, clientDefault, serverDefault, lang);
+	}
+
+	/**
+	 * Creates a config builder that is set up to only be present on the client .
+	 *
+	 * @param configName The name of the config to create.
+	 * @param codec	The codec used to serialize/deserialize the config.
+	 * @param defaultValue An initial/default value for this config.
+	 * @param lang The file language to use for this config.
+	 *             <br>
+	 *             {@link ConfigLang}s are not built into Greenhouse Config by default, you should instead depend on and include a library with a config lang of choice. Such as the JSONC or TOML lib.
+	 * @return A config builder.
+	 * @param <T> The config object.
+	 */
+	static <T> Builder<T> client(String configName,
+								 Codec<T> codec,
+								 T defaultValue,
+								 ConfigLang<?> lang) {
+		return new Builder<>(configName, codec, null, defaultValue, null, lang);
+	}
+
+	/**
+	 * Creates a config builder that is set up to only be present on the server.
+	 *
+	 * @param configName The name of the config to create.
+	 * @param codec	The codec used to serialize/deserialize the config.
+	 * @param defaultValue An initial/default value for this config.
+	 * @param lang The file language to use for this config.
+	 *             <br>
+	 *             {@link ConfigLang}s are not built into Greenhouse Config by default, you should instead depend on and include a library with a config lang of choice. Such as the JSONC or TOML lib.
+	 * @return A config builder.
+	 * @param <T> The config object.
+	 */
+	static <T> Builder<T> dedicatedServer(String configName,
+										  Codec<T> codec,
+										  T defaultValue,
+										  ConfigLang<?> lang) {
+		return new Builder<>(configName, null, codec, null, defaultValue, lang);
 	}
 
     /**
@@ -71,7 +120,7 @@ public interface GreenhouseConfigHolder<T> {
      *             <br>
      *             {@link ConfigLang}s are not built into Greenhouse Config by default, you should instead depend on and include a library with a config lang of choice. Such as the JSONC or TOML lib.
      */
-	@Deprecated(forRemoval = true, since = "1.1.0")
+	@Deprecated(forRemoval = true, since = "2.0.0")
     static <T> Builder<T> builder(String configName, ConfigLang<?> lang) {
         return new Builder<>(configName, lang);
     }
@@ -106,7 +155,7 @@ public interface GreenhouseConfigHolder<T> {
      * @return True if the config is network sync-able, false if not.
 	 * @see	GreenhouseConfigHolder#shouldSync()
      */
-	@Deprecated(forRemoval = true, since = "1.1.0")
+	@Deprecated(forRemoval = true, since = "2.0.0")
     default boolean isNetworkSyncable() {
 		return shouldSync();
 	}
@@ -219,7 +268,7 @@ public interface GreenhouseConfigHolder<T> {
 			this.configLang = lang;
 		}
 
-		@Deprecated(forRemoval = true, since = "1.1.0")
+		@Deprecated(forRemoval = true, since = "2.0.0")
         protected Builder(@NotNull String configName,
 						  @NotNull ConfigLang<?> lang) {
             this.configName = configName;
@@ -245,7 +294,7 @@ public interface GreenhouseConfigHolder<T> {
 		 *
 		 * @see	GreenhouseConfigHolder#common(String, Codec, Object, ConfigLang)
          */
-		@Deprecated(forRemoval = true, since = "1.1.0")
+		@Deprecated(forRemoval = true, since = "2.0.0")
         public Builder<T> common(Codec<T> codec, T defaultValue) {
             server(codec, defaultValue);
             client(codec, defaultValue);
@@ -261,7 +310,7 @@ public interface GreenhouseConfigHolder<T> {
          * @param codec The codec to use for serialization.
          * @param defaultValue The default server config value.
          */
-		@Deprecated(forRemoval = true, since = "1.1.0")
+		@Deprecated(forRemoval = true, since = "2.0.0")
         public Builder<T> server(Codec<T> codec, T defaultValue) {
             serverCodec =  codec;
             defaultServerValue = defaultValue;
@@ -274,12 +323,28 @@ public interface GreenhouseConfigHolder<T> {
          * @param codec The codec to use for serialization.
          * @param defaultValue The default client config value.
          */
-		@Deprecated(forRemoval = true, since = "1.1.0")
+		@Deprecated(forRemoval = true, since = "2.0.0")
         public Builder<T> client(Codec<T> codec, T defaultValue) {
             clientCodec =  codec;
             defaultClientValue = defaultValue;
             return this;
         }
+
+		/**
+		 * @see GreenhouseConfigHolder.Builder#networkSynchronized(StreamCodec)
+		 */
+		@Deprecated(forRemoval = true, since = "2.0.0")
+		public Builder<T> networkSerializable(StreamCodec<FriendlyByteBuf, T> streamCodec) {
+			return networkSynchronized(streamCodec);
+		}
+
+		/**
+		 * @see GreenhouseConfigHolder.Builder#networkSynchronized(Function)
+		 */
+		@Deprecated(forRemoval = true, since = "2.0.0")
+		public Builder<T> networkSerializable(Function<T, StreamCodec<FriendlyByteBuf, T>> streamCodecFunction) {
+			return networkSynchronized(streamCodecFunction);
+		}
 
         /**
          * Sets the config to serialize over the network.
@@ -289,8 +354,8 @@ public interface GreenhouseConfigHolder<T> {
          *
          * @param streamCodec The stream codec to use for serialization.
          */
-        public Builder<T> networkSerializable(StreamCodec<FriendlyByteBuf, T> streamCodec) {
-            return networkSerializable(clientConfig -> streamCodec);
+        public Builder<T> networkSynchronized(StreamCodec<FriendlyByteBuf, T> streamCodec) {
+            return networkSynchronized(clientConfig -> streamCodec);
         }
 
         /**
@@ -301,7 +366,7 @@ public interface GreenhouseConfigHolder<T> {
          *
          * @param streamCodecFunction The stream codec to use for serialization whilst passing the current client config.
          */
-        public Builder<T> networkSerializable(Function<T, StreamCodec<FriendlyByteBuf, T>> streamCodecFunction) {
+        public Builder<T> networkSynchronized(Function<T, StreamCodec<FriendlyByteBuf, T>> streamCodecFunction) {
             this.networkFunction = streamCodecFunction;
             return this;
         }
@@ -329,8 +394,8 @@ public interface GreenhouseConfigHolder<T> {
 		 * older versions of this config to the current version for both
 		 * the client/integrated server and dedicated server.
 		 *
-		 * @param clientFixer The DataFixer to use for updating this config on the client/integrated server.
-		 * @param serverFixer The DataFixer to use for updating this config on the dedicated server.
+		 * @param clientFixer The DataFixer to use for updating the config file on the client/integrated server.
+		 * @param serverFixer The DataFixer to use for updating the config file on the dedicated server.
 		 * @see com.mojang.datafixers.DataFixerBuilder
 		 */
 		public Builder<T> dataFixer(DataFixer clientFixer, DataFixer serverFixer) {
@@ -347,10 +412,10 @@ public interface GreenhouseConfigHolder<T> {
          * This will additionally set the client backwards compatibility config is there is no client config value,
          * this is so integrated servers running the mod can still access this config.
          *
-         * @param fixer The DataFixer to use for updating this config.
+         * @param fixer The DataFixer to use for updating this config object.
          * @see com.mojang.datafixers.DataFixerBuilder
          */
-		@Deprecated(forRemoval = true, since = "1.1.0")
+		@Deprecated(forRemoval = true, since = "2.0.0")
         public Builder<T> dataFixerServer(DataFixer fixer) {
             serverFixer = fixer;
             return this;
@@ -361,10 +426,10 @@ public interface GreenhouseConfigHolder<T> {
          * older versions of this config to the current version for
          * the client/integrated server.
          *
-         * @param fixer The DataFixer to use for updating this config.
+         * @param fixer The DataFixer to use for updating this config object.
          * @see com.mojang.datafixers.DataFixerBuilder
          */
-		@Deprecated(forRemoval = true, since = "1.1.0")
+		@Deprecated(forRemoval = true, since = "2.0.0")
         public Builder<T> dataFixerClient(DataFixer fixer) {
             clientFixer = fixer;
             return this;
@@ -373,7 +438,7 @@ public interface GreenhouseConfigHolder<T> {
         /**
          * A callback that runs after registries have been populated.
          *
-         * @param callback A callback that runs on registry values and the config.
+         * @param callback A callback that runs on registry values and the config object.
          */
         public Builder<T> postRegistryPopulation(BiConsumer<HolderLookup.Provider, T> callback) {
             postRegistryPopulationCallback = callback;
@@ -385,7 +450,7 @@ public interface GreenhouseConfigHolder<T> {
          * <br>
          * This typically happens after a client leaves the game.
          *
-         * @param callback A callback that runs on the config.
+         * @param callback A callback that runs on the config object.
          */
         public Builder<T> postRegistryDepopulation(Consumer<T> callback) {
             postRegistryDepopulationCallback = callback;
@@ -395,7 +460,7 @@ public interface GreenhouseConfigHolder<T> {
         /**
          * A shortcut to {@link GreenhouseConfigHolder.Builder#postRegistryPopulation(BiConsumer)} and {@link GreenhouseConfigHolder.Builder#postRegistryDepopulation(Consumer)} that binds/unbinds the late values of this config.
          *
-         * @param getter A getter that should return all late values from your config.
+         * @param getter A getter that should return all late values from your config object.
          * @see LateHolder
          * @see LateHolderSet
          */
@@ -405,14 +470,14 @@ public interface GreenhouseConfigHolder<T> {
             return this;
         }
 
-		@Deprecated(forRemoval = true, since = "1.1.0")
+		@Deprecated(forRemoval = true, since = "2.0.0")
 		public GreenhouseConfigHolder<T> buildAndRegister() {
 			return build();
 		}
 
         /**
          * Builds this config.
-         * @return A {@link GreenhouseConfigHolder} that holds this config.
+         * @return A {@link GreenhouseConfigHolder} that holds your config object.
          */
         public GreenhouseConfigHolder<T> build() {
             if (serverCodec == null && clientCodec == null)

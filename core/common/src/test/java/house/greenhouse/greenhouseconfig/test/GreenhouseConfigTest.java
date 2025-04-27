@@ -20,7 +20,7 @@ public class GreenhouseConfigTest {
 
     public static final GreenhouseConfigHolder<TestConfig> CONFIG = GreenhouseConfigHolder.common(MOD_ID, TestConfig.CODEC, TestConfig.DEFAULT, JsonCLang.INSTANCE)
             .schemaVersion(3)
-            .networkSerializable(TestConfig::streamCodec)
+            .networkSynchronized(TestConfig::streamCodec)
             .lateValues(TestConfig::getLateValues, s -> LOG.error("Error handling config/greenhouseconfig_test.jsonc: {}", s))
             .dataFixer(TestConfig.Fixer.INSTANCE)
             .build();

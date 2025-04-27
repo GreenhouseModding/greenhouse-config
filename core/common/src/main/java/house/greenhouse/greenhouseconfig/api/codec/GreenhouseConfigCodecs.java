@@ -9,7 +9,7 @@ import house.greenhouse.greenhouseconfig.api.util.LateHolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
-@Deprecated(forRemoval = true, since = "1.1.0")
+@Deprecated(forRemoval = true, since = "2.0.0")
 public class GreenhouseConfigCodecs {
     /**
 	 * @see DefaultFieldUtil#codec(Codec, String, Object)

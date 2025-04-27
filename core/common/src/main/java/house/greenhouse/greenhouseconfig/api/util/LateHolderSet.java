@@ -19,18 +19,18 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * A {@link net.minecraft.core.HolderSet} that gets bound when registries are loaded and can support loading tags and entries in the same set.
+ * A {@link net.minecraft.core.HolderSet} that gets bound when registries are loaded, and can support loading tags and entries in the same set.
  * @param <T> The type of objects inside this HolderSet.
+ *
+ * @see house.greenhouse.greenhouseconfig.api.GreenhouseConfigHolder.Builder#lateValues(Function, Consumer)
  */
 public abstract class LateHolderSet<T> extends HolderSet.ListBacked<T> implements Late {
 	/**
 	 * A {@link Codec} for a LateHolderSet.
 	 *
 	 * @param registry The registry key associated with the type of object within this LateHolderSet.
-	 * @return A {@link LateHolderSet} stream/packet codec.
+	 * @return A {@link LateHolderSet} codec.
 	 * @param <T> The type of objects within the LateHolderSet.
-	 *
-	 * @see house.greenhouse.greenhouseconfig.api.GreenhouseConfigHolder.Builder#lateValues(Function, Consumer)
 	 */
 	public static <T> Codec<LateHolderSet<T>> codec(ResourceKey<? extends Registry<T>> registry) {
 		return new LateHolderSetCodec<>(registry).xmap(holder -> (LateHolderSet<T>)holder, Function.identity());
@@ -63,7 +63,7 @@ public abstract class LateHolderSet<T> extends HolderSet.ListBacked<T> implement
 	/**
 	 * @see	LateHolderSet#builder(ResourceKey)
 	 */
-	@Deprecated(forRemoval = true, since = "1.1.0")
+	@Deprecated(forRemoval = true, since = "2.0.0")
     public static <T> LateHolderSet<T> createFromTags(ResourceKey<? extends Registry<T>> registry, List<TagKey<T>> tags) {
         return new LateHolderSetImpl<>(registry, tags.stream().map(Either::<TagKey<T>, ResourceKey<T>>left).toList());
     }
@@ -71,7 +71,7 @@ public abstract class LateHolderSet<T> extends HolderSet.ListBacked<T> implement
 	/**
 	 * @see	LateHolderSet#builder(ResourceKey)
 	 */
-	@Deprecated(forRemoval = true, since = "1.1.0")
+	@Deprecated(forRemoval = true, since = "2.0.0")
     public static <T> LateHolderSet<T> createFromEntries(ResourceKey<? extends Registry<T>> registry, List<ResourceKey<T>> entries) {
         return new LateHolderSetImpl<>(registry, entries.stream().map(Either::<TagKey<T>, ResourceKey<T>>right).toList());
     }
@@ -79,7 +79,7 @@ public abstract class LateHolderSet<T> extends HolderSet.ListBacked<T> implement
 	/**
 	 * @see	LateHolderSet#builder(ResourceKey)
 	 */
-	@Deprecated(forRemoval = true, since = "1.1.0")
+	@Deprecated(forRemoval = true, since = "2.0.0")
     public static <T> LateHolderSet<T> createMixed(ResourceKey<? extends Registry<T>> registry, List<TagKey<T>> tags, List<ResourceKey<T>> entries) {
 		ImmutableList.Builder<Either<TagKey<T>, ResourceKey<T>>> builder = ImmutableList.builder();
         builder.addAll(tags.stream().map(Either::<TagKey<T>, ResourceKey<T>>left).toList());
