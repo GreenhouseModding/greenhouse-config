@@ -67,7 +67,7 @@ loom {
 		named("server") {
 			server()
 			configName = "Fabric Server"
-			runDir("runs/server")
+			runDir("../../runs/server")
 			setSource(sourceSets["test"])
 			ideConfigGenerated(true)
 			vmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
