@@ -17,6 +17,7 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
@@ -44,7 +45,7 @@ public class ColorWidget extends AbstractColorWidget {
 			}
 
 			@Override
-			protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+			protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 				super.renderWidget(graphics, mouseX, mouseY, partialTick);
 				graphics.blitSprite(DEFAULT_BUTTON.get(active, isHoveredOrFocused()), getX(), getY(), 12, 12);
 				if (isHovered() && !isServerControlled())
@@ -52,7 +53,7 @@ public class ColorWidget extends AbstractColorWidget {
 			}
 
 			@Override
-			protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+			protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
 				narrationElementOutput.add(NarratedElementType.POSITION, Component.literal("Reset to Default Color"));
 			}
 		};
@@ -191,7 +192,7 @@ public class ColorWidget extends AbstractColorWidget {
 	}
 
 	@Override
-	protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		renderColorBox(graphics, getX(), getY());
 		textBox.renderWidget(graphics, mouseX, mouseY, partialTick);
 		defaultButton.render(graphics, mouseX, mouseY, partialTick);
@@ -379,7 +380,7 @@ public class ColorWidget extends AbstractColorWidget {
 		else if (currentlyActive == Type.SATURATION)
 			narrationElementOutput.add(NarratedElementType.TITLE, "Update Saturation to " + s);
 		else if (currentlyActive == Type.VALUE)
-			narrationElementOutput.add(NarratedElementType.TITLE, "Update Value to " + s);
+			narrationElementOutput.add(NarratedElementType.TITLE, "Update Value to " + v);
 	}
 
 	private enum Type {

@@ -22,9 +22,11 @@ import net.minecraft.util.FastColor;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class GreenhouseConfigTestScreen extends Screen {
 	private static final Component SAVED_CONFIG = Component.literal("Saved Config!");
@@ -83,7 +85,7 @@ public class GreenhouseConfigTestScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 		super.render(graphics, mouseX, mouseY, partialTick);
 		if (savedMessageTime > 0) {
 			float timeMultiplier = savedMessageTime - partialTick;
@@ -104,16 +106,16 @@ public class GreenhouseConfigTestScreen extends Screen {
 
 		if (splitCommonColorWidget.isDirty()) {
 			TextColor color = splitCommonColorWidget.getColor();
-			updateColor(builder::color, color);
+			updateColor(TestConfig::color, builder::color, color);
 		}
 		if (splitClientColorWidget.isDirty()) {
 			TextColor color = splitClientColorWidget.getColor();
-			updateColor(builder::clientColor, color);
+			updateColor(testConfig -> testConfig.clientValues().color(), builder::clientColor, color);
 		}
 	}
 
 	@Override
-	protected void insertText(String text, boolean overwrite) {
+	protected void insertText(@NotNull String text, boolean overwrite) {
 		if (splitCommonColorWidget.getTextBox().canConsumeInput()) {
 			if (overwrite)
 				splitCommonColorWidget.getTextBox().setValue(text);
@@ -128,9 +130,9 @@ public class GreenhouseConfigTestScreen extends Screen {
 		}
 	}
 
-	private void updateColor(Consumer<TextColor> colorSetter, TextColor color) {
+	private void updateColor(Function<TestConfig, TextColor> colorGetter, Consumer<TextColor> colorSetter, TextColor color) {
 		colorSetter.accept(color);
-		saveConfigButton.active = !builder.equals(GreenhouseConfigTest.CONFIG.getUnsynced());
+		saveConfigButton.active = !color.equals(colorGetter.apply(GreenhouseConfigTest.CONFIG.getUnsynced()));
 	}
 
 	private void save() {
@@ -148,7 +150,8 @@ public class GreenhouseConfigTestScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(previousScreen);
+		if (minecraft != null)
+			minecraft.setScreen(previousScreen);
 	}
 
 	/**
