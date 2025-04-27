@@ -1,6 +1,6 @@
 package house.greenhouse.greenhouseconfig.impl;
 
-import house.greenhouse.greenhouseconfig.platform.GHConfigIPlatformHelper;
+import house.greenhouse.greenhouseconfig.platform.GHConfigPlatformHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
@@ -9,9 +9,11 @@ import org.slf4j.LoggerFactory;
 public class GreenhouseConfig {
 	public static final String MOD_ID = "greenhouseconfig";
 	public static final Logger LOG = LoggerFactory.getLogger("Greenhouse Config");
-	private static GHConfigIPlatformHelper PLATFORM;
+	private static GHConfigPlatformHelper PLATFORM;
 
-	public static void init(GHConfigIPlatformHelper platform) {
+	public static void init(GHConfigPlatformHelper platform) {
+		if (PLATFORM != null)
+			return;
 		PLATFORM = platform;
 	}
 
@@ -27,7 +29,7 @@ public class GreenhouseConfig {
 		GreenhouseConfigStorage.onRegistryPopulation(server.registryAccess());
 	}
 
-	public static GHConfigIPlatformHelper getPlatform() {
+	public static GHConfigPlatformHelper getPlatform() {
 		return PLATFORM;
 	}
 }

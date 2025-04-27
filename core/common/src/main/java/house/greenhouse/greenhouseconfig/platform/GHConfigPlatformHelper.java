@@ -9,7 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
 
-public interface GHConfigIPlatformHelper {
+public interface GHConfigPlatformHelper {
 
 	/**
 	 * Gets the enum value of the current platform

@@ -19,7 +19,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.nio.file.Path;
 
-public class GreenhouseConfigNeoForgePlatformHelper implements GHConfigIPlatformHelper {
+public class GreenhouseConfigNeoForgePlatformHelper implements GHConfigPlatformHelper {
 	@Override
 	public Platform getPlatform() {
 		return Platform.NEOFORGE;

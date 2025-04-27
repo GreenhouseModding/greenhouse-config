@@ -18,8 +18,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.nio.file.Path;
 
-public class GreenhouseConfigFabricPlatformHelper implements GHConfigIPlatformHelper {
-
+public class GreenhouseConfigFabricPlatformHelper implements GHConfigPlatformHelper {
 	@Override
 	public Platform getPlatform() {
 		return Platform.FABRIC;

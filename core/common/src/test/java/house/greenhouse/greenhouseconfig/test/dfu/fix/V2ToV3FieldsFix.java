@@ -24,8 +24,7 @@ public class V2ToV3FieldsFix extends DataFix {
 								)
 						)
 				).renameField("blue_blocks", "red_blocks")
-				.set("color", dynamic.createString(TestConfig.DEFAULT.color().serialize()))
-				.set("client_color", dynamic.createString(TestConfig.DEFAULT.clientValues().color().serialize()));
+				.set("color", dynamic.createString(TestConfig.SERVER_DEFAULT.color().serialize()));
 	}
 
 	@Override

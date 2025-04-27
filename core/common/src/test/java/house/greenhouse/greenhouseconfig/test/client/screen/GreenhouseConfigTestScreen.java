@@ -48,8 +48,8 @@ public class GreenhouseConfigTestScreen extends Screen {
 		this.previousScreen = previousScreen;
 		TestConfig currentConfig = GreenhouseConfigTest.CONFIG.getUnsynced();
 		builder = new TestConfigBuilder(currentConfig);
-		splitCommonColorWidget = new ColorWidget(0, 0, builder.color, TestConfig.DEFAULT.color());
-		splitClientColorWidget = new ColorWidget(0, 0, builder.clientColor, TestConfig.DEFAULT.clientValues().color());
+		splitCommonColorWidget = new ColorWidget(0, 0, builder.color, TestConfig.CLIENT_DEFAULT.color());
+		splitClientColorWidget = new ColorWidget(0, 0, builder.clientColor, TestConfig.CLIENT_DEFAULT.clientValues().color());
 		saveConfigButton = Button.builder(Component.literal("Save Config"), button -> save()).build();
 		saveConfigButton.active = false;
 	}
