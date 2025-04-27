@@ -27,7 +27,7 @@ public class DefaultedCodec<A> extends MapCodec<A> {
             return DataResult.error(() -> "Field '" + name + "' is not present in '" + input + "'.");
         final DataResult<A> parsed = elementCodec.parse(ops, value);
         if (!parsed.hasResultOrPartial())
-            return DataResult.error(parsed.error().orElseThrow().messageSupplier());
+            return DataResult.<A>error(parsed.error().orElseThrow().messageSupplier()).setPartial(defaultValue);
         return parsed.setPartial(() -> parsed.resultOrPartial().orElse(defaultValue));
     }
 
