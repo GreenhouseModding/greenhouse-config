@@ -93,7 +93,7 @@ tasks {
 	}
 
 	// GradleUp Shadow jank (we have to double-jar jij dependencies because shadow decompresses all jars)
-	val depJar = create<Jar>("depJar") {
+	val depJar = register<Jar>("depJar") {
 		from(jijInclude) {
 			into("META-INF/jarjar")
 		}
