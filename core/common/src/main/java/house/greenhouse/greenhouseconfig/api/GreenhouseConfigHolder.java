@@ -110,21 +110,6 @@ public interface GreenhouseConfigHolder<T> {
 	}
 
 	/**
-	 * Constructs a {@link GreenhouseConfigHolder.Builder} with the specified config name.
-	 * <br>
-	 * Configs are saved inside the config folder as <b>&lt;config_name&gt;.&lt;file_extension&gt;</b>
-	 *
-	 * @param configName The name to create a config under.
-	 * @param lang       The file language to use for this config.
-	 *                   <br>
-	 *                   {@link ConfigLang}s are not built into Greenhouse Config by default, you should instead depend on and include a library with a config lang of choice. Such as the JSONC or TOML lib.
-	 */
-	@Deprecated(forRemoval = true, since = "2.0.0")
-	static <T> Builder<T> builder(String configName, ConfigLang<?> lang) {
-		return new Builder<>(configName, lang);
-	}
-
-	/**
 	 * Gets the schema version for this config.
 	 *
 	 * @return The schema version.
@@ -152,17 +137,6 @@ public interface GreenhouseConfigHolder<T> {
 	 * @return True if the config should sync from server to client, false if not.
 	 */
 	boolean shouldSync();
-
-	/**
-	 * Whether this config is network sync-able.
-	 *
-	 * @return True if the config is network sync-able, false if not.
-	 * @see    GreenhouseConfigHolder#shouldSync()
-	 */
-	@Deprecated(forRemoval = true, since = "2.0.0")
-	default boolean isNetworkSyncable() {
-		return shouldSync();
-	}
 
 	/**
 	 * Gets the config of this holder.
@@ -236,14 +210,14 @@ public interface GreenhouseConfigHolder<T> {
 		private int schemaVersion = 1;
 
 		@Nullable
-		private Codec<T> serverCodec;
+		private final Codec<T> serverCodec;
 		@Nullable
-		private Codec<T> clientCodec;
+		private final Codec<T> clientCodec;
 
 		@Nullable
-		private T defaultServerValue;
+		private final T defaultServerValue;
 		@Nullable
-		private T defaultClientValue;
+		private final T defaultClientValue;
 		@Nullable
 		private Function<T, StreamCodec<FriendlyByteBuf, T>> networkFunction;
 
@@ -276,13 +250,6 @@ public interface GreenhouseConfigHolder<T> {
 			this.configLang = lang;
 		}
 
-		@Deprecated(forRemoval = true, since = "2.0.0")
-		protected Builder(@NotNull String configName,
-						  @NotNull ConfigLang<?> lang) {
-			this.configName = configName;
-			this.configLang = lang;
-		}
-
 		/**
 		 * Sets the config version.
 		 * The config's version is accessed through the user defined file metadata 'GreenhouseConfigSchemaVersion'.
@@ -292,65 +259,6 @@ public interface GreenhouseConfigHolder<T> {
 		public Builder<T> schemaVersion(int version) {
 			this.schemaVersion = Math.max(1, version);
 			return this;
-		}
-
-		/**
-		 * Sets a codec for both the dedicated server and the client/integrated server.
-		 *
-		 * @param codec        The codec to use for both environments.
-		 * @param defaultValue The default value for this config.
-		 * @see    GreenhouseConfigHolder#common(String, Codec, Object, ConfigLang)
-		 */
-		@Deprecated(forRemoval = true, since = "2.0.0")
-		public Builder<T> common(Codec<T> codec, T defaultValue) {
-			server(codec, defaultValue);
-			client(codec, defaultValue);
-			return this;
-		}
-
-		/**
-		 * The config for use with dedicated servers.
-		 * <p>
-		 * This will set the client config is there is no client config value,
-		 * this is so clients running this mod can still access this config.
-		 *
-		 * @param codec        The codec to use for serialization.
-		 * @param defaultValue The default server config value.
-		 */
-		@Deprecated(forRemoval = true, since = "2.0.0")
-		public Builder<T> server(Codec<T> codec, T defaultValue) {
-			serverCodec = codec;
-			defaultServerValue = defaultValue;
-			return this;
-		}
-
-		/**
-		 * Sets the config for use with clients and integrated servers.
-		 *
-		 * @param codec        The codec to use for serialization.
-		 * @param defaultValue The default client config value.
-		 */
-		@Deprecated(forRemoval = true, since = "2.0.0")
-		public Builder<T> client(Codec<T> codec, T defaultValue) {
-			clientCodec = codec;
-			defaultClientValue = defaultValue;
-			return this;
-		}
-
-		/**
-		 * @see GreenhouseConfigHolder.Builder#networkSynchronized(StreamCodec)
-		 */
-		@Deprecated(forRemoval = true, since = "2.0.0")
-		public Builder<T> networkSerializable(StreamCodec<FriendlyByteBuf, T> streamCodec) {
-			return networkSynchronized(streamCodec);
-		}
-
-		/**
-		 * @see GreenhouseConfigHolder.Builder#networkSynchronized(Function)
-		 */
-		@Deprecated(forRemoval = true, since = "2.0.0")
-		public Builder<T> networkSerializable(Function<T, StreamCodec<FriendlyByteBuf, T>> streamCodecFunction) {
-			return networkSynchronized(streamCodecFunction);
 		}
 
 		/**
@@ -412,37 +320,6 @@ public interface GreenhouseConfigHolder<T> {
 		}
 
 		/**
-		 * Adds a backwards compatibility codec used for converting from
-		 * an older version of this config to the current version for
-		 * the dedicated server.
-		 * <p>
-		 * This will additionally set the client backwards compatibility config is there is no client config value,
-		 * this is so integrated servers running the mod can still access this config.
-		 *
-		 * @param fixer The DataFixer to use for updating this config object.
-		 * @see com.mojang.datafixers.DataFixerBuilder
-		 */
-		@Deprecated(forRemoval = true, since = "2.0.0")
-		public Builder<T> dataFixerServer(DataFixer fixer) {
-			serverFixer = fixer;
-			return this;
-		}
-
-		/**
-		 * Adds a backwards compatibility codec used for converting from
-		 * older versions of this config to the current version for
-		 * the client/integrated server.
-		 *
-		 * @param fixer The DataFixer to use for updating this config object.
-		 * @see com.mojang.datafixers.DataFixerBuilder
-		 */
-		@Deprecated(forRemoval = true, since = "2.0.0")
-		public Builder<T> dataFixerClient(DataFixer fixer) {
-			clientFixer = fixer;
-			return this;
-		}
-
-		/**
 		 * A callback that runs after registries have been populated.
 		 *
 		 * @param callback A callback that runs on registry values and the config object.
@@ -475,11 +352,6 @@ public interface GreenhouseConfigHolder<T> {
 			latePopulationCallback = (lookup, config) -> getter.apply(config).forEach(late -> late.bind(lookup, onException));
 			lateDepopulationCallback = (config) -> getter.apply(config).forEach(Late::unbind);
 			return this;
-		}
-
-		@Deprecated(forRemoval = true, since = "2.0.0")
-		public GreenhouseConfigHolder<T> buildAndRegister() {
-			return build();
 		}
 
 		/**

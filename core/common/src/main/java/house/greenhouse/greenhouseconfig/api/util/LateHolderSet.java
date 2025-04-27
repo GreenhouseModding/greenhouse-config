@@ -59,33 +59,6 @@ public abstract class LateHolderSet<T> extends HolderSet.ListBacked<T> implement
 		return new Builder<>(registry);
 	}
 
-	/**
-	 * @see    LateHolderSet#builder(ResourceKey)
-	 */
-	@Deprecated(forRemoval = true, since = "2.0.0")
-	public static <T> LateHolderSet<T> createFromTags(ResourceKey<? extends Registry<T>> registry, List<TagKey<T>> tags) {
-		return new LateHolderSetImpl<>(registry, tags.stream().map(Either::<TagKey<T>, ResourceKey<T>>left).toList());
-	}
-
-	/**
-	 * @see    LateHolderSet#builder(ResourceKey)
-	 */
-	@Deprecated(forRemoval = true, since = "2.0.0")
-	public static <T> LateHolderSet<T> createFromEntries(ResourceKey<? extends Registry<T>> registry, List<ResourceKey<T>> entries) {
-		return new LateHolderSetImpl<>(registry, entries.stream().map(Either::<TagKey<T>, ResourceKey<T>>right).toList());
-	}
-
-	/**
-	 * @see    LateHolderSet#builder(ResourceKey)
-	 */
-	@Deprecated(forRemoval = true, since = "2.0.0")
-	public static <T> LateHolderSet<T> createMixed(ResourceKey<? extends Registry<T>> registry, List<TagKey<T>> tags, List<ResourceKey<T>> entries) {
-		ImmutableList.Builder<Either<TagKey<T>, ResourceKey<T>>> builder = ImmutableList.builder();
-		builder.addAll(tags.stream().map(Either::<TagKey<T>, ResourceKey<T>>left).toList());
-		builder.addAll(entries.stream().map(Either::<TagKey<T>, ResourceKey<T>>right).toList());
-		return new LateHolderSetImpl<>(registry, builder.build());
-	}
-
 	public static class Builder<T> {
 		private final ResourceKey<? extends Registry<T>> registry;
 		private final ImmutableList.Builder<Either<TagKey<T>, ResourceKey<T>>> listBuilder = ImmutableList.builder();
