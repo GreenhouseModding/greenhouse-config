@@ -2,6 +2,7 @@ package house.greenhouse.greenhouseconfig.impl.client;
 
 import house.greenhouse.greenhouseconfig.impl.GreenhouseConfig;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
@@ -13,7 +14,7 @@ public class GreenhouseConfigNeoForgeClient {
 
     @EventBusSubscriber(modid = GreenhouseConfig.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     private static class ModEvents {
-        @SubscribeEvent
+        @SubscribeEvent(priority = EventPriority.HIGHEST)
         public static void onClientSetup(FMLClientSetupEvent event) {
             GreenhouseConfigClient.init();
         }

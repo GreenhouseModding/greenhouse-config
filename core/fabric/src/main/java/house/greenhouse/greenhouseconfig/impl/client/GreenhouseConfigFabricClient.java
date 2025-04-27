@@ -15,7 +15,7 @@ public class GreenhouseConfigFabricClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientLifecycleEvents.CLIENT_STARTED.addPhaseOrdering(Event.DEFAULT_PHASE, CONFIG_INITIALIZATION_PHASE);
+        ClientLifecycleEvents.CLIENT_STARTED.addPhaseOrdering(CONFIG_INITIALIZATION_PHASE, Event.DEFAULT_PHASE);
         ClientLifecycleEvents.CLIENT_STARTED.register(CONFIG_INITIALIZATION_PHASE, client -> GreenhouseConfigClient.init());
 
         ClientConfigurationNetworking.registerGlobalReceiver(SyncGreenhouseConfigPacket.TYPE, (payload, context) -> payload.handleConfiguration());
