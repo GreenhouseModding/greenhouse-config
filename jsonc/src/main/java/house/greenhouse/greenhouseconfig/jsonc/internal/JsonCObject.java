@@ -5,8 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import house.greenhouse.greenhouseconfig.api.lang.CommentedValue;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class JsonCObject extends JsonCElement {
 	public static final JsonCObject EMPTY = new JsonCObject(Map.of());
@@ -46,6 +45,26 @@ public class JsonCObject extends JsonCElement {
 
 	public void putAll(Map<String, JsonCElement> map) {
 		members.putAll(map);
+	}
+
+	public void remove(String name) {
+		members.remove(name);
+	}
+
+	public void sortForRecordCodec() {
+		Map<String, JsonCElement> newMembers = new LinkedHashMap<>();
+		List<Map.Entry<String, JsonCElement>> elements = new ArrayList<>(members.entrySet());
+		if (members.size() < 5) {
+			return;
+		}
+
+		for (int i = (elements.size() / 2); i < elements.size(); ++ i) {
+			newMembers.put(elements.get(i).getKey(), elements.get(i).getValue());
+		}
+		for (int i = 0; i < (elements.size() / 2); ++ i) {
+			newMembers.put(elements.get(i).getKey(), elements.get(i).getValue());
+		}
+		members = newMembers;
 	}
 
 	@Override

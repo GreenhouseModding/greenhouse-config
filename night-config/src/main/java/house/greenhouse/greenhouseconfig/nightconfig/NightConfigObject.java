@@ -7,18 +7,19 @@ import java.util.List;
 import java.util.Map;
 
 import com.electronwill.nightconfig.core.CommentedConfig;
+import com.electronwill.nightconfig.core.InMemoryCommentedFormat;
 
 public final class NightConfigObject extends NightConfigElement {
     private final CommentedConfig config;
 
     public NightConfigObject() {
         super(new String[0]);
-        config = CommentedConfig.inMemory();
+        config = InMemoryCommentedFormat.defaultInstance().createConfig(LinkedHashMap::new);
     }
 
     public NightConfigObject(String... comments) {
         super(comments);
-        config = CommentedConfig.inMemory();
+		config = InMemoryCommentedFormat.defaultInstance().createConfig(LinkedHashMap::new);
     }
 
     public NightConfigObject(CommentedConfig config) {
@@ -33,11 +34,11 @@ public final class NightConfigObject extends NightConfigElement {
 
     @Override
     public NightConfigObject withComment(String[] comments) {
-        return new NightConfigObject(CommentedConfig.copy(config), comments);
+        return new NightConfigObject(getConfig(), comments);
     }
 
     public CommentedConfig getConfig() {
-        return CommentedConfig.copy(config);
+        return CommentedConfig.copy(config, LinkedHashMap::new);
     }
 
     public void put(String name, NightConfigElement element) {
@@ -67,7 +68,7 @@ public final class NightConfigObject extends NightConfigElement {
                 comments = new String[0];
             }
             elementMap.put(entry.getKey(), switch (entry.getValue()) {
-                case CommentedConfig c -> new NightConfigObject(CommentedConfig.copy(c), comments);
+                case CommentedConfig c -> new NightConfigObject(CommentedConfig.copy(c, LinkedHashMap::new), comments);
                 case List<?> list -> new NightConfigList(new ArrayList<>(list), comments);
                 default -> new NightConfigValue(entry.getValue(), comments);
             });
@@ -76,7 +77,7 @@ public final class NightConfigObject extends NightConfigElement {
     }
 
     public NightConfigObject without(String key) {
-        CommentedConfig newConfig = CommentedConfig.inMemory();
+        CommentedConfig newConfig = InMemoryCommentedFormat.defaultInstance().createConfig(LinkedHashMap::new);
         for (var entry : config.entrySet()) {
             if (!entry.getKey().equals(key)) {
                 newConfig.set(entry.getKey(), entry.getValue());

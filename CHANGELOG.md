@@ -5,3 +5,4 @@
 
 ## Bugfixes
 - Fixed potential race conditions on Fabric with platform helper.
+- Fixed configs not writing fields in the correct order.

@@ -1,12 +1,15 @@
 package house.greenhouse.greenhouseconfig.nightconfig;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import com.mojang.serialization.RecordBuilder;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.datafixers.util.Pair;
@@ -27,6 +30,7 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
 
     @Override
     public <U> U convertTo(DynamicOps<U> outOps, NightConfigElement input) {
+		// TODO: This.
         return null;
     }
 
@@ -118,7 +122,7 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
         if (!(map instanceof NightConfigObject) && map != empty())
             return DataResult.error(() -> "Cannot merge into a non-map toml element");
         if (!(key instanceof NightConfigValue keyValue))
-            return DataResult.error(() -> "Key is not a string or string-convertable");
+            return DataResult.error(() -> "Key is not a string or string-convertible");
 
         NightConfigObject newMap = new NightConfigObject(map.getComments());
         if (map instanceof NightConfigObject tomlObject) {
@@ -202,22 +206,22 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
     public DataResult<MapLike<NightConfigElement>> getMap(NightConfigElement input) {
         if (!(input instanceof NightConfigObject object)) return DataResult.error(() -> "Input is not a toml object");
         final Map<String, NightConfigElement> map = object.toElementMap();
-        return DataResult.success(new MapLike<NightConfigElement>() {
-            @Override
-            public @Nullable NightConfigElement get(NightConfigElement key) {
-                return map.get(String.valueOf(((NightConfigValue) key).getValue()));
-            }
+        return DataResult.success(new MapLike<>() {
+			@Override
+			public @Nullable NightConfigElement get(NightConfigElement key) {
+				return map.get(String.valueOf(((NightConfigValue) key).getValue()));
+			}
 
-            @Override
-            public @Nullable NightConfigElement get(String key) {
-                return map.get(key);
-            }
+			@Override
+			public @Nullable NightConfigElement get(String key) {
+				return map.get(key);
+			}
 
-            @Override
-            public Stream<Pair<NightConfigElement, NightConfigElement>> entries() {
-                return map.entrySet().stream().map(e -> Pair.of(createString(e.getKey()), e.getValue()));
-            }
-        });
+			@Override
+			public Stream<Pair<NightConfigElement, NightConfigElement>> entries() {
+				return map.entrySet().stream().map(e -> Pair.of(createString(e.getKey()), e.getValue()));
+			}
+		});
     }
 
     @Override
@@ -251,4 +255,45 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
         }
         return input;
     }
+
+	@Override
+	public RecordBuilder<NightConfigElement> mapBuilder() {
+		return new MapBuilder(this);
+	}
+
+	private static class MapBuilder extends RecordBuilder.AbstractUniversalBuilder<NightConfigElement, Map<NightConfigElement, NightConfigElement>> {
+		protected MapBuilder(DynamicOps<NightConfigElement> ops) {
+			super(ops);
+		}
+
+		@Override
+		protected Map<NightConfigElement, NightConfigElement> initBuilder() {
+			return new LinkedHashMap<>();
+		}
+
+		@Override
+		protected Map<NightConfigElement, NightConfigElement> append(NightConfigElement key, NightConfigElement value, Map<NightConfigElement, NightConfigElement> builder) {
+			builder.put(key, value);
+			return builder;
+		}
+
+		@Override
+		protected DataResult<NightConfigElement> build(Map<NightConfigElement, NightConfigElement> builder, NightConfigElement prefix) {
+			return ops().mergeToMap(prefix, builder).flatMap(element -> {
+				if (element instanceof NightConfigObject original && original.toElementMap().size() > 4) {
+					List<Map.Entry<String, NightConfigElement>> elements = new ArrayList<>(original.toElementMap().entrySet());
+					NightConfigObject obj = new NightConfigObject();
+
+					for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++i) {
+						obj.put(elements.get(i).getKey(), elements.get(i).getValue());
+					}
+					for (int i = 0; i < Mth.ceil(elements.size() / 2.0F); ++i) {
+						obj.put(elements.get(i).getKey(), elements.get(i).getValue());
+					}
+					return DataResult.success(obj);
+				}
+				return DataResult.success(element);
+			});
+		}
+	}
 }
