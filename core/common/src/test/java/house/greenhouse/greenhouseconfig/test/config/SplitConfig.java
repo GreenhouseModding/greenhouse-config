@@ -12,6 +12,7 @@ import house.greenhouse.greenhouseconfig.api.util.DefaultFieldUtil;
 import house.greenhouse.greenhouseconfig.api.util.Late;
 import house.greenhouse.greenhouseconfig.api.util.LateHolder;
 import house.greenhouse.greenhouseconfig.api.util.LateHolderSet;
+import house.greenhouse.greenhouseconfig.impl.codec.OrderCorrectedRecordCodec;
 import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
 import house.greenhouse.greenhouseconfig.test.dfu.fix.V1ToV2FieldsFix;
 import house.greenhouse.greenhouseconfig.test.dfu.fix.V2ToV3FieldsFix;
@@ -121,7 +122,7 @@ public record SplitConfig(CommonValues common,
 						.build(),
 				TextColor.parseColor("#0095a8").getOrThrow()
 		);
-		public static final MapCodec<CommonValues> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
+		public static final MapCodec<CommonValues> CODEC = OrderCorrectedRecordCodec.wrap(RecordCodecBuilder.mapCodec(inst -> inst.group(
 				DefaultFieldUtil.codecWithComments(Codec.INT, "silly", DEFAULT.silly(), "The value which makes this config very silly.")
 						.forGetter(CommonValues::silly),
 				DefaultFieldUtil.codecWithComments(ENCHANTMENT_OPINION_CODEC, "enchantment_opinion", DEFAULT.enchantmentOpinion(), "An enchantment that you either like or dislike.", "Note: Calico was not biased here.")
@@ -145,7 +146,7 @@ public record SplitConfig(CommonValues common,
 						DEFAULT.color(),
 						"This is a value that exists on both the client and server."
 				).forGetter(CommonValues::color)
-		).apply(inst, CommonValues::new));
+		).apply(inst, CommonValues::new)));
 
 		public static final StreamCodec<FriendlyByteBuf, CommonValues> STREAM_CODEC = StreamCodec.composite(
 				ByteBufCodecs.INT, CommonValues::silly,

@@ -51,6 +51,10 @@ public class JsonCObject extends JsonCElement {
 		members.remove(name);
 	}
 
+	public void clear() {
+		members.clear();
+	}
+
 	@Override
 	public CommentedValue withComment(String[] comments) {
 		return new JsonCObject(members, comments);

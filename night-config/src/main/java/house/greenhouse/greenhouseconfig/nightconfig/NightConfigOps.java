@@ -8,7 +8,6 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import com.mojang.serialization.RecordBuilder;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import com.mojang.datafixers.util.Pair;
@@ -278,39 +277,20 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
 
 		@Override
 		protected DataResult<NightConfigElement> build(NightConfigObject builder, NightConfigElement prefix) {
-			NightConfigObject newObject = sortForRecordCodec(builder);
 			if (prefix == null || prefix == ops().empty()) {
-				return DataResult.success(newObject);
+				return DataResult.success(builder);
 			}
 			if (prefix instanceof NightConfigObject object) {
 				final NightConfigObject result = new NightConfigObject();
 				for (final Map.Entry<String, NightConfigElement> entry : object.toMap().entrySet()) {
 					result.put(entry.getKey(), entry.getValue());
 				}
-				for (final Map.Entry<String, NightConfigElement> entry : newObject.toMap().entrySet()) {
+				for (final Map.Entry<String, NightConfigElement> entry : builder.toMap().entrySet()) {
 					result.put(entry.getKey(), entry.getValue());
 				}
 				return DataResult.success(result);
 			}
 			return DataResult.error(() -> "mergeToMap called with not a map: " + prefix, prefix);
-		}
-
-		// Account for a DFU bug where RecordCodecBuilder swaps the half-point at which members are encoded.
-		private static NightConfigObject sortForRecordCodec(NightConfigObject builder) {
-			if (builder.toMap().size() < 5)
-				return builder;
-
-			NightConfigObject newObject = new NightConfigObject(builder.getComments());
-			List<Map.Entry<String, NightConfigElement>> elements = new ArrayList<>(builder.toMap().entrySet());
-
-			for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++i) {
-				newObject.put(elements.get(i).getKey(), elements.get(i).getValue());
-			}
-			for (int i = 0; i < Mth.ceil(elements.size() / 2.0F); ++i) {
-				newObject.put(elements.get(i).getKey(), elements.get(i).getValue());
-			}
-
-			return newObject;
 		}
 	}
 }
