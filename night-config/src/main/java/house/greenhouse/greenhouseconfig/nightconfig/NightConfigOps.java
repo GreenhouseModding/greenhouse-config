@@ -1,7 +1,6 @@
 package house.greenhouse.greenhouseconfig.nightconfig;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -68,7 +67,7 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
                 return DataResult.success(Boolean.parseBoolean(String.valueOf(value.getValue())));
             }
         }
-        return DataResult.error(() -> "Cannot convert a non-value toml element into a boolean");
+        return DataResult.error(() -> "Cannot convert a non-value Night Config element into a boolean");
     }
 
     @Override
@@ -81,7 +80,7 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
         if (input instanceof NightConfigValue value) {
             return DataResult.success(String.valueOf(value.getValue()));
         }
-        return DataResult.error(() -> "Cannot convert a non-value toml element into a string");
+        return DataResult.error(() -> "Cannot convert a non-value Night Config element into a string");
     }
 
     @Override
@@ -92,7 +91,7 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
     @Override
     public DataResult<NightConfigElement> mergeToList(NightConfigElement list, NightConfigElement value) {
         if (!(list instanceof NightConfigList) && list != empty())
-            return DataResult.error(() -> "Cannot merge into a non-list toml element");
+            return DataResult.error(() -> "Cannot merge into a non-list Night Config element");
 
         NightConfigList newList = new NightConfigList(list.getComments());
         if (list instanceof NightConfigList tomlList) {
@@ -261,39 +260,57 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
 		return new MapBuilder(this);
 	}
 
-	private static class MapBuilder extends RecordBuilder.AbstractUniversalBuilder<NightConfigElement, Map<NightConfigElement, NightConfigElement>> {
+	private static class MapBuilder extends RecordBuilder.AbstractUniversalBuilder<NightConfigElement, NightConfigObject> {
 		protected MapBuilder(DynamicOps<NightConfigElement> ops) {
 			super(ops);
 		}
 
 		@Override
-		protected Map<NightConfigElement, NightConfigElement> initBuilder() {
-			return new LinkedHashMap<>();
+		protected NightConfigObject initBuilder() {
+			return new NightConfigObject();
 		}
 
 		@Override
-		protected Map<NightConfigElement, NightConfigElement> append(NightConfigElement key, NightConfigElement value, Map<NightConfigElement, NightConfigElement> builder) {
-			builder.put(key, value);
+		protected NightConfigObject append(NightConfigElement key, NightConfigElement value, NightConfigObject builder) {
+			builder.put(ops().getStringValue(key).getOrThrow(), value);
 			return builder;
 		}
 
 		@Override
-		protected DataResult<NightConfigElement> build(Map<NightConfigElement, NightConfigElement> builder, NightConfigElement prefix) {
-			return ops().mergeToMap(prefix, builder).flatMap(element -> {
-				if (element instanceof NightConfigObject original && original.toElementMap().size() > 4) {
-					List<Map.Entry<String, NightConfigElement>> elements = new ArrayList<>(original.toElementMap().entrySet());
-					NightConfigObject obj = new NightConfigObject();
-
-					for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++i) {
-						obj.put(elements.get(i).getKey(), elements.get(i).getValue());
-					}
-					for (int i = 0; i < Mth.ceil(elements.size() / 2.0F); ++i) {
-						obj.put(elements.get(i).getKey(), elements.get(i).getValue());
-					}
-					return DataResult.success(obj);
+		protected DataResult<NightConfigElement> build(NightConfigObject builder, NightConfigElement prefix) {
+			NightConfigObject newObject = sortForRecordCodec(builder);
+			if (prefix == null || prefix == ops().empty()) {
+				return DataResult.success(newObject);
+			}
+			if (prefix instanceof NightConfigObject object) {
+				final NightConfigObject result = new NightConfigObject();
+				for (final Map.Entry<String, NightConfigElement> entry : object.toElementMap().entrySet()) {
+					result.put(entry.getKey(), entry.getValue());
 				}
-				return DataResult.success(element);
-			});
+				for (final Map.Entry<String, NightConfigElement> entry : newObject.toElementMap().entrySet()) {
+					result.put(entry.getKey(), entry.getValue());
+				}
+				return DataResult.success(result);
+			}
+			return DataResult.error(() -> "mergeToMap called with not a map: " + prefix, prefix);
+		}
+
+		// Account for a DFU bug where RecordCodecBuilder swaps the half-point at which members are encoded.
+		private static NightConfigObject sortForRecordCodec(NightConfigObject builder) {
+			if (builder.toElementMap().size() < 5)
+				return builder;
+
+			NightConfigObject newObject = new NightConfigObject(builder.getComments());
+			List<Map.Entry<String, NightConfigElement>> elements = new ArrayList<>(builder.toElementMap().entrySet());
+
+			for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++ i) {
+				newObject.put(elements.get(i).getKey(), elements.get(i).getValue());
+			}
+			for (int i = 0; i < Mth.ceil(elements.size() / 2.0F); ++ i) {
+				newObject.put(elements.get(i).getKey(), elements.get(i).getValue());
+			}
+
+			return newObject;
 		}
 	}
 }
