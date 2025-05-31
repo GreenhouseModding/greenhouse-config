@@ -5,7 +5,7 @@ import house.greenhouse.greenhouseconfig.api.util.LateHolder;
 import house.greenhouse.greenhouseconfig.api.util.LateHolderSet;
 import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
 import house.greenhouse.greenhouseconfig.test.client.screen.widget.ColorWidget;
-import house.greenhouse.greenhouseconfig.test.config.TestConfig;
+import house.greenhouse.greenhouseconfig.test.config.SplitConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -18,7 +18,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -47,10 +47,10 @@ public class GreenhouseConfigTestScreen extends Screen {
 	public GreenhouseConfigTestScreen(Screen previousScreen) {
 		super(Component.literal("Greenhouse Config Test Configuration"));
 		this.previousScreen = previousScreen;
-		TestConfig currentConfig = GreenhouseConfigTest.CONFIG.getUnsyncedOrThrow();
+		SplitConfig currentConfig = GreenhouseConfigTest.CONFIG.getUnsyncedOrThrow();
 		builder = new TestConfigBuilder(currentConfig);
-		splitCommonColorWidget = new ColorWidget(0, 0, builder.color, TestConfig.CLIENT_DEFAULT.color());
-		splitClientColorWidget = new ColorWidget(0, 0, builder.clientColor, TestConfig.CLIENT_DEFAULT.clientValues().color());
+		splitCommonColorWidget = new ColorWidget(0, 0, builder.color, SplitConfig.CommonValues.DEFAULT.color());
+		splitClientColorWidget = new ColorWidget(0, 0, builder.clientColor, SplitConfig.ClientValues.DEFAULT.color());
 		saveConfigButton = Button.builder(Component.literal("Save Config"), button -> save()).build();
 		saveConfigButton.active = false;
 	}
@@ -93,7 +93,7 @@ public class GreenhouseConfigTestScreen extends Screen {
 			if (alpha > 255) {
 				alpha = 255;
 			}
-			graphics.drawStringWithBackdrop(font, errorMessage == null ? SAVED_CONFIG : errorMessage, (int) ((float) width / 2 - ((float) Minecraft.getInstance().font.width(SAVED_CONFIG) / 2)), height - 40, 0, ARGB.color(alpha, 255, errorMessage == null ? 255 : 0, errorMessage == null ? 255 : 0));
+			graphics.drawStringWithBackdrop(font, errorMessage == null ? SAVED_CONFIG : errorMessage, (int) ((float) width / 2 - ((float) Minecraft.getInstance().font.width(SAVED_CONFIG) / 2)), height - 40, 0, FastColor.ARGB32.color(alpha, 255, errorMessage == null ? 255 : 0, errorMessage == null ? 255 : 0));
 		}
 	}
 
@@ -136,7 +136,7 @@ public class GreenhouseConfigTestScreen extends Screen {
 
 	private void updateColor(Consumer<TextColor> colorSetter, TextColor color) {
 		colorSetter.accept(color);
-		saveConfigButton.active = !builder.build().equals(GreenhouseConfigTest.CONFIG.getUnsynced());
+		saveConfigButton.active = !builder.equals(GreenhouseConfigTest.CONFIG.getUnsynced());
 	}
 
 	private void save() {
@@ -154,9 +154,8 @@ public class GreenhouseConfigTestScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		if (minecraft == null)
-			return;
-		minecraft.setScreen(previousScreen);
+		if (minecraft != null)
+			minecraft.setScreen(previousScreen);
 	}
 
 	/**
@@ -164,19 +163,19 @@ public class GreenhouseConfigTestScreen extends Screen {
 	 */
 	public static class TestConfigBuilder {
 		protected int silly;
-		protected Pair<LateHolder<Enchantment>, TestConfig.Opinion> enchantmentOpinion;
+		protected Pair<LateHolder<Enchantment>, SplitConfig.Opinion> enchantmentOpinion;
 		protected LateHolderSet<Block> redBlocks;
 		protected LateHolderSet<Biome> greenBiomes;
 		protected TextColor color;
 		protected TextColor clientColor;
 
-		protected TestConfigBuilder(TestConfig config) {
-			this.silly = config.silly();
-			this.enchantmentOpinion = config.enchantmentOpinion();
-			this.redBlocks = config.redBlocks();
-			this.greenBiomes = config.greenBiomes();
-			this.color = config.color();
-			this.clientColor = config.clientValues().color();
+		protected TestConfigBuilder(SplitConfig config) {
+			this.silly = config.common().silly();
+			this.enchantmentOpinion = config.common().enchantmentOpinion();
+			this.redBlocks = config.common().redBlocks();
+			this.greenBiomes = config.common().greenBiomes();
+			this.color = config.common().color();
+			this.clientColor = config.client().color();
 		}
 
 		public TestConfigBuilder silly(int silly) {
@@ -184,7 +183,7 @@ public class GreenhouseConfigTestScreen extends Screen {
 			return this;
 		}
 
-		public TestConfigBuilder enchantmentOpinion(LateHolder<Enchantment> enchantment, TestConfig.Opinion opinion) {
+		public TestConfigBuilder enchantmentOpinion(LateHolder<Enchantment> enchantment, SplitConfig.Opinion opinion) {
 			this.enchantmentOpinion = Pair.of(enchantment, opinion);
 			return this;
 		}
@@ -199,12 +198,17 @@ public class GreenhouseConfigTestScreen extends Screen {
 			return this;
 		}
 
-		public boolean equals(TestConfig original) {
-			return original.silly() == silly && original.enchantmentOpinion().equals(enchantmentOpinion) && original.redBlocks().equals(redBlocks) && original.greenBiomes().equals(greenBiomes) && original.color().getValue() == color.getValue() && original.clientValues().color().getValue() == clientColor.getValue();
+		public boolean equals(SplitConfig original) {
+			return original.common().silly() == silly &&
+					original.common().enchantmentOpinion().equals(enchantmentOpinion) &&
+					original.common().redBlocks().equals(redBlocks) &&
+					original.common().greenBiomes().equals(greenBiomes) &&
+					original.common().color().getValue() == color.getValue() &&
+					original.client().color().getValue() == clientColor.getValue();
 		}
 
-		public TestConfig build() {
-			return new TestConfig(silly, enchantmentOpinion, redBlocks, greenBiomes, color, new TestConfig.ClientConfigValues(clientColor));
+		public SplitConfig build() {
+			return new SplitConfig(new SplitConfig.CommonValues(silly, enchantmentOpinion, redBlocks, greenBiomes, color), new SplitConfig.ClientValues(clientColor));
 		}
 	}
 }

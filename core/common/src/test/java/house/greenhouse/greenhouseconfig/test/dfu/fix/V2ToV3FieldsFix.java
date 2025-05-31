@@ -6,7 +6,7 @@ import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import house.greenhouse.greenhouseconfig.api.dfu.GreenhouseConfigDFUReferences;
-import house.greenhouse.greenhouseconfig.test.config.TestConfig;
+import house.greenhouse.greenhouseconfig.test.config.SplitConfig;
 
 import java.util.Map;
 
@@ -27,10 +27,10 @@ public class V2ToV3FieldsFix extends DataFix {
 								)
 						)
 				).renameField("blue_blocks", "red_blocks")
-				.set("color", dynamic.createString(TestConfig.DEFAULT.color().serialize()));
+				.set("color", dynamic.createString(SplitConfig.CommonValues.DEFAULT.color().serialize()));
 		if (isClient) {
 			return newDynamic
-					.set("client_color", dynamic.createString(TestConfig.ClientConfigValues.DEFAULT.color().serialize()));
+					.set("client_color", dynamic.createString(SplitConfig.ClientValues.DEFAULT.color().serialize()));
 		}
 		return newDynamic;
 	}
