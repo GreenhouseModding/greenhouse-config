@@ -71,9 +71,16 @@ public record TestConfig(int silly,
 					.forGetter(TestConfig::redBlocks),
 			DefaultFieldUtil.codecWithComments(LateHolderSet.codec(Registries.BIOME), "green_biomes", DEFAULT.greenBiomes(), "Biomes that are green", "This is an extra line to show how green they really are!").forGetter(TestConfig::greenBiomes),
 			DefaultFieldUtil.codecWithComments(TextColor.CODEC, "color", DEFAULT.color(), "This is a value that exists on both the client and server.")
-					.forGetter(TestConfig::color),
-			ClientConfigValues.CODEC.forGetter(TestConfig::clientValues)
+					.forGetter(TestConfig::color)
 	).apply(inst, TestConfig::new));
+
+	// FIXME: Remove.
+	public TestConfig(int silly,
+					  Pair<LateHolder<Enchantment>, Opinion> enchantmentOpinion,
+					  LateHolderSet<Block> redBlocks, LateHolderSet<Biome> greenBiomes,
+					  TextColor color) {
+		this(silly, enchantmentOpinion, redBlocks, greenBiomes, color, null);
+	}
 
 	public static StreamCodec<FriendlyByteBuf, TestConfig> streamCodec(TestConfig clientConfig) {
 		return StreamCodec.composite(

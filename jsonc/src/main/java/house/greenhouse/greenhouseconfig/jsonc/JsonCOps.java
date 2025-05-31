@@ -11,10 +11,7 @@ import house.greenhouse.greenhouseconfig.jsonc.internal.JsonCElement;
 import house.greenhouse.greenhouseconfig.jsonc.internal.JsonCObject;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
@@ -40,7 +37,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 
 	@Override
 	public <U> U convertTo(DynamicOps<U> outOps, JsonCElement input) {
-		Map<U, U> map = new HashMap<>();
+		Map<U, U> map = new LinkedHashMap<>();
 		if (input instanceof JsonCObject object) {
 			for (Map.Entry<String, JsonCElement> entry : object.members().entrySet())
 				map.put(outOps.createString(entry.getKey()), JsonOps.INSTANCE.convertTo(outOps, input.json()));
@@ -125,7 +122,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 		if (!(key.json() instanceof JsonPrimitive || !key.json().getAsJsonPrimitive().isString()))
 			return DataResult.error(() -> "key is not a string: " + key, map);
 
-		final Map<String, JsonCElement> output = new HashMap<>();
+		final Map<String, JsonCElement> output = new LinkedHashMap<>();
 		if (map instanceof JsonCObject jsonCObject)
 			output.putAll(jsonCObject.members());
 
@@ -145,7 +142,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 
 		final List<JsonElement> missed = Lists.newArrayList();
 
-		values.entries().forEach(entry -> {
+		values.entries().forEachOrdered(entry -> {
 			final JsonElement key = entry.getFirst().json();
 			if (!(key instanceof JsonPrimitive) || !key.getAsJsonPrimitive().isString()) {
 				missed.add(key);
@@ -223,7 +220,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 	@Override
 	public JsonCElement createMap(final Stream<Pair<JsonCElement, JsonCElement>> map) {
 		final JsonCObject result = new JsonCObject();
-		map.forEach(p -> result.put(p.getFirst().json().getAsString(), p.getSecond()));
+		map.forEachOrdered(p -> result.put(p.getFirst().json().getAsString(), p.getSecond()));
 		return result;
 	}
 
@@ -250,16 +247,14 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 	@Override
 	public JsonCElement createList(final Stream<JsonCElement> input) {
 		final JsonArray result = new JsonArray();
-		input.forEach(commented -> result.add(commented.json()));
+		input.forEachOrdered(commented -> result.add(commented.json()));
 		return new JsonCElement(result);
 	}
 
 	@Override
 	public JsonCElement remove(final JsonCElement input, final String key) {
 		if (input instanceof JsonCObject object) {
-			final JsonCObject result = new JsonCObject();
-			object.members().entrySet().stream().filter(entry -> !Objects.equals(entry.getKey(), key)).forEach(entry -> result.put(entry.getKey(), entry.getValue()));
-			return result;
+			object.remove(key);
 		}
 		return input;
 	}
@@ -271,7 +266,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 
 	@Override
 	public RecordBuilder<JsonCElement> mapBuilder() {
-		return new JsonCRecordBuilder();
+		return new MapBuilder();
 	}
 
 	private static final class ArrayBuilder implements ListBuilder<JsonCElement> {
@@ -336,8 +331,8 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 		}
 	}
 
-	private class JsonCRecordBuilder extends RecordBuilder.AbstractStringBuilder<JsonCElement, JsonCObject> {
-		protected JsonCRecordBuilder() {
+	private class MapBuilder extends RecordBuilder.AbstractStringBuilder<JsonCElement, JsonCObject> {
+		protected MapBuilder() {
 			super(JsonCOps.this);
 		}
 
@@ -345,7 +340,6 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 		protected JsonCObject initBuilder() {
 			return new JsonCObject();
 		}
-
 
 		@Override
 		protected JsonCObject append(String key, JsonCElement value, JsonCObject builder) {
@@ -356,6 +350,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 		@Override
 		protected DataResult<JsonCElement> build(final JsonCObject builder, final JsonCElement prefix) {
 			if (prefix == null || prefix == ops().empty()) {
+				builder.sortForRecordCodec();
 				return DataResult.success(builder);
 			}
 			if (prefix instanceof JsonCObject object) {
