@@ -4,9 +4,9 @@ import com.mojang.brigadier.context.CommandContext;
 import house.greenhouse.greenhouseconfig.api.GreenhouseConfigEvents;
 import house.greenhouse.greenhouseconfig.api.GreenhouseConfigHolder;
 import house.greenhouse.greenhouseconfig.api.GreenhouseConfigSide;
-import house.greenhouse.greenhouseconfig.impl.GreenhouseConfigFabric;
 import house.greenhouse.greenhouseconfig.impl.network.QuerySyncGreenhouseConfigPacket;
 import house.greenhouse.greenhouseconfig.impl.network.SyncGreenhouseConfigPacket;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -38,7 +38,7 @@ public class GreenhouseConfigFabricPlatformHelper implements GHConfigPlatformHel
 
 	@Override
 	public GreenhouseConfigSide getSide() {
-		return GreenhouseConfigFabric.isDedicatedServerContext() ? GreenhouseConfigSide.DEDICATED_SERVER : GreenhouseConfigSide.CLIENT;
+		return FabricLoader.getInstance().getEnvironmentType() == EnvType.SERVER ? GreenhouseConfigSide.DEDICATED_SERVER : GreenhouseConfigSide.CLIENT;
 	}
 
 	@Override
@@ -84,5 +84,15 @@ public class GreenhouseConfigFabricPlatformHelper implements GHConfigPlatformHel
 	@Override
 	public <T> void postDepopulationEvent(GreenhouseConfigHolder<T> holder, T config, GreenhouseConfigSide side) {
 		GreenhouseConfigEvents.POST_DEPOPULATION.invoker().onConfig(holder, config, side);
+	}
+
+	@Override
+	public Class<? extends GHConfigPlatformHelper> type() {
+		return GreenhouseConfigFabricPlatformHelper.class;
+	}
+
+	@Override
+	public GHConfigPlatformHelper get() {
+		return this;
 	}
 }

@@ -2,7 +2,6 @@ package house.greenhouse.greenhouseconfig.impl;
 
 import house.greenhouse.greenhouseconfig.impl.network.QuerySyncGreenhouseConfigPacket;
 import house.greenhouse.greenhouseconfig.impl.network.SyncGreenhouseConfigPacket;
-import house.greenhouse.greenhouseconfig.platform.GreenhouseConfigNeoForgePlatformHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,7 +17,6 @@ public class GreenhouseConfigNeoForge {
 	private static boolean dedicatedServerContext = false;
 
 	public GreenhouseConfigNeoForge(IEventBus eventBus) {
-		GreenhouseConfig.init(new GreenhouseConfigNeoForgePlatformHelper());
 	}
 
 	public static boolean isDedicatedServerContext() {

@@ -84,4 +84,14 @@ public class GreenhouseConfigNeoForgePlatformHelper implements GHConfigPlatformH
 	public <T> void postDepopulationEvent(GreenhouseConfigHolder<T> holder, T config, GreenhouseConfigSide side) {
 		GreenhouseConfigEvents.PostDepopulation.post(holder, config, side);
 	}
+
+	@Override
+	public Class<? extends GHConfigPlatformHelper> type() {
+		return GreenhouseConfigNeoForgePlatformHelper.class;
+	}
+
+	@Override
+	public GHConfigPlatformHelper get() {
+		return this;
+	}
 }

@@ -6,10 +6,12 @@ import house.greenhouse.greenhouseconfig.api.GreenhouseConfigSide;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.nio.file.Path;
+import java.util.ServiceLoader;
 
-public interface GHConfigPlatformHelper {
+public interface GHConfigPlatformHelper extends ServiceLoader.Provider<GHConfigPlatformHelper> {
 
 	/**
 	 * Gets the enum value of the current platform
@@ -94,4 +96,19 @@ public interface GHConfigPlatformHelper {
 	 * @param <T>    The config class.
 	 */
 	<T> void postDepopulationEvent(GreenhouseConfigHolder<T> holder, T config, GreenhouseConfigSide side);
+
+	@ApiStatus.Internal
+	static GHConfigPlatformHelper load() {
+		var loaders = ServiceLoader.load(GHConfigPlatformHelper.class);
+		// Maintain sanity
+		if (loaders.stream().findAny().isEmpty()) {
+			throw new IllegalStateException("No " + GHConfigPlatformHelper.class.getName() + " implementation found");
+		}
+
+		return loaders
+				.stream()
+				.findFirst()
+				.orElseThrow()
+				.get();
+	}
 }

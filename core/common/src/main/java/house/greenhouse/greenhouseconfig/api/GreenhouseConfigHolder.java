@@ -205,7 +205,7 @@ public interface GreenhouseConfigHolder<T> {
 	 * This will return false if the config shouldn't be synced.
 	 */
 	default boolean queryConfig() {
-		return GreenhouseConfig.getPlatform().queryConfig(this);
+		return GreenhouseConfig.getHelper().queryConfig(this);
 	}
 
 	/**
@@ -215,7 +215,7 @@ public interface GreenhouseConfigHolder<T> {
 	 */
 	default void syncConfig(MinecraftServer server) {
 		for (ServerPlayer player : server.getPlayerList().getPlayers())
-			GreenhouseConfig.getPlatform().syncConfig(this, server, player);
+			GreenhouseConfig.getHelper().syncConfig(this, server, player);
 	}
 
 	/**
