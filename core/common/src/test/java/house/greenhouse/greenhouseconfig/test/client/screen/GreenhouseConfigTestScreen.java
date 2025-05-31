@@ -47,10 +47,10 @@ public class GreenhouseConfigTestScreen extends Screen {
 	public GreenhouseConfigTestScreen(Screen previousScreen) {
 		super(Component.literal("Greenhouse Config Test Configuration"));
 		this.previousScreen = previousScreen;
-		TestConfig currentConfig = GreenhouseConfigTest.CONFIG.getUnsynced();
+		TestConfig currentConfig = GreenhouseConfigTest.CONFIG.getUnsyncedOrThrow();
 		builder = new TestConfigBuilder(currentConfig);
-		splitCommonColorWidget = new ColorWidget(0, 0, builder.color, TestConfig.DEFAULT.color());
-		splitClientColorWidget = new ColorWidget(0, 0, builder.clientColor, TestConfig.DEFAULT.clientValues().color());
+		splitCommonColorWidget = new ColorWidget(0, 0, builder.color, TestConfig.CLIENT_DEFAULT.color());
+		splitClientColorWidget = new ColorWidget(0, 0, builder.clientColor, TestConfig.CLIENT_DEFAULT.clientValues().color());
 		saveConfigButton = Button.builder(Component.literal("Save Config"), button -> save()).build();
 		saveConfigButton.active = false;
 	}
@@ -90,8 +90,9 @@ public class GreenhouseConfigTestScreen extends Screen {
 		if (savedMessageTime > 0) {
 			float timeMultiplier = savedMessageTime - partialTick;
 			int alpha = (int) (timeMultiplier * 255.0F / 20.0F);
-			if (alpha > 255)
+			if (alpha > 255) {
 				alpha = 255;
+			}
 			graphics.drawStringWithBackdrop(font, errorMessage == null ? SAVED_CONFIG : errorMessage, (int) ((float) width / 2 - ((float) Minecraft.getInstance().font.width(SAVED_CONFIG) / 2)), height - 40, 0, FastColor.ARGB32.color(alpha, 255, errorMessage == null ? 255 : 0, errorMessage == null ? 255 : 0));
 		}
 	}
@@ -100,8 +101,9 @@ public class GreenhouseConfigTestScreen extends Screen {
 	public void tick() {
 		if (savedMessageTime > 0) {
 			--savedMessageTime;
-			if (savedMessageTime == 0)
+			if (savedMessageTime == 0) {
 				errorMessage = null;
+			}
 		}
 
 		if (splitCommonColorWidget.isDirty()) {
@@ -117,16 +119,18 @@ public class GreenhouseConfigTestScreen extends Screen {
 	@Override
 	protected void insertText(@NotNull String text, boolean overwrite) {
 		if (splitCommonColorWidget.getTextBox().canConsumeInput()) {
-			if (overwrite)
+			if (overwrite) {
 				splitCommonColorWidget.getTextBox().setValue(text);
-			else
+			} else {
 				splitCommonColorWidget.getTextBox().insertText(text);
+			}
 		}
 		if (splitClientColorWidget.getTextBox().canConsumeInput()) {
-			if (overwrite)
+			if (overwrite) {
 				splitClientColorWidget.getTextBox().setValue(text);
-			else
+			} else {
 				splitClientColorWidget.getTextBox().insertText(text);
+			}
 		}
 	}
 
