@@ -6,7 +6,6 @@ import org.gradle.jvm.tasks.Jar
 plugins {
 	id("conventions.loader")
 	id("fabric-loom")
-	id("me.modmuss50.mod-publish-plugin")
 }
 
 var props = Properties.MODULES["core"]!!

@@ -3,7 +3,6 @@ import house.greenhouse.greenhouseconfig.gradle.Versions
 
 plugins {
     id("net.neoforged.moddev")
-    id("me.modmuss50.mod-publish-plugin")
     id("maven-publish")
     id("com.github.johnrengelman.shadow")
 }
