@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import house.greenhouse.greenhouseconfig.api.lang.CommentedValue;
+import net.minecraft.util.Mth;
 
 import java.util.*;
 
@@ -58,10 +59,10 @@ public class JsonCObject extends JsonCElement {
 			return;
 		}
 
-		for (int i = (elements.size() / 2); i < elements.size(); ++ i) {
+		for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++ i) {
 			newMembers.put(elements.get(i).getKey(), elements.get(i).getValue());
 		}
-		for (int i = 0; i < (elements.size() / 2); ++ i) {
+		for (int i = 0; i < Mth.ceil(elements.size() / 2.0F); ++ i) {
 			newMembers.put(elements.get(i).getKey(), elements.get(i).getValue());
 		}
 		members = newMembers;
