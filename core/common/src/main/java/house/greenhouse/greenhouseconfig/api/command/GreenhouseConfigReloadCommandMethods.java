@@ -24,7 +24,7 @@ public class GreenhouseConfigReloadCommandMethods {
 	 */
 	public static int reloadGreenhouseConfig(CommandContext<CommandSourceStack> context, GreenhouseConfigHolder<?> holder) {
 		var config = holder.reloadConfig(s ->
-				context.getSource().sendFailure(Component.translatableWithFallback("command.greenhouseconfig.reload.error", "Error whilst reloading config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(s)))))
+				context.getSource().sendFailure(Component.translatableWithFallback("command.greenhouseconfig.reload.error", "Error whilst reloading config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal(s)))))
 		);
 		if (config == null)
 			return 0;
@@ -46,7 +46,7 @@ public class GreenhouseConfigReloadCommandMethods {
 	 */
 	public static int reloadGreenhouseConfigClient(CommandContext<?> context, GreenhouseConfigHolder<?> holder) {
 		var config = holder.reloadConfig(s ->
-				GreenhouseConfig.getHelper().sendFailureClient(context, Component.translatableWithFallback("command.greenhouseconfig.reload.error", "Failed to reload config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(s)))))
+				GreenhouseConfig.getHelper().sendFailureClient(context, Component.translatableWithFallback("command.greenhouseconfig.reload.error", "Failed to reload config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent.ShowText(Component.literal(s)))))
 		);
 		if (config == null)
 			return 0;
