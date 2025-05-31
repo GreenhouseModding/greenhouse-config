@@ -11,12 +11,15 @@ import house.greenhouse.greenhouseconfig.test.config.TestConfig;
 import java.util.Map;
 
 public class V2ToV3FieldsFix extends DataFix {
-	public V2ToV3FieldsFix(Schema outputSchema) {
+	private final boolean isClient;
+
+	public V2ToV3FieldsFix(Schema outputSchema, boolean isClient) {
 		super(outputSchema, false);
+		this.isClient = isClient;
 	}
 
-	private static Dynamic<?> fixDynamic(Dynamic<?> dynamic) {
-		return dynamic.renameAndFixField("liked_enchantment", "enchantment_opinion", dynamic1 ->
+	private static Dynamic<?> fixDynamic(Dynamic<?> dynamic, boolean isClient) {
+		Dynamic<?> newDynamic = dynamic.renameAndFixField("liked_enchantment", "enchantment_opinion", dynamic1 ->
 						dynamic1.createMap(
 								Map.of(
 										dynamic1.createString("enchantment"), dynamic1,
@@ -24,11 +27,16 @@ public class V2ToV3FieldsFix extends DataFix {
 								)
 						)
 				).renameField("blue_blocks", "red_blocks")
-				.set("color", dynamic.createString(TestConfig.SERVER_DEFAULT.color().serialize()));
+				.set("color", dynamic.createString(TestConfig.DEFAULT.color().serialize()));
+		if (isClient) {
+			return newDynamic
+					.set("client_color", dynamic.createString(TestConfig.ClientConfigValues.DEFAULT.color().serialize()));
+		}
+		return newDynamic;
 	}
 
 	@Override
 	protected TypeRewriteRule makeRule() {
-		return fixTypeEverywhereTyped("Fix v2 fields to v3 fields", getInputSchema().getType(GreenhouseConfigDFUReferences.CONFIG), typed -> typed.update(DSL.remainderFinder(), V2ToV3FieldsFix::fixDynamic));
+		return fixTypeEverywhereTyped("Fix v2 fields to v3 fields", getInputSchema().getType(GreenhouseConfigDFUReferences.CONFIG), typed -> typed.update(DSL.remainderFinder(), dynamic -> fixDynamic(dynamic, isClient)));
 	}
 }

@@ -25,7 +25,11 @@ public class GreenhouseConfigTest {
 	public static final Logger LOG = LoggerFactory.getLogger("Greenhouse Config Test");
 
 	public static final GreenhouseConfigHolder<TestConfig> CONFIG = GreenhouseConfigHolder.split(MOD_ID,
-					TestConfig.CLIENT_CODEC, TestConfig.CLIENT_DEFAULT, TestConfig.SERVER_CODEC, TestConfig.SERVER_DEFAULT, JsonCLang.INSTANCE)
+					TestConfig.CLIENT_CODEC,
+					TestConfig.CLIENT_DEFAULT,
+					TestConfig.SERVER_CODEC,
+					TestConfig.DEFAULT,
+					JsonCLang.INSTANCE)
 			.schemaVersion(3)
 			.networkSynchronized(TestConfig::streamCodec)
 			.lateValues(TestConfig::getLateValues, s -> LOG.error("Error handling config/greenhouseconfig_test.jsonc: {}", s))
@@ -62,7 +66,8 @@ public class GreenhouseConfigTest {
 				Pair<LateHolder<Enchantment>, TestConfig.Opinion> enchantmentOpinion,
 				LateHolderSet<Block> redBlocks,
 				LateHolderSet<net.minecraft.world.level.biome.Biome> greenBiomes,
-				TextColor color, TestConfig.ClientConfigValues clientValues
+				TextColor color,
+				TestConfig.ClientConfigValues clientValues
 		)) {
 			GreenhouseConfigTest.LOG.info("Main Config Values...");
 			GreenhouseConfigTest.LOG.info("Silly: {}", silly);
@@ -71,8 +76,9 @@ public class GreenhouseConfigTest {
 			GreenhouseConfigTest.LOG.info(greenBiomes.toString());
 			GreenhouseConfigTest.LOG.info("Split Config Values...");
 			GreenhouseConfigTest.LOG.info(color.serialize());
-			if (side == GreenhouseConfigSide.CLIENT)
+			if (side == GreenhouseConfigSide.CLIENT) {
 				GreenhouseConfigTest.LOG.info(clientValues.color().serialize());
+			}
 		}
 	}
 
