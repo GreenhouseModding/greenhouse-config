@@ -52,22 +52,6 @@ public class JsonCObject extends JsonCElement {
 		members.remove(name);
 	}
 
-	public void sortForRecordCodec() {
-		Map<String, JsonCElement> newMembers = new LinkedHashMap<>();
-		List<Map.Entry<String, JsonCElement>> elements = new ArrayList<>(members.entrySet());
-		if (members.size() < 5) {
-			return;
-		}
-
-		for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++ i) {
-			newMembers.put(elements.get(i).getKey(), elements.get(i).getValue());
-		}
-		for (int i = 0; i < Mth.ceil(elements.size() / 2.0F); ++ i) {
-			newMembers.put(elements.get(i).getKey(), elements.get(i).getValue());
-		}
-		members = newMembers;
-	}
-
 	@Override
 	public CommentedValue withComment(String[] comments) {
 		return new JsonCObject(members, comments);
