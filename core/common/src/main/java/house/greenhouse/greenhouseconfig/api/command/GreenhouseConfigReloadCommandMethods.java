@@ -46,7 +46,7 @@ public class GreenhouseConfigReloadCommandMethods {
 	 */
 	public static int reloadGreenhouseConfigClient(CommandContext<?> context, GreenhouseConfigHolder<?> holder) {
 		var config = holder.reloadConfig(s ->
-				GreenhouseConfig.getPlatform().sendFailureClient(context, Component.translatableWithFallback("command.greenhouseconfig.reload.error", "Failed to reload config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(s)))))
+				GreenhouseConfig.getHelper().sendFailureClient(context, Component.translatableWithFallback("command.greenhouseconfig.reload.error", "Failed to reload config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()).withStyle(Style.EMPTY.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(s)))))
 		);
 		if (config == null)
 			return 0;
@@ -55,7 +55,7 @@ public class GreenhouseConfigReloadCommandMethods {
 		if (Minecraft.getInstance().level != null) {
 			GreenhouseConfigStorage.individualRegistryPopulation(Minecraft.getInstance().level.registryAccess(), holder, config);
 		}
-		GreenhouseConfig.getPlatform().sendSuccessClient(context, Component.translatableWithFallback("command.greenhouseconfig.reload.success", "Successfully reloading config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()));
+		GreenhouseConfig.getHelper().sendSuccessClient(context, Component.translatableWithFallback("command.greenhouseconfig.reload.success", "Successfully reloading config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()));
 		return 1;
 	}
 }

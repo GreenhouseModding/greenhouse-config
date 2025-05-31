@@ -2,7 +2,6 @@ package house.greenhouse.greenhouseconfig.impl;
 
 import house.greenhouse.greenhouseconfig.impl.network.QuerySyncGreenhouseConfigPacket;
 import house.greenhouse.greenhouseconfig.impl.network.SyncGreenhouseConfigPacket;
-import house.greenhouse.greenhouseconfig.platform.GreenhouseConfigFabricPlatformHelper;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -11,8 +10,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerConfigurationNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 public class GreenhouseConfigFabric implements ModInitializer {
-	private static boolean dedicatedServerContext = false;
-
 	public static void registerPackets() {
 		PayloadTypeRegistry.playS2C().register(SyncGreenhouseConfigPacket.TYPE, SyncGreenhouseConfigPacket.STREAM_CODEC);
 		PayloadTypeRegistry.configurationS2C().register(SyncGreenhouseConfigPacket.TYPE, SyncGreenhouseConfigPacket.STREAM_CODEC);
@@ -33,19 +30,13 @@ public class GreenhouseConfigFabric implements ModInitializer {
 		});
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			if (server.isDedicatedServer()) {
-				dedicatedServerContext = true;
 				GreenhouseConfig.onServerStarting();
 			}
 		});
 	}
 
-	public static boolean isDedicatedServerContext() {
-		return dedicatedServerContext;
-	}
-
 	@Override
 	public void onInitialize() {
-		GreenhouseConfig.init(new GreenhouseConfigFabricPlatformHelper());
 		registerPackets();
 		registerEvents();
 	}

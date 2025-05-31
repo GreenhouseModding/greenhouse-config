@@ -9,10 +9,9 @@ import org.slf4j.LoggerFactory;
 public class GreenhouseConfig {
 	public static final String MOD_ID = "greenhouseconfig";
 	public static final Logger LOG = LoggerFactory.getLogger("Greenhouse Config");
-	private static GHConfigIPlatformHelper PLATFORM;
+	private static GHConfigIPlatformHelper helper;
 
-	public static void init(GHConfigIPlatformHelper platform) {
-		PLATFORM = platform;
+	public static void init() {
 	}
 
 	public static ResourceLocation asResource(String path) {
@@ -27,7 +26,16 @@ public class GreenhouseConfig {
 		GreenhouseConfigStorage.onRegistryPopulation(server.registryAccess());
 	}
 
+	@Deprecated(forRemoval = true, since = "2.1.0+1.21.1")
 	public static GHConfigIPlatformHelper getPlatform() {
-		return PLATFORM;
+		return getHelper();
+	}
+
+	@SuppressWarnings("UnstableApiUsage")
+	public static GHConfigIPlatformHelper getHelper() {
+		if (helper == null) {
+			helper = GHConfigIPlatformHelper.load();
+		}
+		return helper;
 	}
 }

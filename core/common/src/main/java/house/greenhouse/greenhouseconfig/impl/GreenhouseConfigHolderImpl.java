@@ -80,16 +80,16 @@ public class GreenhouseConfigHolderImpl<C, T> implements GreenhouseConfigHolder<
 
 	@Override
 	public T getDefaultValue() {
-		return GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? defaultServerValue : defaultClientValue;
+		return GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? defaultServerValue : defaultClientValue;
 	}
 
 	public C encode(T value) {
-		Codec<T> codec = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? serverCodec : clientCodec;
+		Codec<T> codec = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? serverCodec : clientCodec;
 		return codec.encodeStart(configLang.getOps(), value).getPartialOrThrow(s -> new IllegalStateException("Failed to encode config for mod '" + this.configName + "'. " + s));
 	}
 
 	public DataResult<Pair<T, C>> decode(C value) {
-		Codec<T> codec = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? serverCodec : clientCodec;
+		Codec<T> codec = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? serverCodec : clientCodec;
 		return codec.decode(configLang.getOps(), value);
 	}
 
@@ -122,7 +122,7 @@ public class GreenhouseConfigHolderImpl<C, T> implements GreenhouseConfigHolder<
 
 	@Nullable
 	public C update(int previousVersion, Dynamic<C> configContents) {
-		DataFixer fixer = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? dataFixerServer : dataFixerClient;
+		DataFixer fixer = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? dataFixerServer : dataFixerClient;
 		if (fixer == null)
 			return null;
 		return fixer.update(GreenhouseConfigDFUReferences.CONFIG, configContents, previousVersion, schemaVersion).getValue();

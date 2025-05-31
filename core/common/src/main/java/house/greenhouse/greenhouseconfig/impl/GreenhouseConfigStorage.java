@@ -34,7 +34,7 @@ public class GreenhouseConfigStorage {
 	private static final Map<GreenhouseConfigHolder<?>, Object> UNSYNCED_CLIENT_CONFIGS = new HashMap<>();
 
 	public static <C, T> T getConfig(GreenhouseConfigHolderImpl<C, T> holder, boolean unsynced, boolean shouldThrow) {
-		boolean isServer = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
+		boolean isServer = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
 		if (isServer && !SERVER_CONFIGS.containsKey(holder) || !isServer && (unsynced ? !UNSYNCED_CLIENT_CONFIGS.containsKey(holder) : !CLIENT_CONFIGS.containsKey(holder))) {
 			if (shouldThrow)
 				throw new NullPointerException("Could not find config '" + holder.getConfigName() + "'.");
@@ -44,12 +44,12 @@ public class GreenhouseConfigStorage {
 	}
 
 	public static Set<GreenhouseConfigHolder<?>> getConfigs() {
-		boolean isServer = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
+		boolean isServer = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
 		return isServer ? SERVER_CONFIGS.keySet() : CLIENT_CONFIGS.keySet();
 	}
 
 	public static <T> void updateConfig(GreenhouseConfigHolder<T> holder, T value) {
-		boolean isServer = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
+		boolean isServer = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
 		if (isServer && !SERVER_CONFIGS.containsKey(holder) || !isServer && !CLIENT_CONFIGS.containsKey(holder))
 			throw new UnsupportedOperationException("Can only update config '" + holder.getConfigName() + "' after the initial config loading stage.");
 
@@ -61,7 +61,7 @@ public class GreenhouseConfigStorage {
 
 	public static Collection<SyncGreenhouseConfigPacket> createSyncPackets() {
 		ImmutableList.Builder<SyncGreenhouseConfigPacket> list = ImmutableList.builder();
-		var map = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? SERVER_CONFIGS : CLIENT_CONFIGS;
+		var map = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER ? SERVER_CONFIGS : CLIENT_CONFIGS;
 		for (Map.Entry<GreenhouseConfigHolder<?>, Object> entry : map.entrySet()) {
 			var networkCodec = GreenhouseConfigHolderImpl.cast(entry.getKey()).getNetworkCodec(entry.getKey().get());
 			if (networkCodec != null)
@@ -71,7 +71,7 @@ public class GreenhouseConfigStorage {
 	}
 
 	public static <C, T> T reloadConfig(GreenhouseConfigHolderImpl<C, T> holder, Consumer<String> onError) {
-		File file = GreenhouseConfig.getPlatform().getConfigPath().resolve(holder.getConfigName() + "." + holder.getConfigLang().getFileExtension()).toFile();
+		File file = GreenhouseConfig.getHelper().getConfigPath().resolve(holder.getConfigName() + "." + holder.getConfigLang().getFileExtension()).toFile();
 		try {
 			var lang = holder.getConfigLang();
 			var json = lang.read(new FileReader(file));
@@ -84,7 +84,7 @@ public class GreenhouseConfigStorage {
 				createConfig(holder, value.getPartialOrThrow().getFirst(), file);
 				onError.accept(value.error().orElseThrow().message());
 			}
-			if (GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER)
+			if (GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER)
 				SERVER_CONFIGS.put(holder, value.getPartialOrThrow().getFirst());
 			else {
 				T config = value.getPartialOrThrow().getFirst();
@@ -102,7 +102,7 @@ public class GreenhouseConfigStorage {
 		for (GreenhouseConfigHolder<?> config : GreenhouseConfigHolderRegistry.SERVER_CONFIG_HOLDERS.values()) {
 			var holder = GreenhouseConfigHolderImpl.cast(config);
 			loadConfig(holder, SERVER_CONFIGS::put);
-			GreenhouseConfig.getPlatform().postLoadEvent(holder, holder.get(), GreenhouseConfigSide.DEDICATED_SERVER);
+			GreenhouseConfig.getHelper().postLoadEvent(holder, holder.get(), GreenhouseConfigSide.DEDICATED_SERVER);
 		}
 	}
 
@@ -113,25 +113,25 @@ public class GreenhouseConfigStorage {
 				CLIENT_CONFIGS.put(confHolder, conf);
 				UNSYNCED_CLIENT_CONFIGS.put(confHolder, conf);
 			});
-			GreenhouseConfig.getPlatform().postLoadEvent(holder, holder.get(), GreenhouseConfigSide.CLIENT);
+			GreenhouseConfig.getHelper().postLoadEvent(holder, holder.get(), GreenhouseConfigSide.CLIENT);
 		}
 	}
 
 	public static void onRegistryPopulation(HolderLookup.Provider registries) {
-		boolean isServer = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
+		boolean isServer = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
 		Map<GreenhouseConfigHolder<?>, Object> configs = isServer ? SERVER_CONFIGS : CLIENT_CONFIGS;
 		for (Map.Entry<GreenhouseConfigHolder<?>, Object> entry : configs.entrySet()) {
 			GreenhouseConfigHolderImpl.cast(entry.getKey()).postRegistryPopulation(registries, entry.getValue());
-			GreenhouseConfig.getPlatform().postPopulationEvent((GreenhouseConfigHolder<Object>) entry.getKey(), entry.getValue(), GreenhouseConfig.getPlatform().getSide());
+			GreenhouseConfig.getHelper().postPopulationEvent((GreenhouseConfigHolder<Object>) entry.getKey(), entry.getValue(), GreenhouseConfig.getHelper().getSide());
 		}
 	}
 
 	public static void onRegistryDepopulation() {
-		boolean isServer = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
+		boolean isServer = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
 		Map<GreenhouseConfigHolder<?>, Object> configs = isServer ? SERVER_CONFIGS : CLIENT_CONFIGS;
 		for (Map.Entry<GreenhouseConfigHolder<?>, Object> entry : configs.entrySet()) {
 			GreenhouseConfigHolderImpl.cast(entry.getKey()).postRegistryDepopulation(entry.getValue());
-			GreenhouseConfig.getPlatform().postDepopulationEvent((GreenhouseConfigHolder<Object>) entry.getKey(), entry.getValue(), GreenhouseConfig.getPlatform().getSide());
+			GreenhouseConfig.getHelper().postDepopulationEvent((GreenhouseConfigHolder<Object>) entry.getKey(), entry.getValue(), GreenhouseConfig.getHelper().getSide());
 		}
 	}
 
@@ -141,11 +141,11 @@ public class GreenhouseConfigStorage {
 
 	public static void individualRegistryPopulation(HolderLookup.Provider registries, GreenhouseConfigHolder<?> holder, Object value) {
 		GreenhouseConfigHolderImpl.cast(holder).postRegistryPopulation(registries, value);
-		GreenhouseConfig.getPlatform().postPopulationEvent((GreenhouseConfigHolder<Object>) holder, value, GreenhouseConfig.getPlatform().getSide());
+		GreenhouseConfig.getHelper().postPopulationEvent((GreenhouseConfigHolder<Object>) holder, value, GreenhouseConfig.getHelper().getSide());
 	}
 
 	private static <C, T> void loadConfig(GreenhouseConfigHolderImpl<C, T> holder, BiConsumer<GreenhouseConfigHolder<?>, Object> consumer) {
-		File file = GreenhouseConfig.getPlatform().getConfigPath().resolve(holder.getConfigName() + "." + holder.getConfigLang().getFileExtension()).toFile();
+		File file = GreenhouseConfig.getHelper().getConfigPath().resolve(holder.getConfigName() + "." + holder.getConfigLang().getFileExtension()).toFile();
 
 		if (file.exists()) {
 			try {
@@ -195,11 +195,11 @@ public class GreenhouseConfigStorage {
 
 			if (folderCount > 1) {
 				String folderName = holder.getConfigName().substring(0, holder.getConfigName().lastIndexOf("/"));
-				Path path = GreenhouseConfig.getPlatform().getConfigPath().resolve(folderName);
+				Path path = GreenhouseConfig.getHelper().getConfigPath().resolve(folderName);
 				Files.createDirectories(path);
 			}
 
-			File file = GreenhouseConfig.getPlatform().getConfigPath().resolve(holder.getConfigName() + "." + holder.getConfigLang().getFileExtension()).toFile();
+			File file = GreenhouseConfig.getHelper().getConfigPath().resolve(holder.getConfigName() + "." + holder.getConfigLang().getFileExtension()).toFile();
 			if (!file.exists())
 				Files.createFile(file.toPath());
 			createConfig(holder, config, file);

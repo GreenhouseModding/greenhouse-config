@@ -18,7 +18,7 @@ public class TestCommand {
 	public static int printClientText(CommandContext<?> context, GreenhouseConfigHolder<?> holder) {
 		if (!(holder.get() instanceof TestConfig config))
 			return 0;
-		GreenhouseConfig.getPlatform().sendSuccessClient(context, Component.literal(config.clientValues().color().serialize()).withColor(config.clientValues().color().getValue()));
+		GreenhouseConfig.getHelper().sendSuccessClient(context, Component.literal(config.clientValues().color().serialize()).withColor(config.clientValues().color().getValue()));
 		return 1;
 	}
 }
