@@ -16,42 +16,42 @@ object Properties {
 			"Greenhouse Config",
 			"greenhouseconfig",
 			"A niche codec based config system.",
-			"2.1.0"
+			"2.2.0"
 		),
 		"jsonc" to ModuleProperties(
 			"jsonc",
 			"Greenhouse Config - JSONC",
 			"greenhouseconfig_jsonc",
 			"JSONC language support for Greenhouse Config.",
-			"1.0.2"
+			"1.1.0"
 		),
 		"night-config" to ModuleProperties(
 			"night-config",
 			"Greenhouse Config - Night Config",
 			"greenhouseconfig_night_config",
 			"Night Config implementation for Greenhouse Config.",
-			"1.0.2"
+			"1.1.0"
 		),
 		"toml" to ModuleProperties(
 			"toml",
 			"Greenhouse Config - TOML",
 			"greenhouseconfig_toml",
 			"TOML language support for Greenhouse Config.",
-			"1.0.2"
+			"1.1.0"
 		),
 		"yaml" to ModuleProperties(
 			"yaml",
 			"Greenhouse Config - YAML",
 			"greenhouseconfig_yaml",
 			"YAML language support for Greenhouse Config.",
-			"1.0.2"
+			"1.1.0"
 		),
 		"hocon" to ModuleProperties(
 			"hocon",
 			"Greenhouse Config - HOCON",
 			"greenhouseconfig_hocon",
 			"HOCON language support for Greenhouse Config.",
-			"1.0.2"
+			"1.1.0"
 		),
 	)
 
