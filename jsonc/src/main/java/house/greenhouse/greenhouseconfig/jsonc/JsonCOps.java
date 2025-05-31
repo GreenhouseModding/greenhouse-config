@@ -372,7 +372,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 			if (builder.members().size() < 5)
 				return builder;
 
-			JsonCObject newObject = new JsonCObject(builder.members());
+			JsonCObject newObject = new JsonCObject(builder.comments());
 			List<Map.Entry<String, JsonCElement>> elements = new ArrayList<>(builder.members().entrySet());
 
 			for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++ i) {
