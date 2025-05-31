@@ -38,6 +38,7 @@ dependencies {
 	testImplementation(project(":hocon", configuration = "shaded"))
 }
 
+// TODO: Split sources test source-sets.
 loom {
 	val aw = file("src/main/resources/${props.modId}.accesswidener");
 	if (aw.exists())
