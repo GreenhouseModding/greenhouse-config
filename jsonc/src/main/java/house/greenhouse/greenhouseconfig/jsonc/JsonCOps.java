@@ -7,8 +7,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
-import house.greenhouse.greenhouseconfig.jsonc.internal.JsonCElement;
-import house.greenhouse.greenhouseconfig.jsonc.internal.JsonCObject;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +38,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 	public <U> U convertTo(DynamicOps<U> outOps, JsonCElement input) {
 		Map<U, U> map = new LinkedHashMap<>();
 		if (input instanceof JsonCObject object) {
-			for (Map.Entry<String, JsonCElement> entry : object.members().entrySet())
+			for (Map.Entry<String, JsonCElement> entry : object.toMap().entrySet())
 				map.put(outOps.createString(entry.getKey()), JsonOps.INSTANCE.convertTo(outOps, input.json()));
 			return outOps.createMap(map);
 		}
@@ -125,7 +123,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 
 		final Map<String, JsonCElement> output = new LinkedHashMap<>();
 		if (map instanceof JsonCObject jsonCObject)
-			output.putAll(jsonCObject.members());
+			output.putAll(jsonCObject.toMap());
 
 		output.put(key.json().getAsString(), value);
 
@@ -139,7 +137,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 
 		final JsonCObject output = new JsonCObject(map != null ? map.comments() : new String[]{});
 		if (map instanceof JsonCObject jsonCObject)
-			output.putAll(jsonCObject.members());
+			output.putAll(jsonCObject.toMap());
 
 		final List<JsonElement> missed = Lists.newArrayList();
 
@@ -163,7 +161,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 		if (!(input instanceof JsonCObject object))
 			return DataResult.error(() -> "Not a JSON object: " + input);
 
-		return DataResult.success(object.members().entrySet().stream().map(entry -> Pair.of(createString(entry.getKey()), entry.getValue())));
+		return DataResult.success(object.toMap().entrySet().stream().map(entry -> Pair.of(createString(entry.getKey()), entry.getValue())));
 	}
 
 	@Override
@@ -172,7 +170,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 			return DataResult.error(() -> "Not a JSON object: " + input);
 
 		return DataResult.success(c -> {
-			for (final Map.Entry<String, JsonCElement> entry : object.members().entrySet()) {
+			for (final Map.Entry<String, JsonCElement> entry : object.toMap().entrySet()) {
 				c.accept(createString(entry.getKey()), entry.getValue());
 			}
 		});
@@ -188,7 +186,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 			@Override
 			public JsonCElement get(final JsonCElement key) {
 				if (key.json() instanceof JsonPrimitive primitive && primitive.isString()) {
-					final JsonCElement element = object.members().get((primitive.getAsString()));
+					final JsonCElement element = object.toMap().get((primitive.getAsString()));
 					if (element == null || element.json() instanceof JsonNull)
 						return null;
 					return element;
@@ -199,7 +197,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 			@Nullable
 			@Override
 			public JsonCElement get(final String key) {
-				final JsonCElement element = object.members().get(key);
+				final JsonCElement element = object.toMap().get(key);
 				if (element == null || element.json() instanceof JsonNull) {
 					return null;
 				}
@@ -208,7 +206,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 
 			@Override
 			public Stream<Pair<JsonCElement, JsonCElement>> entries() {
-				return object.members().entrySet().stream().map(e -> Pair.of(createString(e.getKey()), e.getValue()));
+				return object.toMap().entrySet().stream().map(e -> Pair.of(createString(e.getKey()), e.getValue()));
 			}
 
 			@Override
@@ -356,10 +354,10 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 			}
 			if (prefix instanceof JsonCObject object) {
 				final JsonCObject result = new JsonCObject();
-				for (final Map.Entry<String, JsonCElement> entry : object.members().entrySet()) {
+				for (final Map.Entry<String, JsonCElement> entry : object.toMap().entrySet()) {
 					result.put(entry.getKey(), entry.getValue());
 				}
-				for (final Map.Entry<String, JsonCElement> entry : newObject.members().entrySet()) {
+				for (final Map.Entry<String, JsonCElement> entry : newObject.toMap().entrySet()) {
 					result.put(entry.getKey(), entry.getValue());
 				}
 				return DataResult.success(result);
@@ -369,11 +367,11 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 
 		// Account for a DFU bug where RecordCodecBuilder swaps the half-point at which members are encoded.
 		private static JsonCObject sortForRecordCodec(JsonCObject builder) {
-			if (builder.members().size() < 5)
+			if (builder.toMap().size() < 5)
 				return builder;
 
 			JsonCObject newObject = new JsonCObject(builder.comments());
-			List<Map.Entry<String, JsonCElement>> elements = new ArrayList<>(builder.members().entrySet());
+			List<Map.Entry<String, JsonCElement>> elements = new ArrayList<>(builder.toMap().entrySet());
 
 			for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++ i) {
 				newObject.put(elements.get(i).getKey(), elements.get(i).getValue());

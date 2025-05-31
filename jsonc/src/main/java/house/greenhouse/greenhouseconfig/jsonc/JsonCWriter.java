@@ -1,4 +1,4 @@
-package house.greenhouse.greenhouseconfig.jsonc.internal;
+package house.greenhouse.greenhouseconfig.jsonc;
 
 import com.google.gson.*;
 
@@ -35,7 +35,7 @@ public class JsonCWriter implements Closeable, Flushable {
 
 		if (element instanceof JsonCObject jsonCObject) {
 			begin("{");
-			for (Map.Entry<String, JsonCElement> entry : jsonCObject.members().entrySet()) {
+			for (Map.Entry<String, JsonCElement> entry : jsonCObject.toMap().entrySet()) {
 				key = entry.getKey();
 				write(entry.getValue());
 			}

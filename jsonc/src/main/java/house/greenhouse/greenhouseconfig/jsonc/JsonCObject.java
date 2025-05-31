@@ -1,10 +1,9 @@
-package house.greenhouse.greenhouseconfig.jsonc.internal;
+package house.greenhouse.greenhouseconfig.jsonc;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import house.greenhouse.greenhouseconfig.api.lang.CommentedValue;
-import net.minecraft.util.Mth;
 
 import java.util.*;
 
@@ -36,7 +35,7 @@ public class JsonCObject extends JsonCElement {
 		}
 	}
 
-	public Map<String, JsonCElement> members() {
+	public Map<String, JsonCElement> toMap() {
 		return ImmutableMap.copyOf(members);
 	}
 

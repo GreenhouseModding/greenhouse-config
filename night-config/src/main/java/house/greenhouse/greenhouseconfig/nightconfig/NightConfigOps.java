@@ -187,7 +187,7 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
     public DataResult<Stream<Pair<NightConfigElement, NightConfigElement>>> getMapValues(NightConfigElement input) {
         if (!(input instanceof NightConfigObject object)) return DataResult.error(() -> "Input is not a toml object");
         return DataResult.success(
-            object.toElementMap().entrySet().stream().map(e -> Pair.of(createString(e.getKey()), e.getValue())));
+            object.toMap().entrySet().stream().map(e -> Pair.of(createString(e.getKey()), e.getValue())));
     }
 
     @Override
@@ -195,7 +195,7 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
         NightConfigElement input) {
         if (!(input instanceof NightConfigObject object)) return DataResult.error(() -> "Input is not a toml object");
         return DataResult.success(c -> {
-            for (var entry : object.toElementMap().entrySet()) {
+            for (var entry : object.toMap().entrySet()) {
                 c.accept(createString(entry.getKey()), entry.getValue());
             }
         });
@@ -204,7 +204,7 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
     @Override
     public DataResult<MapLike<NightConfigElement>> getMap(NightConfigElement input) {
         if (!(input instanceof NightConfigObject object)) return DataResult.error(() -> "Input is not a toml object");
-        final Map<String, NightConfigElement> map = object.toElementMap();
+        final Map<String, NightConfigElement> map = object.toMap();
         return DataResult.success(new MapLike<>() {
 			@Override
 			public @Nullable NightConfigElement get(NightConfigElement key) {
@@ -284,10 +284,10 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
 			}
 			if (prefix instanceof NightConfigObject object) {
 				final NightConfigObject result = new NightConfigObject();
-				for (final Map.Entry<String, NightConfigElement> entry : object.toElementMap().entrySet()) {
+				for (final Map.Entry<String, NightConfigElement> entry : object.toMap().entrySet()) {
 					result.put(entry.getKey(), entry.getValue());
 				}
-				for (final Map.Entry<String, NightConfigElement> entry : newObject.toElementMap().entrySet()) {
+				for (final Map.Entry<String, NightConfigElement> entry : newObject.toMap().entrySet()) {
 					result.put(entry.getKey(), entry.getValue());
 				}
 				return DataResult.success(result);
@@ -297,11 +297,11 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
 
 		// Account for a DFU bug where RecordCodecBuilder swaps the half-point at which members are encoded.
 		private static NightConfigObject sortForRecordCodec(NightConfigObject builder) {
-			if (builder.toElementMap().size() < 5)
+			if (builder.toMap().size() < 5)
 				return builder;
 
 			NightConfigObject newObject = new NightConfigObject(builder.getComments());
-			List<Map.Entry<String, NightConfigElement>> elements = new ArrayList<>(builder.toElementMap().entrySet());
+			List<Map.Entry<String, NightConfigElement>> elements = new ArrayList<>(builder.toMap().entrySet());
 
 			for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++ i) {
 				newObject.put(elements.get(i).getKey(), elements.get(i).getValue());
