@@ -1,8 +1,4 @@
 ## Changes
-- `get` and `getUnsynced` methods will now return null instead of throwing an exception.
-- Added `getOrThrow` and `getUnsyncedOrThrow` methods to GreenhouseConfigHolder.
-- LateHolders no longer throw when unable to bind. Use the onException consumer to handle errors instead if necessary.
-
-## Bugfixes
-- Fixed potential race conditions on Fabric with platform helper.
-- Fixed configs not writing fields in the correct order.
+- Added `OrderCorrectedRecordCodec`, which will correct the field order of your record codec if it encodes more than 4 fields.
+- Removed automatic order correction from JsonCOps and NightConfigOps .
+  - These changes were made due to an edge case where using combination MapCodecs with multiple fields would scramble the position of the fields.
