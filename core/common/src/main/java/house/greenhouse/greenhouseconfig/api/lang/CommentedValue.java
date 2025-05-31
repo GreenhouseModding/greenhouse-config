@@ -2,6 +2,7 @@ package house.greenhouse.greenhouseconfig.api.lang;
 
 import com.mojang.serialization.Codec;
 import house.greenhouse.greenhouseconfig.impl.codec.CommentedCodec;
+import org.jetbrains.annotations.ApiStatus;
 
 /**
  * A value that can have a comment attached to it.
@@ -27,5 +28,6 @@ public interface CommentedValue {
 	 * @param comments the comments the resulting value should have attached.
 	 * @return the new value with comments attached.
 	 */
+	@ApiStatus.Internal
 	CommentedValue withComment(String[] comments);
 }
