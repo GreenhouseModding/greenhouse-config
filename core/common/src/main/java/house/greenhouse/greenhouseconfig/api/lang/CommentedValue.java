@@ -28,6 +28,5 @@ public interface CommentedValue {
 	 * @param comments the comments the resulting value should have attached.
 	 * @return the new value with comments attached.
 	 */
-	@ApiStatus.Internal
 	CommentedValue withComment(String[] comments);
 }

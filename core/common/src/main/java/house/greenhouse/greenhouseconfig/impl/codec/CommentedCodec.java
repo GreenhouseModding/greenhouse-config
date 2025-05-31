@@ -20,7 +20,7 @@ public class CommentedCodec<T> implements Codec<T> {
 		return baseCodec.decode(ops, input);
 	}
 
-	@SuppressWarnings({"unchecked", "UnstableApiUsage"})
+	@SuppressWarnings("unchecked")
 	@Override
 	public <TOps> DataResult<TOps> encode(T input, DynamicOps<TOps> ops, TOps prefix) {
 		DataResult<TOps> result = baseCodec.encode(input, ops, prefix);
