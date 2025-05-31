@@ -1,6 +1,5 @@
 ## Changes
-- Deprecated most previous methods, and updated them with more simplistic implementation.
-
-## Bugfixes
-- Fixed a crash when defaulted fields cannot resolve into a result or partial.
-- Fixed Greenhouse Config YAML not having an icon.
+- `get` and `getUnsynced` methods will now return null instead of throwing an exception.
+- Added `getOrThrow` and `getUnsyncedOrThrow` methods to GreenhouseConfigHolder.
+- LateHolders no longer throw when unable to bind. Use the onException consumer to handle errors instead if necessary.
+-

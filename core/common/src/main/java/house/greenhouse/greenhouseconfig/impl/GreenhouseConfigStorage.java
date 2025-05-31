@@ -33,10 +33,12 @@ public class GreenhouseConfigStorage {
 	private static final Map<GreenhouseConfigHolder<?>, Object> CLIENT_CONFIGS = new HashMap<>();
 	private static final Map<GreenhouseConfigHolder<?>, Object> UNSYNCED_CLIENT_CONFIGS = new HashMap<>();
 
-	public static <C, T> T getConfig(GreenhouseConfigHolderImpl<C, T> holder, boolean unsynced) {
+	public static <C, T> T getConfig(GreenhouseConfigHolderImpl<C, T> holder, boolean unsynced, boolean shouldThrow) {
 		boolean isServer = GreenhouseConfig.getPlatform().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
 		if (isServer && !SERVER_CONFIGS.containsKey(holder) || !isServer && (unsynced ? !UNSYNCED_CLIENT_CONFIGS.containsKey(holder) : !CLIENT_CONFIGS.containsKey(holder))) {
-			throw new NullPointerException("Could not find config '" + holder.getConfigName() + "'.");
+			if (shouldThrow)
+				throw new NullPointerException("Could not find config '" + holder.getConfigName() + "'.");
+			return null;
 		}
 		return isServer ? (T) SERVER_CONFIGS.get(holder) : unsynced ? (T) UNSYNCED_CLIENT_CONFIGS.get(holder) : (T) CLIENT_CONFIGS.get(holder);
 	}

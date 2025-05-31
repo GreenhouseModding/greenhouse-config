@@ -35,7 +35,7 @@ public class LateHolderImpl<T> implements LateHolder<T> {
 		if (registry.get(key).isEmpty())
 			onException.accept("Could not get value " + key.location() + " from registry " + key.registry() + ".");
 
-		value = registry.getOrThrow(key);
+		value = registry.get(key).orElse(null);
 	}
 
 	@Override
