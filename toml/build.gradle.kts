@@ -3,7 +3,6 @@ import house.greenhouse.greenhouseconfig.gradle.Versions
 
 plugins {
 	id("net.neoforged.moddev")
-	id("me.modmuss50.mod-publish-plugin")
 	id("maven-publish")
 	id("com.github.johnrengelman.shadow")
 }
@@ -45,14 +44,6 @@ dependencies {
 	api(project(":night-config"))
 	jijInclude(project(":night-config")) {
 		isTransitive = false
-	}
-}
-
-publishMods {
-	github {
-		file.set(tasks.named<Jar>("shadowJar").get().archiveFile)
-		accessToken = providers.environmentVariable("GITHUB_TOKEN")
-		parent(project(":common").tasks.named("publishGithub"))
 	}
 }
 

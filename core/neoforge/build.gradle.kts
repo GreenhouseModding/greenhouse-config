@@ -6,7 +6,6 @@ import org.gradle.jvm.tasks.Jar
 plugins {
 	id("conventions.loader")
 	id("net.neoforged.moddev")
-	id("me.modmuss50.mod-publish-plugin")
 }
 
 var props = Properties.MODULES["core"]!!
@@ -69,13 +68,5 @@ tasks {
 		filesMatching("*.mixins.json") {
 			filter<LineContains>("negate" to true, "contains" to setOf("refmap"))
 		}
-	}
-}
-
-publishMods {
-	github {
-		file.set(tasks.named<Jar>("jar").get().archiveFile)
-		accessToken = providers.environmentVariable("GITHUB_TOKEN")
-		parent(project(":common").tasks.named("publishGithub"))
 	}
 }

@@ -6,7 +6,6 @@ import org.gradle.jvm.tasks.Jar
 plugins {
 	id("conventions.loader")
 	id("fabric-loom")
-	id("me.modmuss50.mod-publish-plugin")
 }
 
 var props = Properties.MODULES["core"]!!
@@ -72,14 +71,6 @@ loom {
 			ideConfigGenerated(true)
 			vmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
 		}
-	}
-}
-
-publishMods {
-	github {
-		file.set(tasks.named<Jar>("remapJar").get().archiveFile)
-		accessToken = providers.environmentVariable("GITHUB_TOKEN")
-		parent(project(":common").tasks.named("publishGithub"))
 	}
 }
 
