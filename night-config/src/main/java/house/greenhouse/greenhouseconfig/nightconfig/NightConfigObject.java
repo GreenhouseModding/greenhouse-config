@@ -57,7 +57,7 @@ public final class NightConfigObject extends NightConfigElement {
         config.putAll(object.getConfig());
     }
 
-    public Map<String, NightConfigElement> toElementMap() {
+    public Map<String, NightConfigElement> toMap() {
         Map<String, NightConfigElement> elementMap = new LinkedHashMap<>();
         for (var entry : config.entrySet()) {
             String comment = entry.getComment();

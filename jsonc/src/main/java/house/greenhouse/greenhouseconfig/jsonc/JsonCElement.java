@@ -1,4 +1,4 @@
-package house.greenhouse.greenhouseconfig.jsonc.internal;
+package house.greenhouse.greenhouseconfig.jsonc;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
