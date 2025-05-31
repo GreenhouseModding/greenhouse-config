@@ -303,10 +303,10 @@ public final class NightConfigOps implements DynamicOps<NightConfigElement> {
 			NightConfigObject newObject = new NightConfigObject(builder.getComments());
 			List<Map.Entry<String, NightConfigElement>> elements = new ArrayList<>(builder.toMap().entrySet());
 
-			for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++ i) {
+			for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++i) {
 				newObject.put(elements.get(i).getKey(), elements.get(i).getValue());
 			}
-			for (int i = 0; i < Mth.ceil(elements.size() / 2.0F); ++ i) {
+			for (int i = 0; i < Mth.ceil(elements.size() / 2.0F); ++i) {
 				newObject.put(elements.get(i).getKey(), elements.get(i).getValue());
 			}
 
