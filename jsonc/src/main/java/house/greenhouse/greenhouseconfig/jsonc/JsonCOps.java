@@ -7,7 +7,6 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -348,39 +347,20 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 
 		@Override
 		protected DataResult<JsonCElement> build(final JsonCObject builder, final JsonCElement prefix) {
-			JsonCObject newObject = sortForRecordCodec(builder);
 			if (prefix == null || prefix == ops().empty()) {
-				return DataResult.success(newObject);
+				return DataResult.success(builder);
 			}
 			if (prefix instanceof JsonCObject object) {
 				final JsonCObject result = new JsonCObject();
 				for (final Map.Entry<String, JsonCElement> entry : object.toMap().entrySet()) {
 					result.put(entry.getKey(), entry.getValue());
 				}
-				for (final Map.Entry<String, JsonCElement> entry : newObject.toMap().entrySet()) {
+				for (final Map.Entry<String, JsonCElement> entry : builder.toMap().entrySet()) {
 					result.put(entry.getKey(), entry.getValue());
 				}
 				return DataResult.success(result);
 			}
 			return DataResult.error(() -> "mergeToMap called with not a map: " + prefix, prefix);
-		}
-
-		// Account for a DFU bug where RecordCodecBuilder swaps the half-point at which members are encoded.
-		private static JsonCObject sortForRecordCodec(JsonCObject builder) {
-			if (builder.toMap().size() < 5)
-				return builder;
-
-			JsonCObject newObject = new JsonCObject(builder.comments());
-			List<Map.Entry<String, JsonCElement>> elements = new ArrayList<>(builder.toMap().entrySet());
-
-			for (int i = Mth.ceil(elements.size() / 2.0F); i < elements.size(); ++i) {
-				newObject.put(elements.get(i).getKey(), elements.get(i).getValue());
-			}
-			for (int i = 0; i < Mth.ceil(elements.size() / 2.0F); ++i) {
-				newObject.put(elements.get(i).getKey(), elements.get(i).getValue());
-			}
-
-			return newObject;
 		}
 	}
 }
