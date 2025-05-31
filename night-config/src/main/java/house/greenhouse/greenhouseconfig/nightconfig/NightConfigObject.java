@@ -38,8 +38,19 @@ public final class NightConfigObject extends NightConfigElement {
     }
 
     public CommentedConfig getConfig() {
-        return CommentedConfig.copy(config, LinkedHashMap::new);
+        return recurseComments(CommentedConfig.copy(config, LinkedHashMap::new), config);
     }
+
+	// https://github.com/TheElectronWill/night-config/issues/196
+	private CommentedConfig recurseComments(CommentedConfig newConfig, CommentedConfig oldConfig) {
+		for (CommentedConfig.Entry entry : oldConfig.entrySet()) {
+			newConfig.setComment(entry.getKey(), entry.getComment());
+			if (entry.getValue() instanceof CommentedConfig innerConfig) {
+				recurseComments(innerConfig, oldConfig.get(entry.getKey()));
+			}
+		}
+		return newConfig;
+	}
 
     public void put(String name, NightConfigElement element) {
         switch (element) {
@@ -68,7 +79,7 @@ public final class NightConfigObject extends NightConfigElement {
                 comments = new String[0];
             }
             elementMap.put(entry.getKey(), switch (entry.getValue()) {
-                case CommentedConfig c -> new NightConfigObject(CommentedConfig.copy(c, LinkedHashMap::new), comments);
+                case CommentedConfig c -> new NightConfigObject(recurseComments(CommentedConfig.copy(c, LinkedHashMap::new), c), comments);
                 case List<?> list -> new NightConfigList(new ArrayList<>(list), comments);
                 default -> new NightConfigValue(entry.getValue(), comments);
             });
@@ -77,14 +88,7 @@ public final class NightConfigObject extends NightConfigElement {
     }
 
     public NightConfigObject without(String key) {
-        CommentedConfig newConfig = InMemoryCommentedFormat.defaultInstance().createConfig(LinkedHashMap::new);
-        for (var entry : config.entrySet()) {
-            if (!entry.getKey().equals(key)) {
-                newConfig.set(entry.getKey(), entry.getValue());
-                newConfig.setComment(entry.getKey(), entry.getComment());
-            }
-        }
-        return new NightConfigObject(newConfig, comments);
+        return new NightConfigObject(getConfig().remove(key), comments);
     }
 
     @Override
