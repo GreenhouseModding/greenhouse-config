@@ -8,11 +8,13 @@ import house.greenhouse.greenhouseconfig.api.util.LateHolder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class LateHolderCodec<E> implements Codec<LateHolder<E>> {
+	@NotNull
 	private final ResourceKey<? extends Registry<E>> registryKey;
 
-	public LateHolderCodec(ResourceKey<? extends Registry<E>> registry) {
+	public LateHolderCodec(@NotNull ResourceKey<? extends Registry<E>> registry) {
 		registryKey = registry;
 	}
 

@@ -1,3 +1,5 @@
 ## Changes
-- Updated to 1.21.5.
-- Removed 2.0.0's deprecated methods.
+- `get` and `getUnsynced` methods will now return null instead of throwing an exception.
+- Added `getOrThrow` and `getUnsyncedOrThrow` methods to GreenhouseConfigHolder.
+- LateHolders no longer throw when unable to bind. Use the onException consumer to handle errors instead if necessary.
+-

@@ -143,8 +143,9 @@ public interface GreenhouseConfigHolder<T> {
 	 *
 	 * @return The config.
 	 */
+	@Nullable
 	default T get() {
-		return GreenhouseConfigStorage.getConfig((GreenhouseConfigHolderImpl<?, T>) this, false);
+		return GreenhouseConfigStorage.getConfig((GreenhouseConfigHolderImpl<?, T>) this, false, false);
 	}
 
 	/**
@@ -152,9 +153,32 @@ public interface GreenhouseConfigHolder<T> {
 	 * Useful for config screens that should obtain the client-sided value.
 	 *
 	 * @return The config.
+	 * @throws NullPointerException If the unsynced config is not present.
 	 */
+	default T getOrThrow() {
+		return GreenhouseConfigStorage.getConfig((GreenhouseConfigHolderImpl<?, T>) this, false, true);
+	}
+
+	/**
+	 * Gets the config of this holder without any server-sided changes.
+	 * Useful for config screens that should obtain the client-sided value.
+	 *
+	 * @return The unsynced config.
+	 */
+	@Nullable
 	default T getUnsynced() {
-		return GreenhouseConfigStorage.getConfig((GreenhouseConfigHolderImpl<?, T>) this, true);
+		return GreenhouseConfigStorage.getConfig((GreenhouseConfigHolderImpl<?, T>) this, true, false);
+	}
+
+	/**
+	 * Gets the config of this holder without any server-sided changes.
+	 * Useful for config screens that should obtain the client-sided value.
+	 *
+	 * @return The unsynced config.
+	 * @throws NullPointerException If the unsynced config is not present.
+	 */
+	default T getUnsyncedOrThrow() {
+		return GreenhouseConfigStorage.getConfig((GreenhouseConfigHolderImpl<?, T>) this, true, true);
 	}
 
 	/**
@@ -366,7 +390,7 @@ public interface GreenhouseConfigHolder<T> {
 			if (defaultServerValue == null && defaultClientValue == null)
 				throw new NullPointerException("Attempted to build config without a default value.");
 
-			GreenhouseConfigHolderImpl<?, T> config = getTGreenhouseConfigHolder();
+			GreenhouseConfigHolderImpl<?, T> config = getGreenhouseConfigHolder();
 
 			if (serverCodec != null)
 				GreenhouseConfigHolderRegistry.registerServerConfig(configName, config);
@@ -377,7 +401,7 @@ public interface GreenhouseConfigHolder<T> {
 			return config;
 		}
 
-		private @NotNull GreenhouseConfigHolderImpl<?, T> getTGreenhouseConfigHolder() {
+		private @NotNull GreenhouseConfigHolderImpl<?, T> getGreenhouseConfigHolder() {
 			BiConsumer<HolderLookup.Provider, T> populationCallback = latePopulationCallback != null && postRegistryPopulationCallback != null ? latePopulationCallback.andThen(postRegistryPopulationCallback) : latePopulationCallback != null ? latePopulationCallback : postRegistryPopulationCallback;
 			Consumer<T> depopulationCallback = lateDepopulationCallback != null && postRegistryDepopulationCallback != null ? lateDepopulationCallback.andThen(postRegistryDepopulationCallback) : lateDepopulationCallback != null ? lateDepopulationCallback : postRegistryDepopulationCallback;
 
