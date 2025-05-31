@@ -35,10 +35,9 @@ public final class JsonCLang implements ConfigLang<JsonCElement> {
 	@Override
 	public JsonCElement read(Reader reader) {
 		JsonElement json = JsonParser.parseReader(reader);
-		if (json.isJsonObject()) {
+		if (json.isJsonObject())
 			return new JsonCObject(json.getAsJsonObject());
-		} else {
-			return new JsonCElement(json);
-		}
+
+		return new JsonCElement(json);
 	}
 }
