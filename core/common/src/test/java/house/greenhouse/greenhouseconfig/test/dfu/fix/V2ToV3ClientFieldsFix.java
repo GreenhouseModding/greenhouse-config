@@ -6,7 +6,7 @@ import com.mojang.datafixers.TypeRewriteRule;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 import house.greenhouse.greenhouseconfig.api.dfu.GreenhouseConfigDFUReferences;
-import house.greenhouse.greenhouseconfig.test.config.TestConfig;
+import house.greenhouse.greenhouseconfig.test.config.SplitConfig;
 
 public class V2ToV3ClientFieldsFix extends DataFix {
 	public V2ToV3ClientFieldsFix(Schema outputSchema) {
@@ -14,7 +14,7 @@ public class V2ToV3ClientFieldsFix extends DataFix {
 	}
 
 	private static Dynamic<?> fixDynamic(Dynamic<?> dynamic) {
-		return dynamic.set("client_color", dynamic.createString(TestConfig.CLIENT_DEFAULT.color().serialize()));
+		return dynamic.set("client_color", dynamic.createString(SplitConfig.ClientValues.DEFAULT.color().serialize()));
 	}
 
 	@Override
