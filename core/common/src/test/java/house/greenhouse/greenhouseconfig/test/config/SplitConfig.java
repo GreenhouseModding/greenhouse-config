@@ -12,7 +12,7 @@ import house.greenhouse.greenhouseconfig.api.util.DefaultFieldUtil;
 import house.greenhouse.greenhouseconfig.api.util.Late;
 import house.greenhouse.greenhouseconfig.api.util.LateHolder;
 import house.greenhouse.greenhouseconfig.api.util.LateHolderSet;
-import house.greenhouse.greenhouseconfig.impl.codec.OrderCorrectedRecordCodec;
+import house.greenhouse.greenhouseconfig.api.OrderCorrectedRecordCodec;
 import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
 import house.greenhouse.greenhouseconfig.test.dfu.fix.V1ToV2FieldsFix;
 import house.greenhouse.greenhouseconfig.test.dfu.fix.V2ToV3FieldsFix;
