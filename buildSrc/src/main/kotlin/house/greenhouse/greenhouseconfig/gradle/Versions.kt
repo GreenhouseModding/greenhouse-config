@@ -11,7 +11,7 @@ object Versions {
 	const val NIGHT_CONFIG = "3.8.1"
 
 	const val FABRIC_API = "0.132.0+1.21.8"
-	const val FABRIC_LOADER = "0.16.14"
+	const val FABRIC_LOADER = "0.17.2"
 	const val MOD_MENU = "15.0.0-beta.3"
 	const val FABRIC_LOADER_RANGE = ">=0.17"
 	const val FABRIC_MINECRAFT_RANGE = ">=1.21.8"
