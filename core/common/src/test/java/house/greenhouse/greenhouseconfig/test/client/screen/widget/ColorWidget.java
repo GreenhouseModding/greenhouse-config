@@ -1,6 +1,8 @@
 package house.greenhouse.greenhouseconfig.test.client.screen.widget;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import house.greenhouse.greenhouseconfig.impl.client.gui.GradientRectRenderState;
+import house.greenhouse.greenhouseconfig.impl.client.gui.GradientRectRenderState.GradientDirection;
 import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
 import house.greenhouse.greenhouseconfig.test.client.util.ColorUtil;
 import house.greenhouse.greenhouseconfig.test.client.util.MouseUtil;
@@ -12,6 +14,9 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -21,6 +26,8 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+
+import java.util.List;
 
 public class ColorWidget extends AbstractColorWidget {
 	private static final ResourceLocation SELECTOR = GreenhouseConfigTest.asResource("config/selector");
@@ -51,9 +58,16 @@ public class ColorWidget extends AbstractColorWidget {
 			@Override
 			protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
 				super.renderWidget(graphics, mouseX, mouseY, partialTick);
-				graphics.blitSprite(RenderType::guiTextured, DEFAULT_BUTTON.get(active, isHoveredOrFocused()), getX(), getY(), 12, 12);
+				graphics.blitSprite(RenderPipelines.GUI_TEXTURED, DEFAULT_BUTTON.get(active, isHoveredOrFocused()), getX(), getY(), 12, 12);
 				if (isHovered() && !isServerControlled())
-					graphics.renderTooltip(Minecraft.getInstance().font, Component.literal("Reset to Default"), mouseX, mouseY);
+					graphics.renderTooltip(
+							Minecraft.getInstance().font,
+							List.of(ClientTooltipComponent.create(Component.literal("Reset to Default").getVisualOrderText())),
+							mouseX,
+							mouseY,
+							DefaultTooltipPositioner.INSTANCE,
+							null
+					);
 			}
 
 			@Override
@@ -208,7 +222,14 @@ public class ColorWidget extends AbstractColorWidget {
 		renderSlider(graphics, getX(), getY() + 32, v);
 
 		if (MouseUtil.inBounds(mouseX, mouseY, getX(), getY(), 122, 45) && isServerControlled())
-			graphics.renderTooltip(Minecraft.getInstance().font, Component.literal("This value is controlled by the server."), mouseX, mouseY);
+			graphics.renderTooltip(
+					Minecraft.getInstance().font,
+					List.of(ClientTooltipComponent.create(Component.literal("This value is controlled by the server.").getVisualOrderText())),
+					mouseX,
+					mouseY,
+					DefaultTooltipPositioner.INSTANCE,
+					null
+			);
 	}
 
 	@Override
@@ -248,7 +269,7 @@ public class ColorWidget extends AbstractColorWidget {
 		if (isServerControlled())
 			colorValue = ARGB.color((int) (ARGB.red(colorValue) * 0.4), (int) (ARGB.green(colorValue) * 0.4), (int) (ARGB.blue(colorValue) * 0.4));
 
-		graphics.fill(startX, startY, endX, endY, 0, colorValue);
+		graphics.fill(startX, startY, endX, endY, colorValue);
 	}
 
 	private void renderHBackground(GuiGraphics graphics, int startX, int startY) {
@@ -261,43 +282,20 @@ public class ColorWidget extends AbstractColorWidget {
 		int finalStartY = startY + 1;
 		int finalEndY = endY - 2;
 
-		Matrix4f matrix4f = graphics.pose().last().pose();
-		graphics.drawSpecial(bufferSource -> {
-			VertexConsumer vertex = bufferSource.getBuffer(RenderType.gui());
+		float full = isServerControlled() ? 0.4F : 1.0F;
+		int red = ARGB.colorFromFloat(1.0F, full, 0.0F, 0.0F);
+		int yellow = ARGB.colorFromFloat(1.0F, full, full, 0.0F);
+		int green = ARGB.colorFromFloat(1.0F, 0.0F, full, 0.0F);
+		int cyan = ARGB.colorFromFloat(1.0F, 0.0F, full, full);
+		int blue = ARGB.colorFromFloat(1.0F, 0.0F, 0.0F, full);
+		int magenta = ARGB.colorFromFloat(1.0F, full, 0.0F, full);
 
-			float full = isServerControlled() ? 0.4F : 1.0F;
-			int red = ARGB.colorFromFloat(1.0F, full, 0.0F, 0.0F);
-			int yellow = ARGB.colorFromFloat(1.0F, full, full, 0.0F);
-			int green = ARGB.colorFromFloat(1.0F, 0.0F, full, 0.0F);
-			int cyan = ARGB.colorFromFloat(1.0F, 0.0F, full, full);
-			int blue = ARGB.colorFromFloat(1.0F, 0.0F, 0.0F, full);
-			int magenta = ARGB.colorFromFloat(1.0F, full, 0.0F, full);
-
-			vertex.addVertex(matrix4f, (float) finalStartX, (float) finalStartY, 0.0F).setColor(red);
-			vertex.addVertex(matrix4f, (float) finalStartX, (float) finalEndY, 0.0F).setColor(red);
-			vertex.addVertex(matrix4f, (float) finalStartX + 20, (float) finalEndY, 0.0F).setColor(yellow);
-			vertex.addVertex(matrix4f, (float) finalStartX + 20, (float) finalStartY, 0.0F).setColor(yellow);
-			vertex.addVertex(matrix4f, (float) finalStartX + 20, (float) finalStartY, 0.0F).setColor(yellow);
-			vertex.addVertex(matrix4f, (float) finalStartX + 20, (float) finalEndY, 0.0F).setColor(yellow);
-			vertex.addVertex(matrix4f, (float) finalStartX + 40, (float) finalEndY, 0.0F).setColor(green);
-			vertex.addVertex(matrix4f, (float) finalStartX + 40, (float) finalStartY, 0.0F).setColor(green);
-			vertex.addVertex(matrix4f, (float) finalStartX + 40, (float) finalStartY, 0.0F).setColor(green);
-			vertex.addVertex(matrix4f, (float) finalStartX + 40, (float) finalEndY, 0.0F).setColor(green);
-			vertex.addVertex(matrix4f, (float) finalStartX + 60, (float) finalEndY, 0.0F).setColor(cyan);
-			vertex.addVertex(matrix4f, (float) finalStartX + 60, (float) finalStartY, 0.0F).setColor(cyan);
-			vertex.addVertex(matrix4f, (float) finalStartX + 60, (float) finalStartY, 0.0F).setColor(cyan);
-			vertex.addVertex(matrix4f, (float) finalStartX + 60, (float) finalEndY, 0.0F).setColor(cyan);
-			vertex.addVertex(matrix4f, (float) finalStartX + 80, (float) finalEndY, 0.0F).setColor(blue);
-			vertex.addVertex(matrix4f, (float) finalStartX + 80, (float) finalStartY, 0.0F).setColor(blue);
-			vertex.addVertex(matrix4f, (float) finalStartX + 80, (float) finalStartY, 0.0F).setColor(blue);
-			vertex.addVertex(matrix4f, (float) finalStartX + 80, (float) finalEndY, 0.0F).setColor(blue);
-			vertex.addVertex(matrix4f, (float) finalStartX + 100, (float) finalEndY, 0.0F).setColor(magenta);
-			vertex.addVertex(matrix4f, (float) finalStartX + 100, (float) finalStartY, 0.0F).setColor(magenta);
-			vertex.addVertex(matrix4f, (float) finalStartX + 100, (float) finalStartY, 0.0F).setColor(magenta);
-			vertex.addVertex(matrix4f, (float) finalStartX + 100, (float) finalEndY, 0.0F).setColor(magenta);
-			vertex.addVertex(matrix4f, (float) finalStartX + 120, (float) finalEndY, 0.0F).setColor(red);
-			vertex.addVertex(matrix4f, (float) finalStartX + 120, (float) finalStartY, 0.0F).setColor(red);
-		});
+		GradientRectRenderState.fillGradient(graphics, finalStartX, finalStartY, finalStartX + 20, finalEndY, red, yellow, GradientDirection.LEFT_TO_RIGHT);
+		GradientRectRenderState.fillGradient(graphics, finalStartX + 20, finalStartY, finalStartX + 40, finalEndY, yellow, green, GradientDirection.LEFT_TO_RIGHT);
+		GradientRectRenderState.fillGradient(graphics, finalStartX + 40, finalStartY, finalStartX + 60, finalEndY, green, cyan, GradientDirection.LEFT_TO_RIGHT);
+		GradientRectRenderState.fillGradient(graphics, finalStartX + 60, finalStartY, finalStartX + 80, finalEndY, cyan, blue, GradientDirection.LEFT_TO_RIGHT);
+		GradientRectRenderState.fillGradient(graphics, finalStartX + 80, finalStartY, finalStartX + 100, finalEndY, blue, magenta, GradientDirection.LEFT_TO_RIGHT);
+		GradientRectRenderState.fillGradient(graphics, finalStartX + 100, finalStartY, finalStartX + 120, finalEndY, magenta, red, GradientDirection.LEFT_TO_RIGHT);
 	}
 
 	private void renderSBBackground(GuiGraphics graphics, int startX, int startY, int startColor, int endColor) {
@@ -311,28 +309,16 @@ public class ColorWidget extends AbstractColorWidget {
 		int finalEndX = endX - 1;
 		int finalEndY = endY - 1;
 
-		Matrix4f matrix4f = graphics.pose().last().pose();
-		graphics.drawSpecial(bufferSource -> {
-			VertexConsumer vertex = bufferSource.getBuffer(RenderType.gui());
+		int full = isServerControlled() ? 0xFF666666 : 0xFFFFFFFF;
 
-			float full = isServerControlled() ? 0.4F : 1.0F;
+		int startColorFull = ARGB.multiply(startColor, full);
+		int endColorFull = ARGB.multiply(endColor, full);
 
-			float startR = (ARGB.red(startColor) / 255.0F) * full;
-			float startG = (ARGB.green(startColor) / 255.0F) * full;
-			float startB = (ARGB.blue(startColor) / 255.0F) * full;
-			float endR = (ARGB.red(endColor) / 255.0F) * full;
-			float endG = (ARGB.green(endColor) / 255.0F) * full;
-			float endB = (ARGB.blue(endColor) / 255.0F) * full;
-
-			vertex.addVertex(matrix4f, (float) finalStartX, (float) finalStartY, 0.0F).setColor(startR, startG, startB, 1.0F);
-			vertex.addVertex(matrix4f, (float) finalStartX, (float) finalEndY, 0.0F).setColor(startR, startG, startB, 1.0F);
-			vertex.addVertex(matrix4f, (float) finalEndX, (float) finalEndY, 0.0F).setColor(endR, endG, endB, 1.0F);
-			vertex.addVertex(matrix4f, (float) finalEndX, (float) finalStartY, 0.0F).setColor(endR, endG, endB, 1.0F);
-		});
+		GradientRectRenderState.fillGradient(graphics, finalStartX, finalStartY, finalEndX, finalEndY, startColorFull, endColorFull, GradientDirection.LEFT_TO_RIGHT);
 	}
 
 	private void renderSlider(GuiGraphics graphics, int startX, int startY, float location) {
-		graphics.blitSprite(RenderType::guiTextured, SELECTOR, Mth.clamp((int) (startX + (location * 120) - 1), startX, startX + 120), startY, 3, 8, isServerControlled() ? 0xFF666666 : 0xFFFFFFFF);
+		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, SELECTOR, Mth.clamp((int) (startX + (location * 120) - 1), startX, startX + 120), startY, 3, 8, isServerControlled() ? 0xFF666666 : 0xFFFFFFFF);
 	}
 
 	private void updateColorFromSlider() {

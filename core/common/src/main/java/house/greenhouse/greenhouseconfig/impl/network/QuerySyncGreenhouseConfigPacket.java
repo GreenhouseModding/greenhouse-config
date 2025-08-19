@@ -21,7 +21,7 @@ public record QuerySyncGreenhouseConfigPacket(GreenhouseConfigHolder<?> holder) 
 		if (player.getServer() == null)
 			return;
 		player.getServer().execute(() ->
-				GreenhouseConfig.getHelper().syncConfig(holder, player.server, player)
+				GreenhouseConfig.getHelper().syncConfig(holder, player.getServer(), player)
 		);
 	}
 

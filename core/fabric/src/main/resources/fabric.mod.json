@@ -26,6 +26,12 @@
 	  "house.greenhouse.greenhouseconfig.impl.client.GreenhouseConfigFabricClient"
 	]
   },
+  "mixins": [
+    {
+      "config": "greenhouseconfig.client.mixins.json",
+      "environment": "client"
+    }
+  ],
   "accessWidener": "greenhouseconfig.accesswidener",
   "depends": {
 	"fabricloader": "${fabric_loader_range}",
