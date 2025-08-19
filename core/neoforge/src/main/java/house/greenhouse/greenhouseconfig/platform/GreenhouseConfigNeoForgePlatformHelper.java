@@ -15,6 +15,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.client.ClientCommandSourceStack;
+import net.neoforged.neoforge.client.network.ClientPacketDistributor;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.nio.file.Path;
@@ -66,7 +67,7 @@ public class GreenhouseConfigNeoForgePlatformHelper implements GHConfigPlatformH
 	public <T> boolean queryConfig(GreenhouseConfigHolder<T> holder) {
 		if (!holder.shouldSync() || Minecraft.getInstance().getConnection() != null && !Minecraft.getInstance().getConnection().hasChannel(SyncGreenhouseConfigPacket.TYPE) || Minecraft.getInstance().hasSingleplayerServer())
 			return false;
-		PacketDistributor.sendToServer(new QuerySyncGreenhouseConfigPacket(holder));
+		ClientPacketDistributor.sendToServer(new QuerySyncGreenhouseConfigPacket(holder));
 		return true;
 	}
 

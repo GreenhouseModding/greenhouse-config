@@ -23,8 +23,8 @@ public class GreenhouseConfigNeoForge {
 		return dedicatedServerContext;
 	}
 
-	@EventBusSubscriber(modid = GreenhouseConfig.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
-	public static class ModEvents {
+	@EventBusSubscriber(modid = GreenhouseConfig.MOD_ID)
+	public static class Events {
 		@SubscribeEvent
 		public static void registerConfigurationTasks(RegisterConfigurationTasksEvent event) {
 			if (!event.getListener().hasChannel(SyncGreenhouseConfigPacket.TYPE) || event.getListener().getConnection().isMemoryConnection())
@@ -44,10 +44,7 @@ public class GreenhouseConfigNeoForge {
 					})
 					.playToServer(QuerySyncGreenhouseConfigPacket.TYPE, QuerySyncGreenhouseConfigPacket.STREAM_CODEC, (payload, context) -> payload.handle((ServerPlayer) context.player()));
 		}
-	}
 
-	@EventBusSubscriber(modid = GreenhouseConfig.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
-	public static class GameEvents {
 		@SubscribeEvent
 		public static void onServerStarting(ServerAboutToStartEvent event) {
 			if (event.getServer().isDedicatedServer()) {
