@@ -1,7 +1,8 @@
 package house.greenhouse.greenhouseconfig.test.client.screen.widget;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import house.greenhouse.greenhouseconfig.impl.util.Duck_GuiGraphics;
+import house.greenhouse.greenhouseconfig.impl.client.gui.GradientRectRenderState;
+import house.greenhouse.greenhouseconfig.impl.client.gui.GradientRectRenderState.GradientDirection;
 import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
 import house.greenhouse.greenhouseconfig.test.client.util.ColorUtil;
 import house.greenhouse.greenhouseconfig.test.client.util.MouseUtil;
@@ -289,14 +290,12 @@ public class ColorWidget extends AbstractColorWidget {
 		int blue = ARGB.colorFromFloat(1.0F, 0.0F, 0.0F, full);
 		int magenta = ARGB.colorFromFloat(1.0F, full, 0.0F, full);
 
-		((Duck_GuiGraphics) graphics).greenhouseconfig$horizontalGradient();
-		graphics.fillGradient(finalStartX, finalStartY, finalStartX + 20, finalEndY, red, yellow);
-		graphics.fillGradient(finalStartX + 20, finalStartY, finalStartX + 40, finalEndY, yellow, green);
-		graphics.fillGradient(finalStartX + 40, finalStartY, finalStartX + 60, finalEndY, green, cyan);
-		graphics.fillGradient(finalStartX + 60, finalStartY, finalStartX + 80, finalEndY, cyan, blue);
-		graphics.fillGradient(finalStartX + 80, finalStartY, finalStartX + 100, finalEndY, blue, magenta);
-		graphics.fillGradient(finalStartX + 100, finalStartY, finalStartX + 120, finalEndY, magenta, red);
-		((Duck_GuiGraphics) graphics).greenhouseconfig$verticalGradient();
+		GradientRectRenderState.fillGradient(graphics, finalStartX, finalStartY, finalStartX + 20, finalEndY, red, yellow, GradientDirection.LEFT_TO_RIGHT);
+		GradientRectRenderState.fillGradient(graphics, finalStartX + 20, finalStartY, finalStartX + 40, finalEndY, yellow, green, GradientDirection.LEFT_TO_RIGHT);
+		GradientRectRenderState.fillGradient(graphics, finalStartX + 40, finalStartY, finalStartX + 60, finalEndY, green, cyan, GradientDirection.LEFT_TO_RIGHT);
+		GradientRectRenderState.fillGradient(graphics, finalStartX + 60, finalStartY, finalStartX + 80, finalEndY, cyan, blue, GradientDirection.LEFT_TO_RIGHT);
+		GradientRectRenderState.fillGradient(graphics, finalStartX + 80, finalStartY, finalStartX + 100, finalEndY, blue, magenta, GradientDirection.LEFT_TO_RIGHT);
+		GradientRectRenderState.fillGradient(graphics, finalStartX + 100, finalStartY, finalStartX + 120, finalEndY, magenta, red, GradientDirection.LEFT_TO_RIGHT);
 	}
 
 	private void renderSBBackground(GuiGraphics graphics, int startX, int startY, int startColor, int endColor) {
@@ -315,9 +314,7 @@ public class ColorWidget extends AbstractColorWidget {
 		int startColorFull = ARGB.multiply(startColor, full);
 		int endColorFull = ARGB.multiply(endColor, full);
 
-		((Duck_GuiGraphics) graphics).greenhouseconfig$horizontalGradient();
-		graphics.fillGradient(finalStartX, finalStartY, finalEndX, finalEndY, startColor, endColorFull);
-		((Duck_GuiGraphics) graphics).greenhouseconfig$verticalGradient();
+		GradientRectRenderState.fillGradient(graphics, finalStartX, finalStartY, finalEndX, finalEndY, startColorFull, endColorFull, GradientDirection.LEFT_TO_RIGHT);
 	}
 
 	private void renderSlider(GuiGraphics graphics, int startX, int startY, float location) {

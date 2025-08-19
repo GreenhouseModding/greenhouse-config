@@ -5,8 +5,6 @@
   "refmap": "${mod_id}.refmap.json",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "Mixin_GuiGraphics",
-    "Mixin_ColoredRectangleRenderState"
   ],
   "injectors": {
 	"defaultRequire": 1
