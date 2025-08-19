@@ -1,6 +1,5 @@
 package house.greenhouse.greenhouseconfig.test.client.screen.widget;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import house.greenhouse.greenhouseconfig.impl.client.gui.GradientRectRenderState;
 import house.greenhouse.greenhouseconfig.impl.client.gui.GradientRectRenderState.GradientDirection;
 import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
@@ -17,7 +16,6 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +23,6 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 import java.util.List;
 

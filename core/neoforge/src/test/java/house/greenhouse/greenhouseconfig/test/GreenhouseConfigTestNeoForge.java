@@ -13,16 +13,13 @@ public class GreenhouseConfigTestNeoForge {
 		GreenhouseConfigTest.init();
 	}
 
-	@EventBusSubscriber(modid = GreenhouseConfigTest.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+	@EventBusSubscriber(modid = GreenhouseConfigTest.MOD_ID)
 	private static class ModEvents {
 		@SubscribeEvent
 		public static void onPostPopulation(GreenhouseConfigEvents.PostPopulation<?> event) {
 			GreenhouseConfigTest.logTestConfigs(event.getHolder(), event.getConfig(), event.getSide());
 		}
-	}
 
-	@EventBusSubscriber(modid = GreenhouseConfigTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
-	public static class GameEvents {
 		@SubscribeEvent
 		public static void registerCommands(RegisterCommandsEvent event) {
 			GreenhouseConfigTest.registerServerCommands(event.getDispatcher());

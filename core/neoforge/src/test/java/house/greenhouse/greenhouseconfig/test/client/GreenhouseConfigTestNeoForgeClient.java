@@ -16,8 +16,8 @@ public class GreenhouseConfigTestNeoForgeClient {
 		container.registerExtensionPoint(IConfigScreenFactory.class, (modContainer, screen) -> new GreenhouseConfigTestScreen(screen));
 	}
 
-	@EventBusSubscriber(modid = GreenhouseConfigTest.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
-	public static class GameEvents {
+	@EventBusSubscriber(modid = GreenhouseConfigTest.MOD_ID, value = Dist.CLIENT)
+	public static class Events {
 		@SubscribeEvent
 		public static void registerClientCommands(RegisterClientCommandsEvent event) {
 			GreenhouseConfigTestClient.registerClientCommands(event.getDispatcher());
