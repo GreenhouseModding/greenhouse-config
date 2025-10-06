@@ -31,7 +31,6 @@ public class GreenhouseConfig {
 		return getHelper();
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	public static GHConfigIPlatformHelper getHelper() {
 		if (helper == null) {
 			helper = GHConfigIPlatformHelper.load();
