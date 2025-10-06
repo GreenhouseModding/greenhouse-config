@@ -19,10 +19,22 @@ configurations {
     }
 }
 
+gradle.projectsEvaluated {
+	sourceSets {
+		getByName("main") {
+			compileClasspath += project(":common").sourceSets["main"].output
+			runtimeClasspath += project(":common").sourceSets["main"].output
+		}
+		getByName("test") {
+			compileClasspath += project(":common").sourceSets["test"].output
+			runtimeClasspath += project(":common").sourceSets["test"].output
+		}
+	}
+}
+
 dependencies {
-    compileOnly(project(":common"))
-    testCompileOnly(project(":common", "commonJava"))
-    testCompileOnly(project(":common", "commonTestJava"))
+    testCompileOnly(project(":common"))
+
     "commonJava"(project(":common", "commonJava"))
     "commonTestJava"(project(":common", "commonTestJava"))
     "commonResources"(project(":common", "commonResources"))
