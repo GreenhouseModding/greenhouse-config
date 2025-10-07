@@ -128,7 +128,7 @@ publishing {
 		if (System.getenv("MAVEN_USERNAME") != null && System.getenv("MAVEN_PASSWORD") != null) {
 			maven {
 				name = "Greenhouse"
-				url = uri("https://repo.greenhouse.house/releases")
+				url = uri("https://maven.greenhouse.lgbt")
 				credentials {
 					username = System.getenv("MAVEN_USERNAME")
 					password = System.getenv("MAVEN_PASSWORD")
