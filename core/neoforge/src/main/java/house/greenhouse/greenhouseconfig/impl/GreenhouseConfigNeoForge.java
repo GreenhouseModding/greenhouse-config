@@ -7,7 +7,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -46,11 +46,9 @@ public class GreenhouseConfigNeoForge {
 		}
 
 		@SubscribeEvent
-		public static void onServerStarting(ServerAboutToStartEvent event) {
-			if (event.getServer().isDedicatedServer()) {
-				dedicatedServerContext = true;
-				GreenhouseConfig.onServerStarting();
-			}
+		public static void onServerStarting(FMLDedicatedServerSetupEvent event) {
+			dedicatedServerContext = true;
+			GreenhouseConfig.onServerStarting();
 		}
 
 		@SubscribeEvent
