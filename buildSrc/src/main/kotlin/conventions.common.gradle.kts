@@ -54,7 +54,7 @@ repositories {
 		)
 		filter { includeGroup("org.parchmentmc.data") }
 	}
-	maven("https://maven.kneelawk.com/releases/") {
+	maven("https://maven.kneelawk.com/releases") {
 		name = "Kneelawk"
 	}
 }
