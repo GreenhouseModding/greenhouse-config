@@ -14,9 +14,6 @@ credits = "${neoforge_mod_contributors}"
 authors = "${mod_author}"
 description = '''${mod_description}'''
 
-[[accessTransformers]]
-file = "greenhouseconfig.cfg"
-
 [[dependencies.${ mod_id }]]
 modId = "neoforge"
 type = "required"
