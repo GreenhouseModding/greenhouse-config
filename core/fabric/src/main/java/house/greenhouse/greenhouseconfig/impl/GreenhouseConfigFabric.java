@@ -24,14 +24,14 @@ public class GreenhouseConfigFabric implements ModInitializer {
 				return;
 			GreenhouseConfigStorage.createSyncPackets().forEach(packet -> ServerConfigurationNetworking.send(handler, packet));
 		});
-		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-			if (server.isDedicatedServer())
-				GreenhouseConfig.onServerStarted(server);
-		});
 		ServerLifecycleEvents.SERVER_STARTING.register(server -> {
 			if (server.isDedicatedServer()) {
 				GreenhouseConfig.onServerStarting();
 			}
+		});
+		ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+			if (server.isDedicatedServer())
+				GreenhouseConfig.onServerStarted(server);
 		});
 	}
 
