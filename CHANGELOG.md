@@ -1,2 +1,3 @@
 ## Changes
-- Fixed race conditions involving the platform helper. ([#4](https://github.com/GreenhouseModding/greenhouse-config/issues/4))
+- [NeoForge] Swapped event for dedicated server config initialization to ensure that [Modding/enchiridion$5](https://git.greenhouse.lgbt/Modding/enchiridion/issues/5) does not happen.
+- [JSONC] Removed unnecessary access transformer reference in neoforge.mods.toml.

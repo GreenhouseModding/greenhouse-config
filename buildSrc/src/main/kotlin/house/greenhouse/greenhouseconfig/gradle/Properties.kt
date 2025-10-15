@@ -16,14 +16,14 @@ object Properties {
 			"Greenhouse Config",
 			"greenhouseconfig",
 			"A niche codec based config system.",
-			"2.2.1"
+			"2.2.2"
 		),
 		"jsonc" to ModuleProperties(
 			"jsonc",
 			"Greenhouse Config - JSONC",
 			"greenhouseconfig_jsonc",
 			"JSONC language support for Greenhouse Config.",
-			"1.1.0"
+			"1.1.1"
 		),
 		"night-config" to ModuleProperties(
 			"night-config",
