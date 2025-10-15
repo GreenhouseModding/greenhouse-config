@@ -3,11 +3,12 @@ package house.greenhouse.greenhouseconfig.impl;
 import house.greenhouse.greenhouseconfig.impl.network.QuerySyncGreenhouseConfigPacket;
 import house.greenhouse.greenhouseconfig.impl.network.SyncGreenhouseConfigPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
+import net.neoforged.fml.event.lifecycle.FMLDedicatedServerSetupEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.event.RegisterConfigurationTasksEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -44,18 +45,16 @@ public class GreenhouseConfigNeoForge {
 					})
 					.playToServer(QuerySyncGreenhouseConfigPacket.TYPE, QuerySyncGreenhouseConfigPacket.STREAM_CODEC, (payload, context) -> payload.handle((ServerPlayer) context.player()));
 		}
+
+		@SubscribeEvent(priority = EventPriority.HIGHEST)
+		public static void onDedicatedServerSetup(FMLDedicatedServerSetupEvent event) {
+			GreenhouseConfig.onServerStarting();
+			dedicatedServerContext = true;
+		}
 	}
 
 	@EventBusSubscriber(modid = GreenhouseConfig.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 	public static class GameEvents {
-		@SubscribeEvent
-		public static void onServerStarting(ServerAboutToStartEvent event) {
-			if (event.getServer().isDedicatedServer()) {
-				dedicatedServerContext = true;
-				GreenhouseConfig.onServerStarting();
-			}
-		}
-
 		@SubscribeEvent
 		public static void onServerStarted(ServerStartedEvent event) {
 			if (event.getServer().isDedicatedServer())
