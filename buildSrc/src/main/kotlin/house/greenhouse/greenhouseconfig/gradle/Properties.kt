@@ -23,7 +23,7 @@ object Properties {
 			"Greenhouse Config - JSONC",
 			"greenhouseconfig_jsonc",
 			"JSONC language support for Greenhouse Config.",
-			"1.1.0"
+			"1.1.1"
 		),
 		"night-config" to ModuleProperties(
 			"night-config",
