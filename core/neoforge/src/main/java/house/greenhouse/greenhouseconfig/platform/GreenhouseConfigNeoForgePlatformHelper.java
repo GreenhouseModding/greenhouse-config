@@ -33,7 +33,7 @@ public class GreenhouseConfigNeoForgePlatformHelper implements GHConfigPlatformH
 
 	@Override
 	public boolean isDevelopmentEnvironment() {
-		return !FMLLoader.isProduction();
+		return !FMLLoader.getCurrent().isProduction();
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class GreenhouseConfigNeoForgePlatformHelper implements GHConfigPlatformH
 
 	@Override
 	public <T> void syncConfig(GreenhouseConfigHolder<T> holder, MinecraftServer server, ServerPlayer player) {
-		if (!holder.shouldSync() || !player.connection.hasChannel(SyncGreenhouseConfigPacket.TYPE) || server.isSingleplayerOwner(player.getGameProfile()))
+		if (!holder.shouldSync() || !player.connection.hasChannel(SyncGreenhouseConfigPacket.TYPE) || server.isSingleplayerOwner(player.nameAndId()))
 			return;
 		PacketDistributor.sendToPlayer(player, new SyncGreenhouseConfigPacket(holder.getConfigName(), holder.get()));
 	}

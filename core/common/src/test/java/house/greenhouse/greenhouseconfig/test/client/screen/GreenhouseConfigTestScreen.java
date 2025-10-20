@@ -13,6 +13,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -76,9 +77,8 @@ public class GreenhouseConfigTestScreen extends Screen {
 	private LinearLayout layoutLine(String name, AbstractWidget widget) {
 		LinearLayout layout = LinearLayout.horizontal();
 		StringWidget stringWidget = new StringWidget(Component.literal(name), font);
-		stringWidget.alignLeft();
 		stringWidget.setWidth(80);
-		layout.addChild(stringWidget);
+		layout.addChild(stringWidget, LayoutSettings::alignHorizontallyLeft);
 		layout.addChild(widget);
 		layout.arrangeElements();
 		return layout;

@@ -24,7 +24,7 @@ sourceSets {
 neoForge {
     neoFormVersion = Versions.NEOFORM
     parchment {
-        minecraftVersion = Versions.MINECRAFT
+        minecraftVersion = Versions.PARCHMENT_MINECRAFT
         mappingsVersion = Versions.PARCHMENT
     }
 }

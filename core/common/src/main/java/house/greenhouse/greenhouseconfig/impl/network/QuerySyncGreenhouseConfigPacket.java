@@ -18,10 +18,8 @@ public record QuerySyncGreenhouseConfigPacket(GreenhouseConfigHolder<?> holder) 
 			ByteBufCodecs.STRING_UTF8.map(key -> new QuerySyncGreenhouseConfigPacket(GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(key)), config -> config.holder().getConfigName());
 
 	public void handle(ServerPlayer player) {
-		if (player.getServer() == null)
-			return;
-		player.getServer().execute(() ->
-				GreenhouseConfig.getHelper().syncConfig(holder, player.getServer(), player)
+		player.level().getServer().execute(() ->
+				GreenhouseConfig.getHelper().syncConfig(holder, player.level().getServer(), player)
 		);
 	}
 
