@@ -8,7 +8,7 @@ object Properties {
 
 	const val HOMEPAGE = "https://github.com/GreenhouseModding/greenhouse-config"
 	const val GITHUB_REPO = "GreenhouseModding/greenhouse-config"
-	const val GITHUB_COMMITISH = "1.21.8"
+	const val GITHUB_COMMITISH = "1.21.10"
 
 	val MODULES = mapOf(
 		"core" to ModuleProperties(

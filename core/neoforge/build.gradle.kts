@@ -20,7 +20,7 @@ dependencies {
 neoForge {
 	version = Versions.NEOFORGE
 	parchment {
-		minecraftVersion = Versions.MINECRAFT
+		minecraftVersion = Versions.PARCHMENT_MINECRAFT
 		mappingsVersion = Versions.PARCHMENT
 	}
 	addModdingDependenciesTo(sourceSets["test"])

@@ -1,7 +1,7 @@
 package house.greenhouse.greenhouseconfig.test.client.screen.widget;
 
-import house.greenhouse.greenhouseconfig.impl.client.gui.GradientRectRenderState;
-import house.greenhouse.greenhouseconfig.impl.client.gui.GradientRectRenderState.GradientDirection;
+import house.greenhouse.greenhouseconfig.test.client.gui.GradientRectRenderState;
+import house.greenhouse.greenhouseconfig.test.client.gui.GradientRectRenderState.GradientDirection;
 import house.greenhouse.greenhouseconfig.test.GreenhouseConfigTest;
 import house.greenhouse.greenhouseconfig.test.client.util.ColorUtil;
 import house.greenhouse.greenhouseconfig.test.client.util.MouseUtil;
@@ -15,6 +15,7 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.input.*;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
@@ -43,14 +44,14 @@ public class ColorWidget extends AbstractColorWidget {
 		super(x, y, 122, 45, Component.literal("Color Input"));
 		defaultButton = new AbstractButton(x + 110, y, 12, 12, Component.literal("")) {
 			@Override
-			public void onPress() {
+			public void renderString(@NotNull GuiGraphics guiGraphics, @NotNull Font font, int color) {}
+
+			@Override
+			public void onPress(@NotNull InputWithModifiers input) {
 				setColor(defaultColor);
 				textBox.setValue(defaultColor.serialize());
 				setDirty(true);
 			}
-
-			@Override
-			public void renderString(@NotNull GuiGraphics guiGraphics, @NotNull Font font, int color) {}
 
 			@Override
 			protected void renderWidget(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
@@ -127,20 +128,20 @@ public class ColorWidget extends AbstractColorWidget {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (textBox.mouseClicked(mouseX, mouseY, button)) {
+	public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean isDoubleClick) {
+		if (textBox.mouseClicked(event, isDoubleClick)) {
 			currentlyActive = null;
 			currentSlider = 0.0F;
 			textBox.setFocused(true);
 			return true;
 		}
 		textBox.setFocused(false);
-		if (defaultButton.mouseClicked(mouseX, mouseY, button)) {
+		if (defaultButton.mouseClicked(event, isDoubleClick)) {
 			currentlyActive = null;
 			currentSlider = 0.0F;
 			return true;
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(event, isDoubleClick);
 	}
 
 	@Override
@@ -149,51 +150,51 @@ public class ColorWidget extends AbstractColorWidget {
 	}
 
 	@Override
-	public void onClick(double mouseX, double mouseY) {
+	public void onClick(MouseButtonEvent event, boolean isDoubleClick) {
 		resetActive = false;
-		if (MouseUtil.inBounds(mouseX, mouseY, getX() + 2, getY() + 14, 120, 8)) {
+		if (MouseUtil.inBounds(event.x(), event.y(), getX() + 2, getY() + 14, 120, 8)) {
 			setFocused(true);
 			currentSlider = h;
 			currentlyActive = Type.HUE;
-		} else if (MouseUtil.inBounds(mouseX, mouseY, getX() + 2, getY() + 23, 120, 8)) {
+		} else if (MouseUtil.inBounds(event.x(), event.y(), getX() + 2, getY() + 23, 120, 8)) {
 			setFocused(true);
 			currentSlider = s;
 			currentlyActive = Type.SATURATION;
-		} else if (MouseUtil.inBounds(mouseX, mouseY, getX() + 2, getY() + 32, 120, 8)) {
+		} else if (MouseUtil.inBounds(event.x(), event.y(), getX() + 2, getY() + 32, 120, 8)) {
 			setFocused(true);
 			currentSlider = v;
 			currentlyActive = Type.VALUE;
 		}
 		resetActive = true;
-		onDrag(mouseX, mouseY, 0.0, 0.0);
+		onDrag(event, 0.0, 0.0);
 	}
 
 	@Override
-	protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
+	protected void onDrag(@NotNull MouseButtonEvent event, double dragX, double dragY) {
 		if (isFocused() && !textBox.canConsumeInput()) {
 			double originMouse = Mth.clampedLerp(getX(), getX() + 120, currentSlider);
-			float diff = (float) ((mouseX - originMouse) / 120);
+			float diff = (float) ((event.x() - originMouse) / 120);
 			currentSlider = Mth.clamp(currentSlider + diff, 0.0F, 1.0F);
 			updateColorFromSlider();
 		}
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(@NotNull KeyEvent event) {
 		if (textBox.canConsumeInput())
-			return textBox.keyPressed(keyCode, scanCode, modifiers);
-		return super.keyPressed(keyCode, scanCode, modifiers);
+			return textBox.keyPressed(event);
+		return super.keyPressed(event);
 	}
 
 	@Override
-	public boolean charTyped(char codePoint, int modifiers) {
+	public boolean charTyped(@NotNull CharacterEvent event) {
 		if (textBox.canConsumeInput())
-			return textBox.charTyped(codePoint, modifiers);
-		return super.charTyped(codePoint, modifiers);
+			return textBox.charTyped(event);
+		return super.charTyped(event);
 	}
 
 	@Override
-	public void onRelease(double mouseX, double mouseY) {
+	public void onRelease(@NotNull MouseButtonEvent event) {
 		if (isFocused() && !textBox.canConsumeInput()) {
 			setFocused(false);
 			setDirty(true);
@@ -239,8 +240,8 @@ public class ColorWidget extends AbstractColorWidget {
 	}
 
 	@Override
-	protected boolean isValidClickButton(int button) {
-		return !isServerControlled() && super.isValidClickButton(button);
+	protected boolean isValidClickButton(@NotNull MouseButtonInfo buttonInfo) {
+		return !isServerControlled() && super.isValidClickButton(buttonInfo);
 	}
 
 	@Override

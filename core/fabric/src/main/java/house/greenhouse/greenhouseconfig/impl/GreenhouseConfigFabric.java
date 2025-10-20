@@ -20,7 +20,7 @@ public class GreenhouseConfigFabric implements ModInitializer {
 
 	public static void registerEvents() {
 		ServerConfigurationConnectionEvents.BEFORE_CONFIGURE.register((handler, server) -> {
-			if (!ServerConfigurationNetworking.canSend(handler, SyncGreenhouseConfigPacket.TYPE) || server.isSingleplayerOwner(handler.getOwner()))
+			if (!ServerConfigurationNetworking.canSend(handler, SyncGreenhouseConfigPacket.TYPE) || server.isSingleplayer())
 				return;
 			GreenhouseConfigStorage.createSyncPackets().forEach(packet -> ServerConfigurationNetworking.send(handler, packet));
 		});
