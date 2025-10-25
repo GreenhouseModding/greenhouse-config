@@ -1,1 +1,2 @@
-- Bring upstream fixes from 1.21.1 to 1.21.8.
+## Bugfixes
+- Fixed JSONCOps not creating a copy of the JSONC in the `remove` method.

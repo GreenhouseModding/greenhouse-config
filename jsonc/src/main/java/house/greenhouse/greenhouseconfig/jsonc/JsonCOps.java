@@ -1,18 +1,17 @@
 package house.greenhouse.greenhouseconfig.jsonc;
 
 import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
+import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class JsonCOps implements DynamicOps<JsonCElement> {
@@ -252,7 +251,12 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 	@Override
 	public JsonCElement remove(final JsonCElement input, final String key) {
 		if (input instanceof JsonCObject object) {
-			object.remove(key);
+			Map<String, JsonCElement> map = object.toMap()
+					.entrySet()
+					.stream()
+					.filter(entry -> !Objects.equals(entry.getKey(), key))
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
+			return new JsonCObject(map, input.comments());
 		}
 		return input;
 	}
