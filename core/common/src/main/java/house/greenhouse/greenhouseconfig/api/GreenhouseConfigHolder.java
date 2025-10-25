@@ -375,15 +375,6 @@ public interface GreenhouseConfigHolder<T> {
 		}
 
 		/**
-		 * @deprecated Use {@link GreenhouseConfigHolder.Builder#postRegistryDepopulation(PostRegistryDepopulationCallback)} instead.
-		 */
-		@Deprecated(forRemoval = true, since = "2.4.0")
-		public Builder<T> postRegistryDepopulation(Consumer<T> callback) {
-			postRegistryDepopulationCallback = (config) -> callback.accept(config);
-			return this;
-		}
-
-		/**
 		 * A shortcut to {@link GreenhouseConfigHolder.Builder#postRegistryPopulation(PostRegistryPopulationCallback)} and {@link GreenhouseConfigHolder.Builder#postRegistryDepopulation(PostRegistryDepopulationCallback)} that binds/unbinds the late values of this config.
 		 * <p>
 		 * You will be better off using something else if you need client-specific values.
