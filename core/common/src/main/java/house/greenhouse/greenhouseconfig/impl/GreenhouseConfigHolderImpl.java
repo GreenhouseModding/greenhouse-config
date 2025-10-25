@@ -30,9 +30,9 @@ public class GreenhouseConfigHolderImpl<C, T> implements GreenhouseConfigHolder<
 	@Nullable
 	private final Function<T, StreamCodec<FriendlyByteBuf, T>> networkCodecFunction;
 	@Nullable
-	private final BiConsumer<HolderLookup.Provider, T> postRegistryPopulationCallback;
+	private final PostRegistryPopulationCallback<T> postRegistryPopulationCallback;
 	@Nullable
-	private final Consumer<T> postRegistryDepopulationCallback;
+	private final PostRegistryDepopulationCallback<T> postRegistryDepopulationCallback;
 	private final DataFixer dataFixerServer;
 	private final DataFixer dataFixerClient;
 
@@ -40,8 +40,8 @@ public class GreenhouseConfigHolderImpl<C, T> implements GreenhouseConfigHolder<
 									  T defaultServerValue, T defaultClientValue,
 									  Codec<T> serverCodec, Codec<T> clientCodec,
 									  @Nullable Function<T, StreamCodec<FriendlyByteBuf, T>> networkCodecFunction,
-									  @Nullable BiConsumer<HolderLookup.Provider, T> postRegistryPopulationCallback,
-									  @Nullable Consumer<T> postRegistryDepopulationCallback,
+									  @Nullable PostRegistryPopulationCallback<T> postRegistryPopulationCallback,
+									  @Nullable PostRegistryDepopulationCallback<T> postRegistryDepopulationCallback,
 									  DataFixer dataFixerServer,
 									  DataFixer dataFixerClient) {
 		this.configName = configName;
@@ -101,16 +101,16 @@ public class GreenhouseConfigHolderImpl<C, T> implements GreenhouseConfigHolder<
 		return configLang;
 	}
 
-	public void postRegistryPopulation(HolderLookup.Provider registries, T value) {
+	public void postRegistryPopulation(HolderLookup.Provider registries, T value, boolean isClient) {
 		if (postRegistryPopulationCallback == null)
 			return;
-		postRegistryPopulationCallback.accept(registries, value);
+		postRegistryPopulationCallback.postRegistryPopulation(registries, value, isClient);
 	}
 
 	public void postRegistryDepopulation(T value) {
 		if (postRegistryDepopulationCallback == null)
 			return;
-		postRegistryDepopulationCallback.accept(value);
+		postRegistryDepopulationCallback.postRegistryDepopulation(value);
 	}
 
 	@Nullable

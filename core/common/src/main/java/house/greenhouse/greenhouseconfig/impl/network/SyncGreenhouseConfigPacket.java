@@ -58,7 +58,7 @@ public record SyncGreenhouseConfigPacket(String configName, @Nullable Object con
 			GreenhouseConfigHolder<Object> holder = (GreenhouseConfigHolder<Object>) GreenhouseConfigHolderRegistry.CLIENT_CONFIG_HOLDERS.get(configName);
 			GreenhouseConfigStorage.updateConfig(holder, config);
 			if (Minecraft.getInstance().level != null) {
-				GreenhouseConfigStorage.individualRegistryPopulation(Minecraft.getInstance().level.registryAccess(), holder, config);
+				GreenhouseConfigStorage.individualRegistryPopulation(Minecraft.getInstance().level.registryAccess(), holder, config, true);
 			}
 		});
 	}

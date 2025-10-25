@@ -22,7 +22,6 @@ import java.nio.file.attribute.UserDefinedFileAttributeView;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -41,11 +40,6 @@ public class GreenhouseConfigStorage {
 			return null;
 		}
 		return isServer ? (T) SERVER_CONFIGS.get(holder) : unsynced ? (T) UNSYNCED_CLIENT_CONFIGS.get(holder) : (T) CLIENT_CONFIGS.get(holder);
-	}
-
-	public static Set<GreenhouseConfigHolder<?>> getConfigs() {
-		boolean isServer = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
-		return isServer ? SERVER_CONFIGS.keySet() : CLIENT_CONFIGS.keySet();
 	}
 
 	public static <T> void updateConfig(GreenhouseConfigHolder<T> holder, T value) {
@@ -117,11 +111,11 @@ public class GreenhouseConfigStorage {
 		}
 	}
 
-	public static void onRegistryPopulation(HolderLookup.Provider registries) {
+	public static void onRegistryPopulation(HolderLookup.Provider registries, boolean isClient) {
 		boolean isServer = GreenhouseConfig.getHelper().getSide() == GreenhouseConfigSide.DEDICATED_SERVER;
 		Map<GreenhouseConfigHolder<?>, Object> configs = isServer ? SERVER_CONFIGS : CLIENT_CONFIGS;
 		for (Map.Entry<GreenhouseConfigHolder<?>, Object> entry : configs.entrySet()) {
-			GreenhouseConfigHolderImpl.cast(entry.getKey()).postRegistryPopulation(registries, entry.getValue());
+			GreenhouseConfigHolderImpl.cast(entry.getKey()).postRegistryPopulation(registries, entry.getValue(), isClient);
 			GreenhouseConfig.getHelper().postPopulationEvent((GreenhouseConfigHolder<Object>) entry.getKey(), entry.getValue(), GreenhouseConfig.getHelper().getSide());
 		}
 	}
@@ -135,12 +129,8 @@ public class GreenhouseConfigStorage {
 		}
 	}
 
-	public static void individualRegistryPopulation(HolderLookup.Provider registries, GreenhouseConfigHolder<?> holder) {
-		individualRegistryPopulation(registries, holder, holder.get());
-	}
-
-	public static void individualRegistryPopulation(HolderLookup.Provider registries, GreenhouseConfigHolder<?> holder, Object value) {
-		GreenhouseConfigHolderImpl.cast(holder).postRegistryPopulation(registries, value);
+	public static void individualRegistryPopulation(HolderLookup.Provider registries, GreenhouseConfigHolder<?> holder, Object value, boolean isClient) {
+		GreenhouseConfigHolderImpl.cast(holder).postRegistryPopulation(registries, value, isClient);
 		GreenhouseConfig.getHelper().postPopulationEvent((GreenhouseConfigHolder<Object>) holder, value, GreenhouseConfig.getHelper().getSide());
 	}
 

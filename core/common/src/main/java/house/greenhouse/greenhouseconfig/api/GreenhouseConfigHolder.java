@@ -246,14 +246,14 @@ public interface GreenhouseConfigHolder<T> {
 		private Function<T, StreamCodec<FriendlyByteBuf, T>> networkFunction;
 
 		@Nullable
-		private BiConsumer<HolderLookup.Provider, T> latePopulationCallback;
+		private PostRegistryPopulationCallback<T> latePopulationCallback;
 		@Nullable
-		private Consumer<T> lateDepopulationCallback;
+		private PostRegistryDepopulationCallback<T> lateDepopulationCallback;
 
 		@Nullable
-		private BiConsumer<HolderLookup.Provider, T> postRegistryPopulationCallback;
+		private PostRegistryPopulationCallback<T> postRegistryPopulationCallback;
 		@Nullable
-		private Consumer<T> postRegistryDepopulationCallback;
+		private PostRegistryDepopulationCallback<T> postRegistryDepopulationCallback;
 
 		@Nullable
 		private DataFixer clientFixer;
@@ -348,7 +348,7 @@ public interface GreenhouseConfigHolder<T> {
 		 *
 		 * @param callback A callback that runs on registry values and the config object.
 		 */
-		public Builder<T> postRegistryPopulation(BiConsumer<HolderLookup.Provider, T> callback) {
+		public Builder<T> postRegistryPopulation(PostRegistryPopulationCallback<T> callback) {
 			postRegistryPopulationCallback = callback;
 			return this;
 		}
@@ -360,20 +360,40 @@ public interface GreenhouseConfigHolder<T> {
 		 *
 		 * @param callback A callback that runs on the config object.
 		 */
-		public Builder<T> postRegistryDepopulation(Consumer<T> callback) {
+		public Builder<T> postRegistryDepopulation(PostRegistryDepopulationCallback<T> callback) {
 			postRegistryDepopulationCallback = callback;
 			return this;
 		}
 
 		/**
-		 * A shortcut to {@link GreenhouseConfigHolder.Builder#postRegistryPopulation(BiConsumer)} and {@link GreenhouseConfigHolder.Builder#postRegistryDepopulation(Consumer)} that binds/unbinds the late values of this config.
+		 * @deprecated Use {@link GreenhouseConfigHolder.Builder#postRegistryPopulation(PostRegistryPopulationCallback)} instead for potential client context.
+		 */
+		@Deprecated(forRemoval = true, since = "2.4.0")
+		public Builder<T> postRegistryPopulation(BiConsumer<HolderLookup.Provider, T> callback) {
+			postRegistryPopulationCallback = ((registries, config, isClient) -> callback.accept(registries, config));
+			return this;
+		}
+
+		/**
+		 * @deprecated Use {@link GreenhouseConfigHolder.Builder#postRegistryDepopulation(PostRegistryDepopulationCallback)} instead.
+		 */
+		@Deprecated(forRemoval = true, since = "2.4.0")
+		public Builder<T> postRegistryDepopulation(Consumer<T> callback) {
+			postRegistryDepopulationCallback = (config) -> callback.accept(config);
+			return this;
+		}
+
+		/**
+		 * A shortcut to {@link GreenhouseConfigHolder.Builder#postRegistryPopulation(PostRegistryPopulationCallback)} and {@link GreenhouseConfigHolder.Builder#postRegistryDepopulation(PostRegistryDepopulationCallback)} that binds/unbinds the late values of this config.
+		 * <p>
+		 * You will be better off using something else if you need client-specific values.
 		 *
 		 * @param getter A getter that should return all late values from your config object.
 		 * @see LateHolder
 		 * @see LateHolderSet
 		 */
 		public Builder<T> lateValues(Function<T, List<? extends Late>> getter, Consumer<String> onException) {
-			latePopulationCallback = (lookup, config) -> getter.apply(config).forEach(late -> late.bind(lookup, onException));
+			latePopulationCallback = (lookup, config, isClient) -> getter.apply(config).forEach(late -> late.bind(lookup, onException));
 			lateDepopulationCallback = (config) -> getter.apply(config).forEach(Late::unbind);
 			return this;
 		}
@@ -402,10 +422,34 @@ public interface GreenhouseConfigHolder<T> {
 		}
 
 		private @NotNull GreenhouseConfigHolderImpl<?, T> getGreenhouseConfigHolder() {
-			BiConsumer<HolderLookup.Provider, T> populationCallback = latePopulationCallback != null && postRegistryPopulationCallback != null ? latePopulationCallback.andThen(postRegistryPopulationCallback) : latePopulationCallback != null ? latePopulationCallback : postRegistryPopulationCallback;
-			Consumer<T> depopulationCallback = lateDepopulationCallback != null && postRegistryDepopulationCallback != null ? lateDepopulationCallback.andThen(postRegistryDepopulationCallback) : lateDepopulationCallback != null ? lateDepopulationCallback : postRegistryDepopulationCallback;
+			PostRegistryPopulationCallback<T> populationCallback = latePopulationCallback != null && postRegistryPopulationCallback != null ? latePopulationCallback.andThen(postRegistryPopulationCallback) : latePopulationCallback != null ? latePopulationCallback : postRegistryPopulationCallback;
+			PostRegistryDepopulationCallback<T> depopulationCallback = lateDepopulationCallback != null && postRegistryDepopulationCallback != null ? lateDepopulationCallback.andThen(postRegistryDepopulationCallback) : lateDepopulationCallback != null ? lateDepopulationCallback : postRegistryDepopulationCallback;
 
 			return new GreenhouseConfigHolderImpl<>(configName, schemaVersion, configLang, defaultServerValue, defaultClientValue, serverCodec, clientCodec, networkFunction, populationCallback, depopulationCallback, serverFixer, clientFixer);
+		}
+	}
+
+	@FunctionalInterface
+	public interface PostRegistryPopulationCallback<T> {
+		void postRegistryPopulation(HolderLookup.Provider registries, T config, boolean isClient);
+
+		default PostRegistryPopulationCallback<T> andThen(PostRegistryPopulationCallback<T> callback) {
+			return (registries, config, isClient) -> {
+				this.postRegistryPopulation(registries, config, isClient);
+				callback.postRegistryPopulation(registries, config, isClient);
+			};
+		}
+	}
+
+	@FunctionalInterface
+	public interface PostRegistryDepopulationCallback<T> {
+		void postRegistryDepopulation(T config);
+
+		default PostRegistryDepopulationCallback<T> andThen(PostRegistryDepopulationCallback<T> callback) {
+			return (config) -> {
+				this.postRegistryDepopulation(config);
+				callback.postRegistryDepopulation(config);
+			};
 		}
 	}
 }

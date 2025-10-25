@@ -23,7 +23,7 @@ public class GreenhouseConfig {
 	}
 
 	public static void onServerStarted(MinecraftServer server) {
-		GreenhouseConfigStorage.onRegistryPopulation(server.registryAccess());
+		GreenhouseConfigStorage.onRegistryPopulation(server.registryAccess(), false);
 	}
 
 	@Deprecated(forRemoval = true, since = "2.1.0+1.21.1")
@@ -31,7 +31,6 @@ public class GreenhouseConfig {
 		return getHelper();
 	}
 
-	@SuppressWarnings("UnstableApiUsage")
 	public static GHConfigPlatformHelper getHelper() {
 		if (helper == null) {
 			helper = GHConfigPlatformHelper.load();

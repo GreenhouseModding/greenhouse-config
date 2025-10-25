@@ -29,7 +29,7 @@ public class GreenhouseConfigReloadCommandMethods {
 		if (config == null)
 			return 0;
 
-		GreenhouseConfigStorage.individualRegistryPopulation(context.getSource().registryAccess(), holder, config);
+		GreenhouseConfigStorage.individualRegistryPopulation(context.getSource().registryAccess(), holder, config, false);
 		if (holder.shouldSync()) {
 			holder.syncConfig(context.getSource().getServer());
 		}
@@ -53,7 +53,7 @@ public class GreenhouseConfigReloadCommandMethods {
 
 		holder.queryConfig();
 		if (Minecraft.getInstance().level != null) {
-			GreenhouseConfigStorage.individualRegistryPopulation(Minecraft.getInstance().level.registryAccess(), holder, config);
+			GreenhouseConfigStorage.individualRegistryPopulation(Minecraft.getInstance().level.registryAccess(), holder, config, true);
 		}
 		GreenhouseConfig.getHelper().sendSuccessClient(context, Component.translatableWithFallback("command.greenhouseconfig.reload.success", "Successfully reloading config '" + holder.getConfigFileName() + "'.", holder.getConfigFileName()));
 		return 1;

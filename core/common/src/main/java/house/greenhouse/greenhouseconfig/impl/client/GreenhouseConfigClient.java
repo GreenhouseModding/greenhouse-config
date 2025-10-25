@@ -9,7 +9,7 @@ public class GreenhouseConfigClient {
 	}
 
 	public static void onWorldJoin(HolderLookup.Provider registries) {
-		GreenhouseConfigStorage.onRegistryPopulation(registries);
+		GreenhouseConfigStorage.onRegistryPopulation(registries, true);
 	}
 
 	public static void onWorldLeave() {
