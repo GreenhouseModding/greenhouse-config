@@ -224,7 +224,7 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 	@Override
 	public DataResult<Stream<JsonCElement>> getStream(final JsonCElement input) {
 		if (input.json() instanceof JsonArray array) {
-			return DataResult.success(array.asList().stream().map(e -> e instanceof JsonNull ? null : new JsonCElement(e)));
+			return DataResult.success(array.asList().stream().map(e -> e instanceof JsonNull ? null : e instanceof JsonObject obj ? new JsonCObject(obj) : new JsonCElement(e)));
 		}
 		return DataResult.error(() -> "Not a json array: " + input);
 	}
@@ -233,8 +233,8 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 	public DataResult<Consumer<Consumer<JsonCElement>>> getList(final JsonCElement input) {
 		if (input.json() instanceof JsonArray array) {
 			return DataResult.success(c -> {
-				for (final JsonElement element : array.asList()) {
-					c.accept(element instanceof JsonNull ? null : new JsonCElement(element));
+				for (final JsonElement e : array.asList()) {
+					c.accept(e instanceof JsonNull ? null : e instanceof JsonObject obj ? new JsonCObject(obj) : new JsonCElement(e));
 				}
 			});
 		}
