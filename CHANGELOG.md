@@ -6,4 +6,4 @@
 ### JSONC Language
 - Fixed JSONC elements not implementing `equals` or `hashCode`.
 - Fixed JSONCOps not creating a copy of the JSONC in the `remove` method.
-- Fixed JSONC objects crashing when adding to an array using JSONCOps because of no JSON .
+- Fixed JSONC objects crashing when adding to an array using JSONCOps due to not having a internal JSON implementation.
