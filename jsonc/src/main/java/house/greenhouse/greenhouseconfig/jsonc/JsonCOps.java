@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.gson.*;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.*;
-import net.minidev.json.JSONObject;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -25,11 +24,6 @@ public class JsonCOps implements DynamicOps<JsonCElement> {
 	@Override
 	public JsonCElement empty() {
 		return JsonCElement.EMPTY;
-	}
-
-	@Override
-	public JsonCObject emptyMap() {
-		return JsonCObject.EMPTY;
 	}
 
 	@Override
