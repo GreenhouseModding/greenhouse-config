@@ -100,16 +100,9 @@ public interface GHConfigIPlatformHelper extends ServiceLoader.Provider<GHConfig
 
 	@ApiStatus.Internal
 	static GHConfigIPlatformHelper load() {
-		var loaders = ServiceLoader.load(GHConfigIPlatformHelper.class);
-		// Maintain sanity
-		if (loaders.stream().findAny().isEmpty()) {
-			throw new IllegalStateException("No " + GHConfigIPlatformHelper.class.getName() + " implementation found");
-		}
+		var loaders = ServiceLoader.load(GHConfigIPlatformHelper.class, GHConfigIPlatformHelper.class.getClassLoader());
 
-		return loaders
-				.stream()
-				.findFirst()
-				.orElseThrow()
-				.get();
+		return loaders.findFirst().orElseThrow(() ->
+				new IllegalStateException("No " + GHConfigIPlatformHelper.class.getName() + " implementation found"));
 	}
 }
