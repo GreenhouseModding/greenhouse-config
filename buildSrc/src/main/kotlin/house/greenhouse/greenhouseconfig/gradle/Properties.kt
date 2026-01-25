@@ -16,7 +16,7 @@ object Properties {
 			"Greenhouse Config",
 			"greenhouseconfig",
 			"A niche codec based config system.",
-			"2.2.2"
+			"2.2.3"
 		),
 		"jsonc" to ModuleProperties(
 			"jsonc",
