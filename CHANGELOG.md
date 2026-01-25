@@ -1,3 +1,2 @@
 ## Changes
-- [NeoForge] Swapped event for dedicated server config initialization to ensure that [Modding/enchiridion$5](https://git.greenhouse.lgbt/Modding/enchiridion/issues/5) does not happen.
-- [JSONC] Removed unnecessary access transformer reference in neoforge.mods.toml.
+- [NeoForge] Fixed a NeoForge race condition when loading the mod's platform helper during parallel mod loading. [#6](https://github.com/GreenhouseModding/greenhouse-config/pull/6) - hedgehog1029
