@@ -1,5 +1,14 @@
+# ⚠️ Greenhouse Config has PERMANENTLY MOVED to the Greenhouse Forgejo ⚠️
+
+We have been moving our repositories away from GitHub as of lately, and Greenhouse Config is no different.
+Please go to the below URL for any issues with the mod.
+
+#### https://git.greenhouse.lgbt/Modding/greenhouse-config
+
+If you still wish to continue to use this repo, here be dragons, shoo!
+
 # Greenhouse Config
-Greenhouse Config is a config library for Fabric and NeoForge made for mostly myself (MerchantCalico), however, any developer is free to utilise it and provide feedback for it.
+Greenhouse Config is a config library for Fabric and NeoForge made for mostly myself (ChrysanthCow), however, any developer is free to utilise it and provide feedback for it.
 
 Please note that Greenhouse Config is currently in alpha, and code may be subject to change.
 
